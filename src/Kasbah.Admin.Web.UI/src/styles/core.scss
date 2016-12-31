@@ -1,0 +1,30 @@
+@import 'base';
+
+@import 'bulma/utilities/utilities';
+
+$radius: 0;
+
+@import 'bulma/elements/elements';
+@import 'bulma/base/base';
+@import 'bulma/components/components';
+@import 'bulma/layout/layout';
+
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header.nav {
+    background-color: #f5f7fa;
+}
+
+.input, .textarea {
+    box-shadow: none;
+}
+
+ul.content-tree {
+    li ul {
+        padding-left: 10px;
+    }
+}
