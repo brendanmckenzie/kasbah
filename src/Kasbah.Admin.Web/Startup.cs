@@ -79,8 +79,6 @@ namespace Kasbah.Admin.Web
 
             app.UseStaticFiles();
 
-            // app.UseIdentity();
-
             // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
             app.UseOpenIdConnectServer(options =>
             {
@@ -105,11 +103,11 @@ namespace Kasbah.Admin.Web
 
                         // Note: you can skip the request validation when the client_id
                         // parameter is missing to support unauthenticated token requests.
-                        // if (string.IsNullOrEmpty(context.ClientId)) {
-                        //     context.Skip();
-                        //
-                        //     return Task.FromResult(0);
-                        // }
+                        if (string.IsNullOrEmpty(context.ClientId)) {
+                            context.Skip();
+
+                            return Task.FromResult(0);
+                        }
 
                         // Note: to mitigate brute force attacks, you SHOULD strongly consider applying
                         // a key derivation function like PBKDF2 to slow down the secret validation process.
@@ -128,27 +126,16 @@ namespace Kasbah.Admin.Web
                     // Implement OnHandleTokenRequest to support token requests.
                     OnHandleTokenRequest = async context =>
                     {
-                        // Only handle grant_type=password token requests and let the
-                        // OpenID Connect server middleware handle the other grant types.
                         if (context.Request.IsPasswordGrantType())
                         {
                             var securityService = context.HttpContext.RequestServices.GetService<SecurityService>();
-                            // Implement context.Request.Username/context.Request.Password validation here.
-                            // Note: you can call context Reject() to indicate that authentication failed.
-                            // Using password derivation and time-constant comparer is STRONGLY recommended.
                             try
                             {
                                 var user = await securityService.VerifyUserAsync(context.Request.Username, context.Request.Password);
 
                                 var identity = new ClaimsIdentity(context.Options.AuthenticationScheme);
-                                identity.AddClaim(ClaimTypes.NameIdentifier, user.Username);
-
-                                // By default, claims are not serialized in the access/identity tokens.
-                                // Use the overload taking a "destinations" parameter to make sure
-                                // your claims are correctly inserted in the appropriate tokens.
-                                // identity.AddClaim("urn:customclaim", "value",
-                                //     OpenIdConnectConstants.Destinations.AccessToken,
-                                //     OpenIdConnectConstants.Destinations.IdentityToken);
+                                identity.AddClaim(ClaimTypes.Name, user.Username);
+                                identity.AddClaim(ClaimTypes.NameIdentifier, user.Id.ToString());
 
                                 var ticket = new AuthenticationTicket(
                                     new ClaimsPrincipal(identity),

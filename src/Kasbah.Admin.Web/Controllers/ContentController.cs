@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kasbah.Content;
 using Kasbah.Content.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Kasbah.Admin.Web.Controllers
 {
+    [Authorize]
     public class ContentController
     {
         readonly ContentService _contentService;
