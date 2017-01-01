@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Kasbah.DataAccess.ElasticSearch;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Tests
@@ -18,13 +19,16 @@ namespace Tests
             Node = "http://localhost:32769"
         };
 
+        ElasticSearchDataAccessProvider GetProvider()
+            => new ElasticSearchDataAccessProvider(new LoggerFactory(), _settings);
+
         [Fact]
         public async Task PutEntry_WithValidDetails_CreatedSuccessfuly()
         {
             var id = Guid.NewGuid();
             var entry = new TestType { Property = "Hello world" };
 
-            var provider = new ElasticSearchDataAccessProvider(_settings);
+            var provider = GetProvider();
 
             await provider.PutEntryAsync(Index, id, entry);
         }
@@ -35,7 +39,7 @@ namespace Tests
             var id = Guid.NewGuid();
             var entry = new TestType { Property = "Hello world" };
 
-            var provider = new ElasticSearchDataAccessProvider(_settings);
+            var provider = GetProvider();
 
             await provider.PutEntryAsync(Index, id, entry);
 
@@ -52,7 +56,7 @@ namespace Tests
             var id = Guid.NewGuid();
             var entry = new TestType { Property = "Hello world" };
 
-            var provider = new ElasticSearchDataAccessProvider(_settings);
+            var provider = GetProvider();
 
             await provider.PutEntryAsync(Index, id, entry);
             await Task.Delay(1000);

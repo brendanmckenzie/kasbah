@@ -4,14 +4,13 @@ using System.Threading.Tasks;
 using Kasbah.DataAccess;
 using Kasbah.Content.Models;
 using System.Collections.Generic;
-using System.Reflection;
 using Microsoft.Extensions.Logging;
 
 namespace Kasbah.Content
 {
     public class ContentService
     {
-        const string IndexName = "content";
+        const string IndexName = "nodes";
         readonly IDataAccessProvider _dataAccessProvider;
         readonly ILogger _log;
         public ContentService(IDataAccessProvider dataAccessProvider, ILoggerFactory loggerFactory)
@@ -22,7 +21,7 @@ namespace Kasbah.Content
 
         #region Public methods
 
-        public async Task<Guid> CreateNodeAsync(Guid? parent, string alias, string displayName)
+        public async Task<Guid> CreateNodeAsync(Guid? parent, string alias, string displayName, string type)
         {
             var id = Guid.NewGuid();
             var node = new Node
@@ -31,6 +30,7 @@ namespace Kasbah.Content
                 Parent = parent,
                 Alias = alias,
                 DisplayName = displayName,
+                Type = type,
                 Taxonomy = await CalculateTaxonomyAsync(parent, id, alias)
             };
 
@@ -86,30 +86,9 @@ namespace Kasbah.Content
         {
             var data = await GetRawDataAsync(id);
 
-            // TODO: implement mapping dictionary -> object
+            // TODO: implement mapping dictionary > object
 
             throw new NotImplementedException();
-        }
-
-        public async Task<TypeDefinition> GetTypeDefinition<T>()
-        {
-            var type = typeof(T);
-            var typeInfo = type.GetTypeInfo();
-            var properties = typeInfo.GetProperties(BindingFlags.Public | BindingFlags.GetProperty);
-
-            var ret = new TypeDefinition
-            {
-                DisplayName = typeInfo.Name,
-                Type = type,
-                Fields = properties.Select(ent => new TypeDefinition.Field
-                {
-                    DisplayName = ent.Name,
-                    Alias = ent.Name,
-                    Type = ent.PropertyType.Name
-                })
-            };
-
-            return await Task.FromResult(ret);
         }
 
         public async Task UpdateDataAsync(Guid id, IDictionary<string, object> data)
@@ -125,9 +104,6 @@ namespace Kasbah.Content
         {
             _log.LogDebug($"Initialising {nameof(ContentService)}");
             await _dataAccessProvider.EnsureIndexExists(IndexName);
-
-            var dummyNode = Guid.NewGuid();
-            await CreateNodeAsync(null, dummyNode.ToString(), dummyNode.ToString());
         }
 
         #endregion

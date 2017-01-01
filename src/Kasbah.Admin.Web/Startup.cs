@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AspNet.Security.OpenIdConnect.Extensions;
 using AspNet.Security.OpenIdConnect.Primitives;
 using AspNet.Security.OpenIdConnect.Server;
-using Kasbah.Analytics;
 using Kasbah.Content;
 using Kasbah.DataAccess;
 using Kasbah.Security;
@@ -51,10 +50,7 @@ namespace Kasbah.Admin.Web
             services.AddMvc();
 
             // Kasbah services
-            // TODO: Create .AddKasbah() extension method
-            services.AddTransient<SecurityService>();
-            services.AddTransient<AnalyticsService>();
-            services.AddTransient<ContentService>();
+            services.AddKasbah();
 
             // TODO: remove dependency on ES provider
             services.AddSingleton(new Kasbah.DataAccess.ElasticSearch.ElasticSearchDataAccessProviderSettings
