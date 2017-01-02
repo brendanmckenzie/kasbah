@@ -1,7 +1,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 
-namespace Kasbah.Admin.Web
+namespace ExampleSite.Admin
 {
     public class Program
     {

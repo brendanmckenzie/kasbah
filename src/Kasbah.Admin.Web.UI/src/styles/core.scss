@@ -27,4 +27,8 @@ ul.content-tree {
     li ul {
         padding-left: 10px;
     }
+
+    a.is-active {
+        font-weight: bold;
+    }
 }

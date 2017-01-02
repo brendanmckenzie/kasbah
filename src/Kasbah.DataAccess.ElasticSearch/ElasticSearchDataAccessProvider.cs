@@ -39,7 +39,8 @@ namespace Kasbah.DataAccess.ElasticSearch
 
         public async Task<IEnumerable<EntryWrapper<T>>> QueryEntriesAsync<T>(string index, object query = null)
         {
-            var queryStr = JsonConvert.SerializeObject(ParseQuery(query));
+            var queryObj = ParseQuery(query);
+            var queryStr = queryObj == null ? null : JsonConvert.SerializeObject(queryObj);
 
             var uri = new Uri($"{index}/{typeof(T).FullName}/_search", UriKind.Relative);
 
@@ -47,7 +48,7 @@ namespace Kasbah.DataAccess.ElasticSearch
 
             var req = new HttpRequestMessage(HttpMethod.Get, uri)
             {
-                Content = new StringContent(queryStr, Encoding.UTF8, "application/json")
+                Content = queryStr == null ? null : new StringContent(queryStr, Encoding.UTF8, "application/json")
             };
 
             var res = await _webClient.SendAsync(req);

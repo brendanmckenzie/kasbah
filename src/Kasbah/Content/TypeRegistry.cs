@@ -20,6 +20,9 @@ namespace Kasbah.Content
 
         public IEnumerable<TypeDefinition> ListTypes()
             => _types.AsEnumerable();
+
+        public TypeDefinition GetType(string type)
+            => _types.SingleOrDefault(ent => ent.Alias == type);
     }
 
     public static class TypeRegistryExtensions
@@ -47,7 +50,7 @@ namespace Kasbah.Content
         {
             _type = type;
             _typeInfo = type.GetTypeInfo();
-            _fields = _typeInfo.GetProperties().Select(MapProperty);
+            _fields = _typeInfo.GetProperties().Select(MapProperty).ToList();
 
             _displayName = type.Name;
         }
@@ -57,7 +60,7 @@ namespace Kasbah.Content
             return new TypeDefinition
             {
                 DisplayName = _displayName,
-                Type = _type,
+                Alias = _type.FullName,
                 Fields = _fields
             };
         }
@@ -71,7 +74,7 @@ namespace Kasbah.Content
 
         public TypeDefinitionBuilder FieldDisplayName(string fieldName, string displayName)
         {
-            UpdateField(fieldName, field => field.DisplayName = displayName);
+            UpdateField(fieldName, field => { field.DisplayName = displayName; });
 
             return this;
         }
@@ -83,13 +86,20 @@ namespace Kasbah.Content
             return this;
         }
 
+        public TypeDefinitionBuilder FieldCategory(string fieldName, string category)
+        {
+            UpdateField(fieldName, field => field.Category = category);
+
+            return this;
+        }
+
         void UpdateField(string fieldName, Action<TypeDefinition.Field> update)
         {
             var field = _fields.SingleOrDefault(ent => ent.Alias == fieldName);
-            if (field != null)
-            {
-                update(field);
-            }
+
+            if (field == null) { throw new InvalidOperationException($"Unknown field: {fieldName}"); }
+
+            update(field);
         }
 
         static TypeDefinition.Field MapProperty(PropertyInfo property)
