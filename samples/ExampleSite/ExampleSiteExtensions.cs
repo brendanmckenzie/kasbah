@@ -25,8 +25,7 @@ namespace ExampleSite
             typeRegistry.Register<ExampleModel>(config =>
             {
                 config
-                    .FieldCategory(nameof(ExampleModel.Lorem), "General")
-                    .FieldHelpText(nameof(ExampleModel.Lorem), "Lorem ipsum was a method of typesetting")
+                    .FieldHelpText(nameof(ExampleModel.Lorem), "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s")
                     .FieldDisplayName(nameof(ExampleModel.Lorem), "Lorem ipsum");
             });
 

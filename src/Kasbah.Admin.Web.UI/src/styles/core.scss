@@ -26,6 +26,8 @@ header.nav {
 ul.content-tree {
     li ul {
         padding-left: 10px;
+        margin-bottom: 5px;
+        border-left: 1px dashed #ccc;
     }
 
     a.is-active {
