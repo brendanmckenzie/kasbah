@@ -8,11 +8,12 @@
     "Microsoft.AspNetCore.Cors": "1.1.0",
     "Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
     "Microsoft.AspNetCore.StaticFiles": "1.1.0",
+    "Microsoft.AspNetCore.Diagnostics": "1.1.0",
     "Microsoft.Extensions.Logging": "1.1.0",
     "Microsoft.Extensions.Logging.Console": "1.1.0",
     "Microsoft.Extensions.Logging.Debug": "1.1.0",
     "ExampleSite": "1.0.0-*",
-    "Kasbah.Web.Admin": "1.0.0-*"
+    "Kasbah.Web.Public": "1.0.0-*"
   },
   "frameworks": {
     "netcoreapp1.1": {

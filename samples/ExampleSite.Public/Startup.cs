@@ -1,11 +1,11 @@
-using Kasbah.Web.Admin;
+using Kasbah.Web.Public;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace ExampleSite.Admin
+namespace ExampleSite.Public
 {
     public class Startup
     {
@@ -16,17 +16,8 @@ namespace ExampleSite.Admin
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddKasbahAdmin();
+            services.AddKasbahPublic();
             services.AddExampleSite();
-            services.AddCors(options =>
-            {
-                options.AddPolicy("default", builder =>
-                {
-                    builder.AllowAnyMethod();
-                    builder.AllowAnyHeader();
-                    builder.AllowAnyOrigin();
-                });
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -35,18 +26,10 @@ namespace ExampleSite.Admin
             loggerFactory.AddConsole(LogLevel.Debug);
             loggerFactory.AddDebug();
 
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-            }
+            app.UseDeveloperExceptionPage();
+            app.UseStatusCodePages();
 
-            app.UseCors("default");
-
-            app.UseKasbahAdmin();
+            app.UseKasbahPublic();
             app.UseExampleSite();
         }
     }

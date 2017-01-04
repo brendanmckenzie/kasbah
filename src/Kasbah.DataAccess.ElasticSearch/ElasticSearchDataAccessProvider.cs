@@ -58,15 +58,25 @@ namespace Kasbah.DataAccess.ElasticSearch
 
             var searchResult = JsonConvert.DeserializeObject<SearchResult<T>>(resStr);
 
-            return searchResult.Hits.Hits.Select(ent => new EntryWrapper<T> { Id = Guid.Parse(ent.Id), Entry = ent.Source });
+            return searchResult?.Hits?.Hits?.Select(ent => new EntryWrapper<T>
+            {
+                Id = Guid.Parse(ent.Id),
+                Source = ent.Source,
+                Version = ent.Version
+            }) ?? Enumerable.Empty<EntryWrapper<T>>();
         }
 
-        public async Task<T> GetEntryAsync<T>(string index, Guid id)
+        public async Task<EntryWrapper<T>> GetEntryAsync<T>(string index, Guid id, int? version = null)
         {
-            var res = await _webClient.GetStringAsync(ItemUri<T>(index, id));
-            var getResult = JsonConvert.DeserializeObject<SearchResultHitsHit<T>>(res);
+            var res = await _webClient.GetStringAsync(ItemUri<T>(index, id, version: version));
+            var ent = JsonConvert.DeserializeObject<SearchResultHitsHit<T>>(res);
 
-            return getResult.Source;
+            return new EntryWrapper<T>
+            {
+                Id = Guid.Parse(ent.Id),
+                Source = ent.Source,
+                Version = ent.Version
+            };
         }
 
         public async Task EnsureIndexExists(string index)
@@ -94,8 +104,22 @@ namespace Kasbah.DataAccess.ElasticSearch
             return new { query };
         }
 
-        Uri ItemUri<T>(string index, Guid id, Guid? parent = null)
-            => new Uri($"{index}/{typeof(T).FullName}/{id}" + (parent.HasValue ? $"?parent={parent}" : null), UriKind.Relative);
+        Uri ItemUri<T>(string index, Guid id, Guid? parent = null, int? version = null)
+        {
+            var queryString = new Dictionary<string, object>();
+            if (parent.HasValue)
+            {
+                queryString.Add("parent", parent);
+            }
+            if (version.HasValue)
+            {
+                queryString.Add("version", version);
+            }
+
+            var path = $"{index}/{typeof(T).FullName}/{id}";
+            return new Uri(path + queryString.ToQueryString(), UriKind.Relative);
+        }
+
 
         class SearchResult<TEnt>
         {
@@ -130,6 +154,17 @@ namespace Kasbah.DataAccess.ElasticSearch
             public int Version { get; set; }
             [JsonProperty("_source")]
             public TEnt Source { get; set; }
+        }
+    }
+
+    // TODO: replace this with a framework function that does this
+    static class QueryStringHelpers
+    {
+        public static string ToQueryString(this Dictionary<string, object> dict, bool excludeQuestionMark = false)
+        {
+            var ret = string.Join("&", dict.Select(ent => $"{ent.Key}={ent.Value}"));
+
+            return excludeQuestionMark ? ret : $"?{ret}";
         }
     }
 }

@@ -77,10 +77,10 @@ namespace Kasbah.Security
 
             foreach (var entry in entries)
             {
-                entry.Entry.Password = null;
+                entry.Source.Password = null;
             }
 
-            return entries.Select(ent => ent.Entry);
+            return entries.Select(ent => ent.Source);
         }
 
         public async Task InitialiseAsync()
@@ -105,7 +105,7 @@ namespace Kasbah.Security
         {
             var entries = await _dataAccessProvider.QueryEntriesAsync<User>(IndexName, new { term = new { Username = username } });
 
-            return entries.FirstOrDefault()?.Entry;
+            return entries.FirstOrDefault()?.Source;
         }
 
         #endregion

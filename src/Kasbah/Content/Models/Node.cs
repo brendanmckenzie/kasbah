@@ -10,5 +10,8 @@ namespace Kasbah.Content.Models
         public string Alias { get; set; }
         public string DisplayName { get; set; }
         public string Type { get; set; }
+        public int? PublishedVersion { get; set; }
+        public DateTime Created { get; set; }
+        public DateTime Modified { get; set; }
     }
 }

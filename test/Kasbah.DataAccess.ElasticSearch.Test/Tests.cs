@@ -46,8 +46,8 @@ namespace Tests
             var res = await provider.GetEntryAsync<TestType>(Index, id);
 
             Assert.NotNull(res);
-            Assert.Equal(entry.Property, res.Property);
-            Assert.NotEqual(entry, res);
+            Assert.Equal(entry.Property, res.Source.Property);
+            Assert.NotEqual(entry, res.Source);
         }
 
         [Fact]

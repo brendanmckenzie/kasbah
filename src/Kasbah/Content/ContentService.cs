@@ -41,7 +41,9 @@ namespace Kasbah.Content
                 Alias = alias,
                 DisplayName = displayName ?? alias,
                 Type = type,
-                Taxonomy = await CalculateTaxonomyAsync(parent, id, alias)
+                Taxonomy = await CalculateTaxonomyAsync(parent, id, alias),
+                Created = DateTime.UtcNow,
+                Modified = DateTime.UtcNow
             };
 
             await _dataAccessProvider.PutEntryAsync(Indicies.Nodes, id, node);
@@ -53,16 +55,19 @@ namespace Kasbah.Content
         {
             var entries = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes);
 
-            return entries.Select(ent => ent.Entry);
+            return entries.Select(ent => ent.Source);
         }
 
-        public async Task<IDictionary<string, object>> GetRawDataAsync(Guid id)
+        public async Task<IDictionary<string, object>> GetRawDataAsync(Guid id, int? version = null)
         {
             try
             {
-                var nodeData = await _dataAccessProvider.GetEntryAsync<NodeData>(Indicies.Content, id);
+                var nodeData = await _dataAccessProvider.GetEntryAsync<NodeData>(Indicies.Content, id, version);
 
-                return nodeData.Data;
+                var res = nodeData.Source.Data;
+                res["_version"] = nodeData.Version;
+
+                return res;
             }
             catch (HttpRequestException)
             {
@@ -82,6 +87,22 @@ namespace Kasbah.Content
         public async Task UpdateDataAsync(Guid id, IDictionary<string, object> data)
         {
             await _dataAccessProvider.PutEntryAsync(Indicies.Content, id, new NodeData { Data = data });
+
+            var node = await GetNodeAsync(id);
+
+            node.Modified = DateTime.UtcNow;
+
+            await UpdateNodeAsync(id, node);
+        }
+
+        public async Task PublishNodeVersionAsync(Guid id, int? version)
+        {
+            var node = await GetNodeAsync(id);
+
+            node.Modified = DateTime.UtcNow;
+            node.PublishedVersion = version;
+
+            await UpdateNodeAsync(id, node);
         }
 
         // TODO: could probably use better naming conventions
@@ -99,6 +120,21 @@ namespace Kasbah.Content
             };
         }
 
+        // TODO: These two methods need to be optimised so as to not query the entire tree
+        public async Task<Node> GetNodeByTaxonomy(IEnumerable<string> aliases)
+        {
+            var tree = await DescribeTreeAsync();
+
+            return tree.SingleOrDefault(ent => ent.Taxonomy.Aliases.SequenceEqual(aliases));
+        }
+
+        public async Task<Node> GetNodeByTaxonomy(IEnumerable<Guid> ids)
+        {
+            var tree = await DescribeTreeAsync();
+
+            return tree.SingleOrDefault(ent => ent.Taxonomy.Ids.SequenceEqual(ids));
+        }
+
         public async Task InitialiseAsync()
         {
             _log.LogDebug($"Initialising {nameof(ContentService)}");
@@ -112,7 +148,12 @@ namespace Kasbah.Content
 
         async Task<Node> GetNodeAsync(Guid id)
         {
-            return await _dataAccessProvider.GetEntryAsync<Node>(Indicies.Nodes, id);
+            return (await _dataAccessProvider.GetEntryAsync<Node>(Indicies.Nodes, id)).Source;
+        }
+
+        async Task UpdateNodeAsync(Guid id, Node node)
+        {
+            await _dataAccessProvider.PutEntryAsync(Indicies.Nodes, id, node);
         }
 
         async Task<NodeTaxonomy> CalculateTaxonomyAsync(Guid? parent, Guid id, string alias)
