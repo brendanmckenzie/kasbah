@@ -38,9 +38,9 @@ namespace ExampleSite
             var siteRegistry = app.ApplicationServices.GetService<SiteRegistry>();
             siteRegistry.RegisterSite(config =>
             {
-                config.Alias = "example";
-                config.Domains = new[] { "localhost:5000" };
-                config.ContentRoot = new[] { "sites", "example", "home" };
+                config.Alias = "takeoffgo";
+                config.Domains = new[] { "localhost:5001" };
+                config.ContentRoot = new[] { "sites", "takeoffgo", "home" };
             });
 
             return app;

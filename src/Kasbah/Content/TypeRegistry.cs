@@ -60,7 +60,7 @@ namespace Kasbah.Content
             return new TypeDefinition
             {
                 DisplayName = _displayName,
-                Alias = _type.FullName,
+                Alias = _type.AssemblyQualifiedName,
                 Fields = _fields
             };
         }

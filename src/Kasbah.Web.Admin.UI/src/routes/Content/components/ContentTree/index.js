@@ -1,5 +1,6 @@
 import React from 'react'
 import Loading from 'components/Loading'
+import Error from 'components/Error'
 import NodeTree from './NodeTree'
 
 class ContentTree extends React.Component {
@@ -10,7 +11,7 @@ class ContentTree extends React.Component {
     createNode: React.PropTypes.object.isRequired
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.handleRefresh()
   }
 
@@ -27,6 +28,10 @@ class ContentTree extends React.Component {
   render() {
     if (this.props.describeTree.loading) {
       return <Loading />
+    }
+
+    if (!this.props.describeTree.success) {
+      return <Error />
     }
 
     return (

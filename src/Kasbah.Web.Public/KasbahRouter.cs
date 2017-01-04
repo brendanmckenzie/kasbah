@@ -46,7 +46,7 @@ namespace Kasbah.Web.Public
                 {
                     routeData.Values["node"] = node;
 
-                    var content = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
+                    var content = await _contentService.GetTypedDataAsync(node.Id, node.PublishedVersion);
 
                     routeData.Values["content"] = content;
 

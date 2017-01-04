@@ -20,6 +20,8 @@ namespace Kasbah.Content
         readonly ILogger _log;
         readonly IDataAccessProvider _dataAccessProvider;
         readonly TypeRegistry _typeRegistry;
+        readonly TypeMapper _typeMapper = new TypeMapper();
+
         public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, TypeRegistry typeRegistry)
         {
             _log = loggerFactory.CreateLogger<ContentService>();
@@ -75,13 +77,12 @@ namespace Kasbah.Content
             }
         }
 
-        public async Task<T> GetTypedDataAsync<T>(Guid id)
+        public async Task<object> GetTypedDataAsync(Guid id, int? version = null)
         {
-            var data = await GetRawDataAsync(id);
+            var node = await GetNodeAsync(id);
+            var data = await GetRawDataAsync(id, version);
 
-            // TODO: implement mapping dictionary > object
-
-            throw new NotImplementedException();
+            return _typeMapper.MapType(data, node.Type);
         }
 
         public async Task UpdateDataAsync(Guid id, IDictionary<string, object> data)
