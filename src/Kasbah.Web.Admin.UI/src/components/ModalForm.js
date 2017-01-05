@@ -1,6 +1,6 @@
 import React from 'react'
 
-const ModalForm = ({ onSubmit, onClose, children, title }) => (
+const ModalForm = ({ onSubmit, onClose, children, title, loading }) => (
   <div className='modal is-active'>
     <div className='modal-background' onClick={onClose} />
     <form onSubmit={onSubmit}>
@@ -16,7 +16,7 @@ const ModalForm = ({ onSubmit, onClose, children, title }) => (
         </section>
         <footer className='modal-card-foot'>
           <button type='button' className='button' onClick={onClose}>Cancel</button>
-          <button type='submit' className='button is-primary'>Save</button>
+          <button type='submit' className={'button is-primary ' + (loading ? 'is-loading' : '')}>Save</button>
         </footer>
       </div>
     </form>
@@ -26,7 +26,8 @@ const ModalForm = ({ onSubmit, onClose, children, title }) => (
 ModalForm.propTypes = {
   onSubmit: React.PropTypes.func.isRequired,
   onClose: React.PropTypes.func.isRequired,
-  children: React.PropTypes.element.isRequired,
+  loading: React.PropTypes.bool,
+  children: React.PropTypes.any.isRequired,
   title: React.PropTypes.string.isRequired
 }
 

@@ -27,7 +27,11 @@ namespace ExampleSite
             var typeRegistry = app.ApplicationServices.GetService<TypeRegistry>();
             typeRegistry.Register<Folder>();
             typeRegistry.Register<WebRoot>();
-            typeRegistry.Register<HomePage>();
+            typeRegistry.Register<HomePage>(config =>
+            {
+                config
+                    .SetOption("view", "SomeView");
+            });
             typeRegistry.Register<ExampleModel>(config =>
             {
                 config

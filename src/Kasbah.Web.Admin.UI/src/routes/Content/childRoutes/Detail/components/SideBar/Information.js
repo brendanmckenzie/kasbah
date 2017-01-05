@@ -31,7 +31,7 @@ export const Information = ({ node, type, data }) => (
 Information.propTypes = {
   node: React.PropTypes.object.isRequired,
   type: React.PropTypes.object.isRequired,
-  data: React.PropTypes.object.isRequired
+  data: React.PropTypes.object
 }
 
 export default Information

@@ -1,19 +1,21 @@
 import React from 'react'
 import ContentTree from './ContentTree/index.js'
 
-export const View = ({ children, describeTree, describeTreeRequest, createNode, createNodeRequest }) => (
+export const View = (props) => (
   <div className='section'>
     <h1 className='title'>Content</h1>
     <div className='columns'>
       <div className='column is-2'>
         <ContentTree
-          describeTree={describeTree}
-          describeTreeRequest={describeTreeRequest}
-          createNode={createNode}
-          createNodeRequest={createNodeRequest} />
+          describeTree={props.describeTree}
+          describeTreeRequest={props.describeTreeRequest}
+          createNode={props.createNode}
+          createNodeRequest={props.createNodeRequest}
+          listTypes={props.listTypes}
+          listTypesRequest={props.listTypesRequest} />
       </div>
       <div className='column'>
-        {children}
+        {props.children}
       </div>
     </div>
   </div>
@@ -24,7 +26,9 @@ View.propTypes = {
   describeTree: React.PropTypes.object.isRequired,
   describeTreeRequest: React.PropTypes.func.isRequired,
   createNode: React.PropTypes.object.isRequired,
-  createNodeRequest: React.PropTypes.func.isRequired
+  createNodeRequest: React.PropTypes.func.isRequired,
+  listTypes: React.PropTypes.object.isRequired,
+  listTypesRequest: React.PropTypes.func.isRequired
 }
 
 export default View

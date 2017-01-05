@@ -12,9 +12,11 @@ namespace Kasbah.Web.Admin.Controllers
     public class ContentController
     {
         readonly ContentService _contentService;
-        public ContentController(ContentService contentService)
+        readonly TypeRegistry _typeRegistry;
+        public ContentController(ContentService contentService, TypeRegistry typeRegistry)
         {
             _contentService = contentService;
+            _typeRegistry = typeRegistry;
         }
 
         [Route("{id}/edit"), HttpGet]
@@ -33,15 +35,20 @@ namespace Kasbah.Web.Admin.Controllers
         public async Task<IEnumerable<Node>> DescribeTree()
             => await _contentService.DescribeTreeAsync();
 
+        [Route("types"), HttpGet]
+        public async Task<IEnumerable<TypeDefinition>> ListTypes()
+            => await Task.FromResult(_typeRegistry.ListTypes());
+
         [Route("node"), HttpPost]
         public async Task<Guid> CreateNode([FromBody] CreateNodeRequest request)
-            => await _contentService.CreateNodeAsync(request.Parent, request.Alias, request.Type);
+            => await _contentService.CreateNodeAsync(request.Parent, request.Alias, request.Type, request.DisplayName);
     }
 
     public class CreateNodeRequest
     {
         public Guid? Parent { get; set; }
         public string Alias { get; set; }
+        public string DisplayName { get; set; }
         public string Type { get; set; }
     }
 }

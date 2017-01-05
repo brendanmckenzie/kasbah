@@ -18,4 +18,4 @@ export const action = (request) => {
   }
 }
 
-export const reducer = createReducer([CREATE_NODE, CREATE_NODE_SUCCESS, CREATE_NODE_FAILURE])
+export const reducer = createReducer([CREATE_NODE, CREATE_NODE_SUCCESS, CREATE_NODE_FAILURE], { loading: false })

@@ -44,6 +44,7 @@ namespace Kasbah.Content
         readonly Type _type;
         readonly TypeInfo _typeInfo;
         readonly IEnumerable<TypeDefinition.Field> _fields;
+        readonly IDictionary<string, object> _options;
         string _displayName;
 
         public TypeDefinitionBuilder(Type type)
@@ -51,6 +52,7 @@ namespace Kasbah.Content
             _type = type;
             _typeInfo = type.GetTypeInfo();
             _fields = _typeInfo.GetProperties().Select(MapProperty).ToList();
+            _options = new Dictionary<string, object>();
 
             _displayName = type.Name;
         }
@@ -61,6 +63,7 @@ namespace Kasbah.Content
             {
                 DisplayName = _displayName,
                 Alias = _type.AssemblyQualifiedName,
+                Options = _options,
                 Fields = _fields
             };
         }
@@ -68,6 +71,13 @@ namespace Kasbah.Content
         public TypeDefinitionBuilder DisplayName(string displayName)
         {
             _displayName = displayName;
+
+            return this;
+        }
+
+        public TypeDefinitionBuilder SetOption(string key, string value)
+        {
+            _options[key] = value;
 
             return this;
         }
@@ -89,6 +99,13 @@ namespace Kasbah.Content
         public TypeDefinitionBuilder FieldCategory(string fieldName, string category)
         {
             UpdateField(fieldName, field => field.Category = category);
+
+            return this;
+        }
+
+        public TypeDefinitionBuilder FieldEditor(string fieldName, string editor)
+        {
+            UpdateField(fieldName, field => field.Editor = editor);
 
             return this;
         }

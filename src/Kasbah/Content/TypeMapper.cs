@@ -19,6 +19,7 @@ namespace Kasbah.Content
                 if (data.ContainsKey(key))
                 {
                     var value = data[key];
+                    // TODO: handle nested objects and slight datatype mismatches (int64/int32, decimal/double, etc...)
                     if (value.GetType() == property.PropertyType)
                     {
                         property.SetValue(ret, value);

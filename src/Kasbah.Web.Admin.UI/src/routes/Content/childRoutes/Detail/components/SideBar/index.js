@@ -17,7 +17,7 @@ export const SideBar = ({ node, type, data }) => (
 SideBar.propTypes = {
   node: React.PropTypes.object.isRequired,
   type: React.PropTypes.object.isRequired,
-  data: React.PropTypes.object.isRequired
+  data: React.PropTypes.object
 }
 
 export default SideBar

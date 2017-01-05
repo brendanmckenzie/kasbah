@@ -121,19 +121,45 @@ namespace Kasbah.Content
             };
         }
 
-        // TODO: These two methods need to be optimised so as to not query the entire tree
+        // TODO: these still aren't entirely ideal, find a way to make the query only return 1 item
         public async Task<Node> GetNodeByTaxonomy(IEnumerable<string> aliases)
         {
-            var tree = await DescribeTreeAsync();
+            var query = new
+            {
+                @bool = new
+                {
+                    must = aliases.Select(ent => new
+                    {
+                        match = new Dictionary<string, string> {
+                            { "Taxonomy.Aliases", ent }
+                        }
+                    })
+                }
+            };
+            var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
 
-            return tree.SingleOrDefault(ent => ent.Taxonomy.Aliases.SequenceEqual(aliases));
+            return items.Select(ent => ent.Source)
+                .SingleOrDefault(ent => ent.Taxonomy.Aliases.SequenceEqual(aliases));
         }
 
         public async Task<Node> GetNodeByTaxonomy(IEnumerable<Guid> ids)
         {
-            var tree = await DescribeTreeAsync();
+            var query = new
+            {
+                @bool = new
+                {
+                    must = ids.Select(ent => new
+                    {
+                        match = new Dictionary<string, Guid> {
+                            { "Taxonomy.Ids", ent }
+                        }
+                    })
+                }
+            };
+            var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
 
-            return tree.SingleOrDefault(ent => ent.Taxonomy.Ids.SequenceEqual(ids));
+            return items.Select(ent => ent.Source)
+                .SingleOrDefault(ent => ent.Taxonomy.Ids.SequenceEqual(ids));
         }
 
         public async Task InitialiseAsync()

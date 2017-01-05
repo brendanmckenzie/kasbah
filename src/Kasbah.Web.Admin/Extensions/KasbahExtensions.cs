@@ -6,6 +6,7 @@ using Kasbah.Content;
 using Kasbah.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace Kasbah.Web.Admin
 {
@@ -45,12 +46,16 @@ namespace Kasbah.Web.Admin
 
 
             // Find a better way/place to do this...
-            Task.WaitAll(
-                app.ApplicationServices.GetService<ContentService>().InitialiseAsync(),
-                app.ApplicationServices.GetService<SecurityService>().InitialiseAsync(),
-                app.ApplicationServices.GetService<AnalyticsService>().InitialiseAsync());
+            InitialiseAsync(app.ApplicationServices).Wait();
 
             return app;
+        }
+
+        static async Task InitialiseAsync(IServiceProvider services)
+        {
+            await services.GetService<ContentService>().InitialiseAsync();
+            await services.GetService<SecurityService>().InitialiseAsync();
+            await services.GetService<AnalyticsService>().InitialiseAsync();
         }
     }
 }

@@ -29,7 +29,7 @@ namespace Kasbah.DataAccess.ElasticSearch
         {
             var json = JsonConvert.SerializeObject(data);
 
-            await _webClient.PutAsync(ItemUri<T>(index, id, parent), new StringContent(json, Encoding.UTF8, "application/json"));
+            await _webClient.PutAsync(ItemUri<T>(index, id, parent, waitForRefresh: true), new StringContent(json, Encoding.UTF8, "application/json"));
         }
 
         public async Task DeleteEntryAsync<T>(string index, Guid id)
@@ -104,7 +104,7 @@ namespace Kasbah.DataAccess.ElasticSearch
             return new { query };
         }
 
-        Uri ItemUri<T>(string index, Guid id, Guid? parent = null, int? version = null)
+        Uri ItemUri<T>(string index, Guid id, Guid? parent = null, int? version = null, bool waitForRefresh = false)
         {
             var queryString = new Dictionary<string, object>();
             if (parent.HasValue)
@@ -114,6 +114,10 @@ namespace Kasbah.DataAccess.ElasticSearch
             if (version.HasValue)
             {
                 queryString.Add("version", version);
+            }
+            if (waitForRefresh)
+            {
+                queryString.Add("refresh", "wait_for");
             }
 
             var path = $"{index}/{typeof(T).FullName}/{id}";

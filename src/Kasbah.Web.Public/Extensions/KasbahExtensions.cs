@@ -12,6 +12,8 @@ namespace Kasbah.Web.Public
     {
         public static IServiceCollection AddKasbahPublic(this IServiceCollection services)
         {
+            services.AddSingleton(new KasbahWebApplication());
+
             services
                 .AddMvc()
                 .AddApplicationPart(typeof(KasbahExtensions).GetTypeInfo().Assembly);

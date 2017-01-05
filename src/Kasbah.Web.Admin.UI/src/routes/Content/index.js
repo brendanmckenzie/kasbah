@@ -5,6 +5,7 @@ export default (store) => ({
   getComponent (nextState, cb) {
     require.ensure([], (require) => {
       injectReducer(store, { key: 'describeTree', reducer: require('./modules/describeTree').reducer })
+      injectReducer(store, { key: 'listTypes', reducer: require('./modules/listTypes').reducer })
       injectReducer(store, { key: 'createNode', reducer: require('./modules/createNode').reducer })
 
       cb(null, require('./container').default)
