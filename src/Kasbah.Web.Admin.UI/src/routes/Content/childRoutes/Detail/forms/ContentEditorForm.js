@@ -2,6 +2,7 @@ import React from 'react'
 import { Field, reduxForm } from 'redux-form'
 import _ from 'lodash'
 import { Tabs, Tab } from 'components/Tabs'
+import { getEditor } from 'editors'
 
 const ContentEditorForm = ({ handleSubmit, onPublish, type, loading }) => (
   <form onSubmit={handleSubmit}>
@@ -10,9 +11,9 @@ const ContentEditorForm = ({ handleSubmit, onPublish, type, loading }) => (
         <Tab key={index} title={ent}>
           <div>
             {type.fields.filter(fld => fld.category === ent).map((fld, fldIndex) => (
-              <div key={fldIndex}>
+              <div key={fldIndex} className='control'>
                 <label className='label' htmlFor={fld.alias}>{fld.displayName}</label>
-                <Field name={fld.alias} id={fld.alias} component='input' type='text' className='input' />
+                <Field name={fld.alias} id={fld.alias} component={getEditor(fld.editor)} className='input' />
                 {fld.helpText && <span className='help'>{fld.helpText}</span>}
               </div>
             ))}

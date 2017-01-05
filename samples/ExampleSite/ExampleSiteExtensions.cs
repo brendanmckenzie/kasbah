@@ -30,6 +30,9 @@ namespace ExampleSite
             typeRegistry.Register<HomePage>(config =>
             {
                 config
+                    .FieldEditor(nameof(HomePage.LongText), "longText")
+                    .FieldEditor(nameof(HomePage.ShortText), "text")
+                    .FieldEditor(nameof(HomePage.Date), "date")
                     .SetOption("view", "SomeView");
             });
             typeRegistry.Register<ExampleModel>(config =>

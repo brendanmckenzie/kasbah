@@ -1,5 +1,6 @@
 import React from 'react'
 import Loading from 'components/Loading'
+import Error from 'components/Error'
 import ContentEditor from './ContentEditor'
 import SideBar from './SideBar'
 
@@ -46,6 +47,10 @@ class View extends React.Component {
   render() {
     if (this.props.getDetail.loading) {
       return <Loading />
+    }
+
+    if (!this.props.getDetail.success) {
+      return <Error />
     }
 
     return (
