@@ -1,7 +1,9 @@
-﻿using ExampleSite.Models;
+﻿using System.IO;
+using ExampleSite.Models;
 using Kasbah.Content;
 using Kasbah.Content.Models;
 using Kasbah.DataAccess;
+using Kasbah.Media;
 using Kasbah.Web;
 using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Builder;
@@ -18,6 +20,12 @@ namespace ExampleSite
                 Node = "http://localhost:32769"
             });
             services.AddTransient<IDataAccessProvider, Kasbah.DataAccess.ElasticSearch.ElasticSearchDataAccessProvider>();
+
+            services.AddSingleton(new Kasbah.Media.LocalStorageMediaProviderSettings
+            {
+                ContentRoot = Path.Combine(Directory.GetCurrentDirectory(), "media")
+            });
+            services.AddTransient<IMediaStorageProvider, Kasbah.Media.LocalStorageMediaProvider>();
 
             return services;
         }

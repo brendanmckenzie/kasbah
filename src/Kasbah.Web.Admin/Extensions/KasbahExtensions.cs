@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Kasbah.Web.Admin.Providers;
 using Kasbah.Analytics;
 using Kasbah.Content;
+using Kasbah.Media;
 using Kasbah.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,7 @@ namespace Kasbah.Web.Admin
             services.AddTransient<AnalyticsService>();
             services.AddTransient<SecurityService>();
             services.AddTransient<ContentService>();
+            services.AddTransient<MediaService>();
 
             return services;
         }
@@ -53,9 +55,10 @@ namespace Kasbah.Web.Admin
 
         static async Task InitialiseAsync(IServiceProvider services)
         {
-            await services.GetService<ContentService>().InitialiseAsync();
-            await services.GetService<SecurityService>().InitialiseAsync();
             await services.GetService<AnalyticsService>().InitialiseAsync();
+            await services.GetService<ContentService>().InitialiseAsync();
+            await services.GetService<MediaService>().InitialiseAsync();
+            await services.GetService<SecurityService>().InitialiseAsync();
         }
     }
 }

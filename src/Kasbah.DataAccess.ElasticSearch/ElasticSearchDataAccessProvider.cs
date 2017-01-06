@@ -86,7 +86,9 @@ namespace Kasbah.DataAccess.ElasticSearch
             // TODO: make this nicer
             try
             {
-                await _webClient.PutAsync(new Uri(index, UriKind.Relative), new StringContent(string.Empty, Encoding.UTF8, "application/json"));
+                var indexName = string.IsNullOrEmpty(_settings.IndexPrefix) ? index : $"{_settings.IndexPrefix}_{index}";
+
+                await _webClient.PutAsync(new Uri(indexName, UriKind.Relative), new StringContent(string.Empty, Encoding.UTF8, "application/json"));
             }
             catch
             {
