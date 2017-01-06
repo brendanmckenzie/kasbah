@@ -12,6 +12,7 @@ namespace Kasbah.DataAccess.ElasticSearch
 {
     public class ElasticSearchDataAccessProvider : IDataAccessProvider
     {
+        readonly ElasticSearchDataAccessProviderSettings _settings;
         readonly HttpClient _webClient;
         readonly ILogger _log;
 
@@ -19,6 +20,7 @@ namespace Kasbah.DataAccess.ElasticSearch
         {
             _log = loggerFactory.CreateLogger<ElasticSearchDataAccessProvider>();
 
+            _settings = settings;
             _webClient = new HttpClient
             {
                 BaseAddress = new Uri(settings.Node)
@@ -119,6 +121,8 @@ namespace Kasbah.DataAccess.ElasticSearch
             {
                 queryString.Add("refresh", "wait_for");
             }
+
+            var indexName = string.IsNullOrEmpty(_settings.IndexPrefix) ? index : $"{_settings.IndexPrefix}_{index}";
 
             var path = $"{index}/{typeof(T).FullName}/{id}";
             return new Uri(path + queryString.ToQueryString(), UriKind.Relative);
