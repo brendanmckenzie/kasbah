@@ -11,6 +11,14 @@ export const makeApiRequest = (request) => {
     body: request.rawBody ? request.rawBody : JSON.stringify(request.body)
   }
 
+  if (request.headers) {
+    for (var k in request.headers) {
+      if (request.headers[k] === null) {
+        delete params.headers[k]
+      }
+    }
+  }
+
   if (localStorage.user) {
     const { accessToken } = JSON.parse(localStorage.user)
     params.headers['Authorization'] = `Bearer ${accessToken}`

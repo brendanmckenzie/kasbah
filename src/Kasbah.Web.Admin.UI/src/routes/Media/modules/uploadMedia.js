@@ -5,16 +5,11 @@ export const UPLOAD_MEDIA_SUCCESS = 'UPLOAD_MEDIA_SUCCESS'
 export const UPLOAD_MEDIA_FAILURE = 'UPLOAD_MEDIA_FAILURE'
 
 export const action = (files) => {
-  const el = document.createElement('form')
+  const data = new FormData()
 
   for (var file of files) {
-    const input = document.createElement('input')
-    input.type = 'file'
-    input.file = file
+    data.append(file.name, file, file.name)
   }
-
-  const data = new FormData(el)
-  console.log(data)
 
   return {
     types: [UPLOAD_MEDIA, UPLOAD_MEDIA_SUCCESS, UPLOAD_MEDIA_FAILURE],

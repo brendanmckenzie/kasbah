@@ -24,7 +24,7 @@ namespace Kasbah.Web.Admin.Controllers
 
         [Route("upload"), HttpPost]
         public async Task<IEnumerable<Guid>> Upload(IEnumerable<IFormFile> files)
-            => await Task.WhenAll(files.Select(async ent => await _mediaService.PutMediaAsync(ent.OpenReadStream(), ent.FileName, ent.ContentType)));
+            => await Task.WhenAll(files.Concat(Request.Form.Files).Select(async ent => await _mediaService.PutMediaAsync(ent.OpenReadStream(), ent.FileName, ent.ContentType)));
 
         [Route("{id}"), HttpGet]
         public async Task<FileResult> GetMedia(Guid id, [FromQuery] GetMediaRequest request)

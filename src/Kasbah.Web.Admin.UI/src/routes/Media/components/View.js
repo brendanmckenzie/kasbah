@@ -20,6 +20,16 @@ class View extends React.Component {
   }
 
   componentWillMount() {
+    this.handleRefresh()
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.uploadMedia.success && nextProps.uploadMedia.success !== this.props.uploadMedia.success) {
+      this.handleRefresh()
+    }
+  }
+
+  handleRefresh() {
     this.props.listMediaRequest()
   }
 
