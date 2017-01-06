@@ -18,6 +18,8 @@ class View extends React.Component {
   constructor() {
     super()
 
+    this.state = { payload: null }
+
     this.handleSave = this.handleSave.bind(this)
     this.handlePublish = this.handlePublish.bind(this)
   }
@@ -30,6 +32,24 @@ class View extends React.Component {
     if (nextProps.id !== this.props.id) {
       this.handleLoad(nextProps.id)
     }
+
+    if (nextProps.getDetail.success && nextProps.getDetail.success !== this.props.getDetail.success) {
+      this.setState({
+        payload: nextProps.getDetail.payload
+      })
+    }
+
+    if (nextProps.putDetail.success && nextProps.putDetail.success !== this.props.putDetail.success) {
+      this.setState({
+        payload: nextProps.putDetail.payload
+      })
+    }
+
+    if (nextProps.publish.success && nextProps.publish.success !== this.props.publish.success) {
+      this.setState({
+        payload: nextProps.publish.payload
+      })
+    }
   }
 
   handleLoad(id) {
@@ -41,7 +61,7 @@ class View extends React.Component {
   }
 
   handlePublish() {
-    this.props.publishRequest({ id: this.props.id, version: this.props.getDetail.payload.data['_version'] })
+    this.props.publishRequest({ id: this.props.id, version: this.state.payload.data['_version'] })
   }
 
   render() {
@@ -55,16 +75,18 @@ class View extends React.Component {
 
     return (
       <div>
-        <h2 className='subtitle'>{this.props.getDetail.payload.node.displayName}</h2>
+        <h2 className='subtitle'>{this.state.payload.node.displayName}</h2>
         <div className='columns'>
           <div className='column'>
-            <ContentEditor {...this.props.getDetail}
+            <ContentEditor
+              payload={this.state.payload}
               loading={this.props.putDetail.loading}
+              publishing={this.props.publish.loading}
               onSubmit={this.handleSave}
               onPublish={this.handlePublish} />
           </div>
           <div className='column is-3'>
-            <SideBar {...this.props.getDetail.payload} />
+            <SideBar {...this.state.payload} />
           </div>
         </div>
       </div>

@@ -24,12 +24,20 @@ namespace Kasbah.Web.Admin.Controllers
             => await _contentService.GetNodeDataForEditingAsync(id);
 
         [Route("{id}/publish/{version}"), HttpPost]
-        public async Task PublishNodeVersion(Guid id, int? version)
-            => await _contentService.PublishNodeVersionAsync(id, version);
+        public async Task<NodeDataForEditing> PublishNodeVersion(Guid id, int? version)
+        {
+            await _contentService.PublishNodeVersionAsync(id, version);
+
+            return await GetNodeDataForEditing(id);
+        }
 
         [Route("{id}"), HttpPost]
-        public async Task UpdateNodeData(Guid id, [FromBody]IDictionary<string, object> data)
-            => await _contentService.UpdateDataAsync(id, data);
+        public async Task<NodeDataForEditing> UpdateNodeData(Guid id, [FromBody]IDictionary<string, object> data)
+        {
+            await _contentService.UpdateDataAsync(id, data);
+
+            return await GetNodeDataForEditing(id);
+        }
 
         [Route("tree"), HttpGet]
         public async Task<IEnumerable<Node>> DescribeTree()

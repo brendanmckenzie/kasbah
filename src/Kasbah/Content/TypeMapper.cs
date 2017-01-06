@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -6,6 +7,10 @@ namespace Kasbah.Content
 {
     public class TypeMapper
     {
+        public TypeMapper()
+        {
+        }
+
         // TODO: implement linking to other objects
         public object MapType(IDictionary<string, object> data, string typeName)
         {
@@ -19,10 +24,24 @@ namespace Kasbah.Content
                 if (data.ContainsKey(key))
                 {
                     var value = data[key];
+                    if (value == null) { continue; }
+
                     // TODO: handle nested objects and slight datatype mismatches (int64/int32, decimal/double, etc...)
                     if (value.GetType() == property.PropertyType)
                     {
                         property.SetValue(ret, value);
+                    }
+                    else if (value.GetType().IsAssignableFrom(typeof(IDictionary)))
+                    {
+                        // TODO: handle nested object
+                    }
+                    else if (value.GetType() == typeof(string))
+                    {
+                        Guid id;
+                        if (Guid.TryParse((string)value, out id))
+                        {
+                            // TODO: handle referenced object (Guid)
+                        }
                     }
                     else
                     {

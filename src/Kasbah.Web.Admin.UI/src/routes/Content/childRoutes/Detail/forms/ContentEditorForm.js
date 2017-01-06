@@ -2,10 +2,10 @@ import React from 'react'
 import { Field, reduxForm } from 'redux-form'
 import _ from 'lodash'
 import { Tabs, Tab } from 'components/Tabs'
-import { getEditor } from 'editors'
+import kasbah from 'kasbah'
 
-const ContentEditorForm = ({ handleSubmit, onPublish, type, loading }) => (
-  <form onSubmit={handleSubmit}>
+const ContentEditorForm = ({ handleSubmit, onPublish, type, loading, publishing }) => (
+  <form onSubmit={handleSubmit} className='content-editor__form' disabled={loading || publishing}>
     <Tabs>
       {_(type.fields).map(ent => ent.category).uniq().value().map((ent, index) => (
         <Tab key={index} title={ent}>
@@ -13,7 +13,7 @@ const ContentEditorForm = ({ handleSubmit, onPublish, type, loading }) => (
             {type.fields.filter(fld => fld.category === ent).map((fld, fldIndex) => (
               <div key={fldIndex} className='control'>
                 <label className='label' htmlFor={fld.alias}>{fld.displayName}</label>
-                <Field name={fld.alias} id={fld.alias} component={getEditor(fld.editor)} className='input' />
+                <Field name={fld.alias} id={fld.alias} component={kasbah.getEditor(fld.editor)} className='input' />
                 {fld.helpText && <span className='help'>{fld.helpText}</span>}
               </div>
             ))}
@@ -23,8 +23,8 @@ const ContentEditorForm = ({ handleSubmit, onPublish, type, loading }) => (
     </Tabs>
     <hr />
     <div className='control has-text-right'>
-      <button className={'button is-primary' + (loading ? ' is-loading' : '')}>Save changes</button>
-      <button className='button' type='button' onClick={onPublish}>Publish</button>
+      <button className={'button ' + ((publishing || loading) ? 'is-loading' : '')} type='button' onClick={onPublish}>Publish</button>
+      <button className={'button is-primary' + ((loading || loading) ? ' is-loading' : '')}>Save changes</button>
     </div>
   </form>
 )
@@ -34,6 +34,7 @@ ContentEditorForm.propTypes = {
   onPublish: React.PropTypes.func.isRequired,
   type: React.PropTypes.object.isRequired,
   loading: React.PropTypes.bool,
+  publishing: React.PropTypes.bool,
   error: React.PropTypes.string
 }
 

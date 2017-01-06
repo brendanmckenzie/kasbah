@@ -34,3 +34,16 @@ ul.content-tree {
         font-weight: bold;
     }
 }
+
+.content-editor__form {
+    textarea {
+        height: 200px;
+        resize: none;
+    }
+}
+
+.control {
+    button + button {
+        margin-left: 10px;
+    }
+}
