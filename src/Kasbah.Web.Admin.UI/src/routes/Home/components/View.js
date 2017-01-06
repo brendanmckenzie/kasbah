@@ -8,7 +8,7 @@ export const View = () => (
         <div className='tile is-vertical is-8'>
           <div className='tile'>
             <div className='tile is-parent is-vertical'>
-              <article className='tile is-child notification is-primary'>
+              <article className='tile is-child notification is-danger'>
                 <p className='title'>Kasbah</p>
                 <p className='subtitle'>v1.0</p>
               </article>
@@ -25,11 +25,11 @@ export const View = () => (
             </div>
           </div>
           <div className='tile is-parent'>
-            <article className='tile is-child notification is-danger'>
-              <p className='title'>Wide tile</p>
+            <article className='tile is-child notification is-primary'>
+              <p className='title'>System information</p>
               <p className='subtitle'>Aligned with the right tile</p>
               <div className='content'>
-                <p>Not really sure what to put here. Notifications? Alerts? News? Weater?</p>
+                <p>Server statistics, requests/minute, uptime, total # of requests...</p>
               </div>
             </article>
           </div>
