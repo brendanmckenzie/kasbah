@@ -47,3 +47,22 @@ ul.content-tree {
         margin-left: 10px;
     }
 }
+
+ul.breadcrumb {
+    margin-top: -15px;
+    li {
+        font-size: 80%;
+        display: inline-block;
+        &::after {
+            content: '/';
+            margin: 0 5px;
+            color: #ccc;
+        }
+
+        &:last-child {
+            &::after {
+                display: none;
+            }
+        }
+    }
+}

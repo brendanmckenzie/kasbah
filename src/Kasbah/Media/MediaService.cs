@@ -54,5 +54,8 @@ namespace Kasbah.Media
 
         public async Task<Stream> GetMediaStreamAsync(Guid id)
             => await _mediaStorageProvider.GetMediaAsync(id);
+
+        public async Task<MediaItem> GetMediaItemAsync(Guid id)
+            => (await _dataAccessProvider.GetEntryAsync<MediaItem>(IndexName, id)).Source;
     }
 }

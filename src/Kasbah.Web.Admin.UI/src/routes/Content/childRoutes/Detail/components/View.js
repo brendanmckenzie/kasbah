@@ -76,6 +76,9 @@ class View extends React.Component {
     return (
       <div>
         <h2 className='subtitle'>{this.state.payload.node.displayName}</h2>
+        <ul className='breadcrumb'>
+          {this.state.payload.node.taxonomy.aliases.map((ent, index) => <li key={index}>{ent}</li>)}
+        </ul>
         <div className='columns'>
           <div className='column'>
             <ContentEditor
