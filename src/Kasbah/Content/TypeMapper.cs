@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,7 +6,6 @@ using Newtonsoft.Json.Linq;
 
 namespace Kasbah.Content
 {
-    // TODO: this needs to be heavily unit tested
     public class TypeMapper
     {
         readonly ContentService _contentService;
@@ -67,6 +65,8 @@ namespace Kasbah.Content
                     }
                 }
             }
+
+            // TODO: array of linked objects
 
             try
             {
