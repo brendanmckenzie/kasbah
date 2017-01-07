@@ -77,7 +77,7 @@ class View extends React.Component {
                       <div className='media'>
                         <figure className='media-left'>
                           <span className='image is-64x64'>
-                            <img src={`http://localhost:5000/media/${ent.id}?width=128`} />
+                            <img src={`http://localhost:5000/media/${ent.id}?width=128&height=128`} />
                           </span>
                         </figure>
                         <div className='media-content'>

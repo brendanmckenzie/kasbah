@@ -2,17 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace Kasbah.Content
 {
+    // TODO: this needs to be heavily unit tested
     public class TypeMapper
     {
-        public TypeMapper()
+        readonly ContentService _contentService;
+        readonly TypeRegistry _typeRegistry;
+
+        public TypeMapper(ContentService contentService, TypeRegistry typeRegistry)
         {
+            _contentService = contentService;
+            _typeRegistry = typeRegistry;
         }
 
-        // TODO: implement linking to other objects
-        public object MapType(IDictionary<string, object> data, string typeName)
+        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName)
         {
             var type = Type.GetType(typeName);
             var typeInfo = type.GetTypeInfo();
@@ -23,35 +30,52 @@ namespace Kasbah.Content
                 var key = property.Name;
                 if (data.ContainsKey(key))
                 {
-                    var value = data[key];
-                    if (value == null) { continue; }
+                    var source = data[key];
+                    var dest = await MapPropertyAsync(source, property);
 
-                    // TODO: handle nested objects and slight datatype mismatches (int64/int32, decimal/double, etc...)
-                    if (value.GetType() == property.PropertyType)
-                    {
-                        property.SetValue(ret, value);
-                    }
-                    else if (value.GetType().IsAssignableFrom(typeof(IDictionary)))
-                    {
-                        // TODO: handle nested object
-                    }
-                    else if (value.GetType() == typeof(string))
-                    {
-                        Guid id;
-                        if (Guid.TryParse((string)value, out id))
-                        {
-                            // TODO: handle referenced object (Guid)
-                        }
-                    }
-                    else
-                    {
-                        // property type mismatch
-                        Console.WriteLine($"Unable to map {key}, source type: {value.GetType().Name}, destination type: {property.PropertyType.Name}");
-                    }
+                    property.SetValue(ret, dest);
                 }
             }
 
             return ret;
+        }
+
+        public async Task<object> MapPropertyAsync(object source, PropertyInfo property)
+        {
+            if (source == null) { return null; }
+
+            var sourceType = source.GetType();
+
+            // Nested objects
+            if (sourceType == typeof(JObject))
+            {
+                var dict = (source as JObject).ToObject<IDictionary<string, object>>();
+
+                return await MapTypeAsync(dict, property.PropertyType.AssemblyQualifiedName);
+            }
+
+            // Linked objects
+            if (_typeRegistry.GetType(property.PropertyType.AssemblyQualifiedName) != null)
+            {
+                Guid id;
+                if (Guid.TryParse((string)source, out id))
+                {
+                    var node = await _contentService.GetNodeAsync(id);
+                    if (node.PublishedVersion.HasValue)
+                    {
+                        return _contentService.GetTypedDataAsync(id, node.PublishedVersion.Value);
+                    }
+                }
+            }
+
+            try
+            {
+                return Convert.ChangeType(source, property.PropertyType);
+            }
+            catch (InvalidCastException)
+            {
+                return null;
+            }
         }
     }
 }

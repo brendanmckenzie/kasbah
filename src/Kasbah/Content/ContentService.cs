@@ -20,13 +20,16 @@ namespace Kasbah.Content
         readonly ILogger _log;
         readonly IDataAccessProvider _dataAccessProvider;
         readonly TypeRegistry _typeRegistry;
-        readonly TypeMapper _typeMapper = new TypeMapper();
+        readonly TypeMapper _typeMapper;
 
         public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, TypeRegistry typeRegistry)
         {
             _log = loggerFactory.CreateLogger<ContentService>();
             _dataAccessProvider = dataAccessProvider;
             _typeRegistry = typeRegistry;
+
+            // TODO: this isn't great. remove the circular dependency
+            _typeMapper = new TypeMapper(this, _typeRegistry);
         }
 
         #region Public methods
@@ -82,7 +85,7 @@ namespace Kasbah.Content
             var node = await GetNodeAsync(id);
             var data = await GetRawDataAsync(id, version);
 
-            return _typeMapper.MapType(data, node.Type);
+            return await _typeMapper.MapTypeAsync(data, node.Type);
         }
 
         public async Task UpdateDataAsync(Guid id, IDictionary<string, object> data)
@@ -169,14 +172,14 @@ namespace Kasbah.Content
             await _dataAccessProvider.EnsureIndexExists(Indicies.Content);
         }
 
-        #endregion
-
-        #region Private methods
-
-        async Task<Node> GetNodeAsync(Guid id)
+        public async Task<Node> GetNodeAsync(Guid id)
         {
             return (await _dataAccessProvider.GetEntryAsync<Node>(Indicies.Nodes, id)).Source;
         }
+
+        #endregion
+
+        #region Private methods
 
         async Task UpdateNodeAsync(Guid id, Node node)
         {

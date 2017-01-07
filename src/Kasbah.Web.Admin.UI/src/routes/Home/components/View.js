@@ -25,7 +25,7 @@ export const View = () => (
             </div>
           </div>
           <div className='tile is-parent'>
-            <article className='tile is-child notification is-primary'>
+            <article className='tile is-child notification'>
               <p className='title'>System information</p>
               <p className='subtitle'>Aligned with the right tile</p>
               <div className='content'>
