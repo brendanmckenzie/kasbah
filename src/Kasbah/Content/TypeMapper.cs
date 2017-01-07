@@ -63,7 +63,7 @@ namespace Kasbah.Content
                     var node = await _contentService.GetNodeAsync(id);
                     if (node.PublishedVersion.HasValue)
                     {
-                        return _contentService.GetTypedDataAsync(id, node.PublishedVersion.Value);
+                        return await _contentService.GetTypedDataAsync(id, node.PublishedVersion.Value);
                     }
                 }
             }

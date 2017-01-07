@@ -35,6 +35,11 @@ namespace Tests
         public string StringProp { get; set; }
     }
 
+    class TestTypeLinkedProp
+    {
+        public NestedType LinkedNestedProp { get; set; }
+    }
+
     public class TypeMapperTests
     {
         const string Index = "testing";
@@ -55,6 +60,8 @@ namespace Tests
             _typeRegistry.Register<TestTypeStringProp>();
             _typeRegistry.Register<TestTypeIntProp>();
             _typeRegistry.Register<TestTypeNestedProp>();
+            _typeRegistry.Register<TestTypeLinkedProp>();
+            _typeRegistry.Register<NestedType>();
 
             _contentService = new ContentService(new LoggerFactory(), GetProvider(), _typeRegistry);
         }
@@ -104,6 +111,28 @@ namespace Tests
 
             Assert.NotNull(obj);
             Assert.Equal(obj.IntProp, 1);
+        }
+
+        [Fact]
+        public async Task MapType_WithLinkedObject_ReturnsCorrectObject()
+        {
+            var typeMapper = new TypeMapper(_contentService, _typeRegistry);
+
+            var id = Guid.NewGuid();
+            var createdItemId = await _contentService.CreateNodeAsync(null, id.ToString(), typeof(NestedType).AssemblyQualifiedName);
+            await _contentService.UpdateDataAsync(createdItemId, new Dictionary<string, object> { { "StringProp", "value" } });
+            await _contentService.PublishNodeVersionAsync(createdItemId, 1);
+
+            var dict = new Dictionary<string, object>
+            {
+                { "LinkedNestedProp", createdItemId.ToString() }
+            };
+
+            var obj = await typeMapper.MapTypeAsync(dict, typeof(TestTypeLinkedProp).AssemblyQualifiedName) as TestTypeLinkedProp;
+
+            Assert.NotNull(obj);
+            Assert.NotNull(obj.LinkedNestedProp);
+            Assert.Equal(obj.LinkedNestedProp.StringProp, "value");
         }
     }
 }
