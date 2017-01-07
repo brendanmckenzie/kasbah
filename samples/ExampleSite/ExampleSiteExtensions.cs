@@ -1,11 +1,9 @@
 ﻿using System.IO;
 using ExampleSite.Models;
 using Kasbah.Content;
-using Kasbah.Content.Models;
 using Kasbah.DataAccess;
 using Kasbah.Media;
 using Kasbah.Web;
-using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -33,7 +31,6 @@ namespace ExampleSite
         public static IApplicationBuilder UseExampleSite(this IApplicationBuilder app)
         {
             var typeRegistry = app.ApplicationServices.GetService<TypeRegistry>();
-            typeRegistry.Register<Folder>();
             typeRegistry.Register<WebRoot>();
             typeRegistry.Register<HomePage>(config =>
             {
