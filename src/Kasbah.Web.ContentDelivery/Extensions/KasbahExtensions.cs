@@ -6,7 +6,7 @@ using Kasbah.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Kasbah.Web.Public
+namespace Kasbah.Web.ContentDelivery
 {
     public static class KasbahExtensions
     {

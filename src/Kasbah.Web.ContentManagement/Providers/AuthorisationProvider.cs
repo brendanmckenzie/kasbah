@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Kasbah.Security;
 
-namespace Kasbah.Web.Admin.Providers
+namespace Kasbah.Web.ContentManagement.Providers
 {
     public class AuthorisationProvider : OpenIdConnectServerProvider
     {

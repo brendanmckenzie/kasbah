@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Kasbah.Web.Public.Controllers
+namespace Kasbah.Web.ContentDelivery.Controllers
 {
     public class DefaultContentController : Controller
     {

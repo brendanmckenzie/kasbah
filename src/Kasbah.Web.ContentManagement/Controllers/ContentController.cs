@@ -5,7 +5,7 @@ using Kasbah.Content;
 using Kasbah.Content.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Kasbah.Web.Admin.Controllers
+namespace Kasbah.Web.ContentManagement.Controllers
 {
     // [Authorize]
     [Route("content")]

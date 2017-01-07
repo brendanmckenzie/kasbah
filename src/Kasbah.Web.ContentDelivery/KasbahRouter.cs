@@ -5,7 +5,7 @@ using Kasbah.Content;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 
-namespace Kasbah.Web.Public
+namespace Kasbah.Web.ContentDelivery
 {
     public class KasbahRouter : IRouter
     {

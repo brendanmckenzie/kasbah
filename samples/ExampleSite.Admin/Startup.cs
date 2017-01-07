@@ -1,4 +1,4 @@
-using Kasbah.Web.Admin;
+using Kasbah.Web.ContentManagement;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
