@@ -38,8 +38,7 @@ namespace ExampleSite
                     .FieldEditor(nameof(HomePage.LongText), "longText")
                     .FieldEditor(nameof(HomePage.ShortText), "text")
                     .FieldHelpText(nameof(HomePage.ShortText), "Some help text")
-                    .FieldEditor(nameof(HomePage.Date), "date")
-                    .SetOption("view", "SomeView");
+                    .FieldEditor(nameof(HomePage.Date), "date");
             });
             typeRegistry.Register<ExampleModel>(config =>
             {

@@ -17,13 +17,13 @@ namespace Kasbah.Web.ContentDelivery.Controllers
             _analyticsService = analyticsService;
         }
 
-        [Route("track")]
+        [Route("track"), HttpPost]
         public async Task TrackEvent(AnalyticsEvent ev)
         {
             await _analyticsService.TrackEvent(ev);
         }
 
-        [Route("init")]
+        [Route("init"), HttpPost]
         public async Task<AnalyticsInitResponse> Init([FromBody] AnalyticsInitRequest request)
         {
             if (request.Persona.HasValue)
@@ -42,14 +42,14 @@ namespace Kasbah.Web.ContentDelivery.Controllers
             }
         }
 
-        [Route("tracker.js")]
+        [Route("tracker.js"), HttpGet]
         public FileResult Tracker()
         {
             var resourceName = "Kasbah.Web.ContentDelivery.Resources.AnalyticsTracker.js";
             var assembly = typeof(AnalyticsController).GetTypeInfo().Assembly;
             var stream = assembly.GetManifestResourceStream(resourceName);
 
-            return new FileStreamResult(stream, "text/javascript");
+            return new FileStreamResult(stream, "application/javascript");
         }
     }
 

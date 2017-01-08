@@ -1,40 +1,52 @@
 (function () {
+  if (!window.fetch) {
+    // TODO: pull in fetch polyfill
+  }
 
-    var AnalyticsTracker = function (existingEvents) {
-        this.makeRequest = function (endpoint, data, callback) {
+  var AnalyticsTracker = function (existingEvents) {
+    this.init(existingEvents);
+  }
 
-        }
-
-        this.init = function () {
-            var initReq = {
-                persona: localStorage['kasbah:persona']
-            }
-            var initCallback = function (res) {
-                localStorage['kasbah:persona'] = res.persona
-                sessionStorage['kasbah:session'] = res.session
-            }
-            this.makeRequest('init', initReq, initCallback)
-
-            if (typeof existingEvents === 'Array') {
-                for (var i = 0; i < existingEvents.length; i++) {
-                    this.push(existingEvents[i]);
-                }
-            }
-        }
-
-        this.push = function (ev) {
-            this.makeRequest('init', {
-                type: ev.type,
-                source: ev.source,
-                data: ev.data || {},
-                persona: localStorage['kasbah:persona'],
-                session: sessionStorage['kasbah:session']
-            })
-        }
-
-        this.init();
+  AnalyticsTracker.prototype.init = function (existingEvents) {
+    var initReq = {
+      persona: typeof localStorage['kasbah:persona'] === 'undefined' ? null : localStorage['kasbah:persona'],
     }
 
-    window.analytics = new AnalyticsTracker(window.analytics);
+    this.makeRequest('/analytics/init', initReq).then(function (res) {
+      localStorage['kasbah:persona'] = res.persona
+      sessionStorage['kasbah:session'] = res.session
+    })
+
+    if (existingEvents instanceof Array) {
+      for (var i = 0; i < existingEvents.length; i++) {
+        this.push(existingEvents[i]);
+      }
+    }
+  };
+
+  AnalyticsTracker.prototype.push = function (ev) {
+    this.makeRequest('/analytics/track', {
+      type: ev.type,
+      source: ev.source,
+      data: ev.data || {},
+      persona: typeof localStorage['kasbah:persona'] === 'undefined' ? null : localStorage['kasbah:persona'],
+      session: typeof sessionStorage['kasbah:session'] === 'undefined' ? null : sessionStorage['kasbah:session']
+    })
+  };
+
+  AnalyticsTracker.prototype.makeRequest = function (endpoint, data) {
+    var fetchReq = {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    }
+
+    return fetch(endpoint, fetchReq)
+  };
+
+  window.analytics = new AnalyticsTracker(window.analytics);
 
 })()
