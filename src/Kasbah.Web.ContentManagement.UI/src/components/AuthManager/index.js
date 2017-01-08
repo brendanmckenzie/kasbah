@@ -1,7 +1,6 @@
 import React from 'react'
+import moment from 'moment'
 import { connect } from 'react-redux'
-
-// TODO: set at timeout to watch localStorage.accessTokenExpires to issue run refresh token
 
 export class AuthManager extends React.Component {
   static propTypes = {
@@ -9,7 +8,12 @@ export class AuthManager extends React.Component {
   }
 
   componentDidMount() {
-
+    setTimeout(() => {
+      if (moment().add(5, 'minutes').isAfter(moment(localStorage.accessTokenExpires))) {
+        // TODO: refresh access token
+        console.log('issue refresh token request')
+      }
+    }, 1000)
   }
 
   render() {
