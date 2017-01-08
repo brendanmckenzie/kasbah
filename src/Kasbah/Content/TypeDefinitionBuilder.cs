@@ -13,7 +13,8 @@ namespace Kasbah.Content
         static IDictionary<Type, string> _knownTypeEditors = new Dictionary<Type, string>
         {
             { typeof(string), "text" },
-            { typeof(DateTime), "date" }
+            { typeof(DateTime), "date" },
+            { typeof(Media.Models.MediaItem), "mediaPicker" }
         };
 
         readonly Type _type;
