@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -58,18 +59,16 @@ namespace Kasbah.Content
             // Linked objects
             if (_typeRegistry.GetType(property.PropertyType.AssemblyQualifiedName) != null)
             {
-                Guid id;
-                if (Guid.TryParse((string)source, out id))
-                {
-                    var node = await _contentService.GetNodeAsync(id);
-                    if (node.PublishedVersion.HasValue)
-                    {
-                        return await _contentService.GetTypedDataAsync(id, node.PublishedVersion.Value);
-                    }
-                }
+                return await MapLinkedObjectAsync(source);
             }
 
-            // TODO: array of linked objects
+            // Linked objects (multiple)
+            if (property.PropertyType.IsGenericParameter && (_typeRegistry.GetType(property.PropertyType.GenericTypeArguments[0].AssemblyQualifiedName) != null))
+            {
+                var typeName = property.PropertyType.GenericTypeArguments[0].AssemblyQualifiedName;
+
+                return Task.WhenAll((source as IEnumerable<string>).Select(async ent => await MapLinkedObjectAsync(ent)));
+            }
 
             try
             {
@@ -79,6 +78,21 @@ namespace Kasbah.Content
             {
                 return null;
             }
+        }
+
+        async Task<object> MapLinkedObjectAsync(object source)
+        {
+            Guid id;
+            if (Guid.TryParse((string)source, out id))
+            {
+                var node = await _contentService.GetNodeAsync(id);
+                if (node.PublishedVersion.HasValue)
+                {
+                    return await _contentService.GetTypedDataAsync(id, node.PublishedVersion.Value);
+                }
+            }
+
+            return null;
         }
     }
 }
