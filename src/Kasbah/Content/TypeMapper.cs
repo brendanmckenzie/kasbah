@@ -23,15 +23,18 @@ namespace Kasbah.Content
             var typeInfo = type.GetTypeInfo();
 
             var ret = Activator.CreateInstance(type);
-            foreach (var property in typeInfo.GetProperties())
+            if (data != null)
             {
-                var key = property.Name;
-                if (data.ContainsKey(key))
+                foreach (var property in typeInfo.GetProperties())
                 {
-                    var source = data[key];
-                    var dest = await MapPropertyAsync(source, property);
+                    var key = property.Name;
+                    if (data.ContainsKey(key))
+                    {
+                        var source = data[key];
+                        var dest = await MapPropertyAsync(source, property);
 
-                    property.SetValue(ret, dest);
+                        property.SetValue(ret, dest);
+                    }
                 }
             }
 
