@@ -44,7 +44,8 @@ namespace Kasbah.DataAccess.ElasticSearch
             var queryObj = ParseQuery(query);
             var queryStr = queryObj == null ? null : JsonConvert.SerializeObject(queryObj);
 
-            var uri = new Uri($"{index}/{typeof(T).FullName}/_search", UriKind.Relative);
+            var indexName = string.IsNullOrEmpty(_settings.IndexPrefix) ? index : $"{_settings.IndexPrefix}_{index}";
+            var uri = new Uri($"{indexName}/{typeof(T).FullName}/_search", UriKind.Relative);
 
             _log.LogDebug($"{nameof(QueryEntriesAsync)}: {uri} - {queryStr}");
 
@@ -126,7 +127,7 @@ namespace Kasbah.DataAccess.ElasticSearch
 
             var indexName = string.IsNullOrEmpty(_settings.IndexPrefix) ? index : $"{_settings.IndexPrefix}_{index}";
 
-            var path = $"{index}/{typeof(T).FullName}/{id}";
+            var path = $"{indexName}/{typeof(T).FullName}/{id}";
             return new Uri(path + queryString.ToQueryString(), UriKind.Relative);
         }
 
