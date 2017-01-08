@@ -9,11 +9,7 @@ export const action = (request) => {
     types: [CREATE_NODE, CREATE_NODE_SUCCESS, CREATE_NODE_FAILURE],
     request: {
       url: '/content/node',
-      body: {
-        parent: request.parent,
-        alias: request.alias,
-        type: request.type
-      }
+      body: request
     }
   }
 }
