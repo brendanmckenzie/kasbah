@@ -1,4 +1,5 @@
 import React from 'react'
+import moment from 'moment'
 import LoginForm from '../forms/LoginForm'
 
 export class View extends React.Component {
@@ -11,9 +12,14 @@ export class View extends React.Component {
     router: React.PropTypes.object.isRequired
   }
 
+  componentWillMount() {
+    delete localStorage.user
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.login.success && nextProps.login.success !== this.props.login.success) {
       localStorage.user = JSON.stringify(nextProps.login.payload)
+      localStorage.accessTokenExpires = moment().add(nextProps.login.payload.expires_in, 'seconds').format()
 
       this.context.router.push('/')
     }
@@ -33,7 +39,7 @@ export class View extends React.Component {
                       <p className='title'>Kasbah</p>
                     </div>
                     <div className='level-right'>
-                      <small>v1.0.0-build-5602</small>
+                      <small>v0.0.1</small>
                     </div>
                   </div>
                 </div>

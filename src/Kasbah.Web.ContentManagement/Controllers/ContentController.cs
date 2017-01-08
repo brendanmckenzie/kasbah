@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kasbah.Content;
 using Kasbah.Content.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kasbah.Web.ContentManagement.Controllers
 {
-    // [Authorize]
+    [Authorize]
     [Route("content")]
     public class ContentController
     {

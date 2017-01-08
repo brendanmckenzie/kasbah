@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using ImageSharp;
-using ImageSharp.Processing;
 using Kasbah.Media;
 using Kasbah.Media.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kasbah.Web.ContentManagement.Controllers
 {
+    [Authorize]
     [Route("media")]
     public class MediaController : Controller
     {
@@ -34,26 +33,6 @@ namespace Kasbah.Web.ContentManagement.Controllers
         {
             var item = await _mediaService.GetMediaItemAsync(id);
             var stream = await _mediaService.GetMediaStreamAsync(id);
-
-            if (item.ContentType.StartsWith("image/"))
-            {
-                if (!request.IsEmpty)
-                {
-                    var image = new Image(stream);
-                    var options = new ResizeOptions();
-                    options.Mode = ResizeMode.BoxPad;
-                    options.Size = new Size(request.Width.Value, request.Height.Value);
-
-                    image.Resize(options);
-
-                    using (var output = new MemoryStream())
-                    {
-                        image.Save(output);
-
-                        return new FileStreamResult(output, item.ContentType);
-                    }
-                }
-            }
 
             return new FileStreamResult(stream, item.ContentType);
         }
