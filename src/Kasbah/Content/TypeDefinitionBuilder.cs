@@ -8,6 +8,14 @@ namespace Kasbah.Content
 {
     public class TypeDefinitionBuilder
     {
+        const string DefaultEditor = "text";
+
+        static IDictionary<Type, string> _knownTypeEditors = new Dictionary<Type, string>
+        {
+            { typeof(string), "text" },
+            { typeof(DateTime), "date" }
+        };
+
         readonly Type _type;
         readonly TypeInfo _typeInfo;
         readonly IEnumerable<TypeDefinition.Field> _fields;
@@ -92,7 +100,8 @@ namespace Kasbah.Content
             {
                 DisplayName = property.Name,
                 Alias = property.Name,
-                Type = property.PropertyType.Name
+                Type = property.PropertyType.Name,
+                Editor = _knownTypeEditors.ContainsKey(property.PropertyType) ? _knownTypeEditors[property.PropertyType] : DefaultEditor
             };
         }
     }
