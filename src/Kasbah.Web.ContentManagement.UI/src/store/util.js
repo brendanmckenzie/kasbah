@@ -1,4 +1,4 @@
-const API_BASE = __PROD__ ? '/' : 'http://localhost:5000'
+const API_BASE = __PROD__ ? '' : 'http://localhost:5000'
 
 export const makeApiRequest = (request) => {
   const user = localStorage.user ? JSON.parse(localStorage.user) : null

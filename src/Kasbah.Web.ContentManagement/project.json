@@ -20,5 +20,10 @@
         "NETStandard.Library": "1.6.1"
       }
     }
+  },
+  "buildOptions": {
+    "embed": [
+      "wwwroot/**/*"
+    ]
   }
 }
