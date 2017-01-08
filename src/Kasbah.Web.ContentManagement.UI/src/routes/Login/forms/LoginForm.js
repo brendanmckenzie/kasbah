@@ -1,7 +1,7 @@
 import React from 'react'
 import { Field, reduxForm } from 'redux-form'
 
-const LoginForm = ({ handleSubmit }) => (
+const LoginForm = ({ handleSubmit, loading, error }) => (
   <form onSubmit={handleSubmit}>
     <div className='control'>
       <label className='label' htmlFor='username'>Username</label>
@@ -11,8 +11,13 @@ const LoginForm = ({ handleSubmit }) => (
       <label className='label' htmlFor='password'>Password</label>
       <Field name='password' component='input' type='password' className='input' />
     </div>
+    {error && (
+      <div className='notification is-warning'>
+        {error}
+      </div>
+    )}
     <div className='control has-text-centered'>
-      <button className='button is-primary'>Login</button>
+      <button className={'button is-primary ' + (loading ? 'is-loading' : '')}>Login</button>
     </div>
   </form>
 )

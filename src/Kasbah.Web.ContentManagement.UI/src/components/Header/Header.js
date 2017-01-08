@@ -1,6 +1,14 @@
 import React from 'react'
 import { IndexLink, Link } from 'react-router'
 
+const sections = [
+  { link: '/content', title: 'Content' },
+  { link: '/media', title: 'Media' },
+  { link: '/analytics', title: 'Analytics' },
+  { link: '/security', title: 'Security' },
+  { link: '/system', title: 'System' }
+]
+
 export const Header = () => (
   <header className='nav'>
     <div className='container'>
@@ -9,18 +17,11 @@ export const Header = () => (
       </ul>
 
       <ul className='nav-right'>
-        <li className='nav-item'>
-          <Link activeClassName='is-active' to='/content'>Content</Link>
-        </li>
-        <li className='nav-item'>
-          <Link activeClassName='is-active' to='/media'>Media</Link>
-        </li>
-        <li className='nav-item'>
-          <Link activeClassName='is-active' to='/analytics'>Analytics</Link>
-        </li>
-        <li className='nav-item'>
-          <Link activeClassName='is-active' to='/security'>Security</Link>
-        </li>
+        {sections.map((ent, index) => (
+          <li key={index} className='nav-item'>
+            <Link activeClassName='is-active' to={ent.link}>{ent.title}</Link>
+          </li>
+        ))}
       </ul>
     </div>
   </header>

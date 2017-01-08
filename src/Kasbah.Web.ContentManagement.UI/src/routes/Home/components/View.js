@@ -9,6 +9,7 @@ export const View = () => (
           <div className='tile'>
             <div className='tile is-parent is-vertical'>
               <article className='tile is-child notification is-danger'>
+                <p className='heading'>Content authoring and marketing platform</p>
                 <p className='title'>Kasbah</p>
                 <p className='subtitle'>v1.0</p>
               </article>
@@ -25,13 +26,13 @@ export const View = () => (
             </div>
           </div>
           <div className='tile is-parent'>
-            <article className='tile is-child notification'>
+            <Link to='/system' className='tile is-child notification'>
               <p className='title'>System information</p>
               <p className='subtitle'>Aligned with the right tile</p>
               <div className='content'>
                 <p>Server statistics, requests/minute, uptime, total # of requests...</p>
               </div>
-            </article>
+            </Link>
           </div>
         </div>
         <div className='tile is-parent'>

@@ -21,16 +21,24 @@ export class View extends React.Component {
 
   render() {
     return (
-      <div className='section'>
-        <div className='container'>
-          <div className='columns'>
-            <div className='column is-4 is-offset-4'>
-              <h1 className='title'>Login</h1>
-              <LoginForm onSubmit={this.props.loginRequest} {...this.props.login} />
-            </div>
-            <div className='column is-2'>
-              <h5 className='heading'>System information</h5>
-              <p>Kasbah v1.0.0-build-5602</p>
+      <div className='hero is-fullheight'>
+        <div className='hero-body'>
+          <div className='container'>
+            <div className='columns'>
+              <div className='column is-4 is-offset-4'>
+                <div className='notification is-info'>
+                  <p className='heading'>Content authoring and marketing platform</p>
+                  <div className='level'>
+                    <div className='level-left'>
+                      <p className='title'>Kasbah</p>
+                    </div>
+                    <div className='level-right'>
+                      <small>v1.0.0-build-5602</small>
+                    </div>
+                  </div>
+                </div>
+                <LoginForm onSubmit={this.props.loginRequest} {...this.props.login} />
+              </div>
             </div>
           </div>
         </div>
