@@ -1,8 +1,11 @@
+using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using Kasbah.Analytics;
 using Kasbah.Content;
+using Kasbah.Logging;
 using Kasbah.Security;
+using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,14 +21,11 @@ namespace Kasbah.Web.ContentDelivery
                 .AddMvc()
                 .AddApplicationPart(typeof(KasbahExtensions).GetTypeInfo().Assembly);
 
-            services.AddSingleton<TypeRegistry>();
-            services.AddSingleton<SiteRegistry>();
-
-            services.AddTransient<AnalyticsService>();
-            services.AddTransient<SecurityService>();
-            services.AddTransient<ContentService>();
+            services.AddKasbah();
 
             services.AddTransient<KasbahRouter>();
+
+            Jobs.Configure.RegisterJobs(services);
 
             return services;
         }
@@ -41,14 +41,25 @@ namespace Kasbah.Web.ContentDelivery
                     template: "{*path}");
             });
 
-
-            // Find a better way/place to do this...
-            Task.WaitAll(
-                app.ApplicationServices.GetService<ContentService>().InitialiseAsync(),
-                app.ApplicationServices.GetService<SecurityService>().InitialiseAsync(),
-                app.ApplicationServices.GetService<AnalyticsService>().InitialiseAsync());
+            InitialiseAsync(app.ApplicationServices).Wait();
 
             return app;
+        }
+
+        // Find a better way/place to do this...
+        static async Task InitialiseAsync(IServiceProvider services)
+        {
+            var application = services.GetService<KasbahWebApplication>();
+
+            await services.GetService<ContentService>().InitialiseAsync();
+            await services.GetService<SecurityService>().InitialiseAsync();
+            await services.GetService<AnalyticsService>().InitialiseAsync();
+
+            var loggingService = services.GetService<LoggingService>();
+            await loggingService.InitialiseAsync();
+            await loggingService.RegisterInstanceAsync(application.Id, application.Started);
+
+            await Jobs.Configure.ConfigureJobsAsync(services);
         }
     }
 }

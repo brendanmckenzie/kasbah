@@ -9,7 +9,9 @@
   "dependencies": {
     "Kasbah": "1.0.0-*",
     "Microsoft.AspNetCore.Routing": "1.1.0",
-    "Microsoft.AspNetCore.Mvc": "1.1.0"
+    "Microsoft.AspNetCore.Mvc": "1.1.0",
+    "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
+    "Quartz": "3.0.0-alpha2"
   },
   "frameworks": {
     "netstandard1.6": {

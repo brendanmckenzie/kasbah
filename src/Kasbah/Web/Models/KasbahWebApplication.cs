@@ -1,6 +1,6 @@
 using System;
 
-namespace Kasbah.Web
+namespace Kasbah.Web.Models
 {
     public class KasbahWebApplication
     {

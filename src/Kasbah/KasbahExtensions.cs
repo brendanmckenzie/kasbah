@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Kasbah.Analytics;
 using Kasbah.Content;
 using Kasbah.Content.Models;
+using Kasbah.Logging;
 using Kasbah.Media;
 using Kasbah.Security;
 using Kasbah.Web;
@@ -21,6 +22,7 @@ namespace Kasbah
             services.AddTransient<SecurityService>();
             services.AddTransient<ContentService>();
             services.AddTransient<MediaService>();
+            services.AddTransient<LoggingService>();
 
             return services;
         }
@@ -34,6 +36,13 @@ namespace Kasbah
 
             var typeRegistry = services.GetService<TypeRegistry>();
             typeRegistry.Register<Folder>();
+
+            var siteRegistry = services.GetService<SiteRegistry>();
+
+            var registration = services.GetService<IKasbahWebRegistration>();
+
+            registration.RegisterTypes(typeRegistry);
+            registration.RegisterSites(siteRegistry);
         }
     }
 }

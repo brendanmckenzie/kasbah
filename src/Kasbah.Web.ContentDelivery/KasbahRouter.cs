@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Kasbah.Analytics;
 using Kasbah.Analytics.Models;
 using Kasbah.Content;
+using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 
