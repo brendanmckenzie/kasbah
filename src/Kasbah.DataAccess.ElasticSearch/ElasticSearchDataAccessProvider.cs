@@ -30,8 +30,10 @@ namespace Kasbah.DataAccess.ElasticSearch
         public async Task PutEntryAsync<T>(string index, Guid id, T data, Guid? parent = null)
         {
             var json = JsonConvert.SerializeObject(data);
+            var data2 = JsonConvert.DeserializeObject<T>(json);
+            var json2 = JsonConvert.SerializeObject(data2);
 
-            await _webClient.PutAsync(ItemUri<T>(index, id, parent, waitForRefresh: true), new StringContent(json, Encoding.UTF8, "application/json"));
+            await _webClient.PutAsync(ItemUri<T>(index, id, parent, waitForRefresh: true), new StringContent(json2, Encoding.UTF8, "application/json"));
         }
 
         public async Task DeleteEntryAsync<T>(string index, Guid id)

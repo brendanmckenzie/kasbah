@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Kasbah.Content
@@ -52,6 +53,14 @@ namespace Kasbah.Content
             if (sourceType == typeof(JObject))
             {
                 var dict = (source as JObject).ToObject<IDictionary<string, object>>();
+
+                return await MapTypeAsync(dict, property.PropertyType.AssemblyQualifiedName);
+            }
+
+            // TODO: gross. find out why/where nested objects are being serialized to strings
+            if (sourceType == typeof(string) && property.PropertyType != typeof(string))
+            {
+                var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>((string)source);
 
                 return await MapTypeAsync(dict, property.PropertyType.AssemblyQualifiedName);
             }

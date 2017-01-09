@@ -60,6 +60,13 @@ namespace Kasbah.Web.ContentDelivery
             await loggingService.RegisterInstanceAsync(application.Id, application.Started);
 
             await Jobs.Configure.ConfigureJobsAsync(services);
+
+            var typeRegistry = services.GetService<TypeRegistry>();
+            var siteRegistry = services.GetService<SiteRegistry>();
+            var registration = services.GetService<IKasbahWebRegistration>();
+
+            registration.RegisterTypes(typeRegistry);
+            registration.RegisterSites(siteRegistry);
         }
     }
 }

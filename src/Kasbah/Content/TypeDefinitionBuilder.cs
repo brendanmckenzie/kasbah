@@ -17,6 +17,16 @@ namespace Kasbah.Content
             { typeof(Media.Models.MediaItem), "mediaPicker" }
         };
 
+        static IEnumerable<Type> _basicEditors = new[] {
+            typeof(string),
+            typeof(int),
+            typeof(long),
+            typeof(short),
+            typeof(double),
+            typeof(decimal),
+            typeof(DateTime)
+        };
+
         readonly Type _type;
         readonly TypeInfo _typeInfo;
         readonly IEnumerable<TypeDefinition.Field> _fields;
@@ -97,13 +107,23 @@ namespace Kasbah.Content
 
         static TypeDefinition.Field MapProperty(PropertyInfo property)
         {
-            return new TypeDefinition.Field
+            var typeInfo = property.PropertyType.GetTypeInfo();
+
+            var ret = new TypeDefinition.Field
             {
                 DisplayName = property.Name,
                 Alias = property.Name,
                 Type = property.PropertyType.Name,
                 Editor = _knownTypeEditors.ContainsKey(property.PropertyType) ? _knownTypeEditors[property.PropertyType] : DefaultEditor
             };
+
+            if (!_basicEditors.Contains(property.PropertyType))
+            {
+                ret.Editor = "nested";
+                ret.Options["fields"] = typeInfo.GetProperties().Select(MapProperty);
+            }
+
+            return ret;
         }
     }
 

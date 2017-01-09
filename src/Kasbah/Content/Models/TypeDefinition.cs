@@ -19,6 +19,7 @@ namespace Kasbah.Content.Models
             public string HelpText { get; set; }
             public string Category { get; set; } = DefaultCategory;
             public string Editor { get; set; }
+            public IDictionary<string, object> Options { get; set; } = new Dictionary<string, object>();
         }
     }
 }

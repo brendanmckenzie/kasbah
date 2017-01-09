@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Kasbah.Content;
 using Kasbah.Content.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Linq;
 
 namespace Kasbah.Web.ContentManagement.Controllers
 {
@@ -35,6 +37,10 @@ namespace Kasbah.Web.ContentManagement.Controllers
         [Route("{id}"), HttpPost]
         public async Task<NodeDataForEditing> UpdateNodeData(Guid id, [FromBody]IDictionary<string, object> data)
         {
+            foreach (var kvp in data.Where(ent => ent.Value is JObject).ToList())
+            {
+                data[kvp.Key] = (kvp.Value as JObject).ToObject<IDictionary<string, object>>();
+            }
             await _contentService.UpdateDataAsync(id, data);
 
             return await GetNodeDataForEditing(id);
