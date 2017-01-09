@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router'
 import Loading from 'components/Loading'
 import Error from 'components/Error'
 import ContentEditor from './ContentEditor'
@@ -73,11 +74,15 @@ class View extends React.Component {
       return <Error />
     }
 
+    const { taxonomy } = this.state.payload.node
+
     return (
       <div>
         <h2 className='subtitle'>{this.state.payload.node.displayName}</h2>
         <ul className='breadcrumb'>
-          {this.state.payload.node.taxonomy.aliases.map((ent, index) => <li key={index}>{ent}</li>)}
+          {taxonomy.aliases.map((ent, index) => (
+            <li key={index}><Link to={`/content/${taxonomy.ids[index]}`}>{ent}</Link></li>
+          ))}
         </ul>
         <div className='columns'>
           <div className='column'>

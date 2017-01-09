@@ -22,7 +22,7 @@ const ContentEditorForm = ({ handleSubmit, onPublish, type, loading, publishing 
       ))}
     </Tabs>
     <hr />
-    <div className='control has-text-right'>
+    <div className='has-text-right'>
       <button className={'button ' + ((publishing || loading) ? 'is-loading' : '')} type='button' onClick={onPublish}>Publish</button>
       <button className={'button is-primary' + ((loading || loading) ? ' is-loading' : '')}>Save changes</button>
     </div>

@@ -30,10 +30,18 @@ namespace Kasbah.DataAccess.ElasticSearch
         public async Task PutEntryAsync<T>(string index, Guid id, T data, Guid? parent = null)
         {
             var json = JsonConvert.SerializeObject(data);
-            var data2 = JsonConvert.DeserializeObject<T>(json);
-            var json2 = JsonConvert.SerializeObject(data2);
 
-            await _webClient.PutAsync(ItemUri<T>(index, id, parent, waitForRefresh: true), new StringContent(json2, Encoding.UTF8, "application/json"));
+            await _webClient.PutAsync(ItemUri<T>(index, id, parent, waitForRefresh: true), new StringContent(json, Encoding.UTF8, "application/json"));
+        }
+
+        public async Task PutEntryAsync<T>(string index, Guid id, IDictionary<string, object> data, Guid? parent = null)
+            => await PutEntryAsync(index, id, typeof(T), data, parent);
+
+        public async Task PutEntryAsync(string index, Guid id, Type type, IDictionary<string, object> data, Guid? parent = null)
+        {
+            var json = JsonConvert.SerializeObject(data);
+
+            await _webClient.PutAsync(ItemUri(type, index, id, parent, waitForRefresh: true), new StringContent(json, Encoding.UTF8, "application/json"));
         }
 
         public async Task DeleteEntryAsync<T>(string index, Guid id)
@@ -46,8 +54,7 @@ namespace Kasbah.DataAccess.ElasticSearch
             var queryObj = ParseQuery(query);
             var queryStr = queryObj == null ? null : JsonConvert.SerializeObject(queryObj);
 
-            var indexName = string.IsNullOrEmpty(_settings.IndexPrefix) ? index : $"{_settings.IndexPrefix}_{index}";
-            var uri = new Uri($"{indexName}/{typeof(T).FullName}/_search", UriKind.Relative);
+            var uri = new Uri($"{IndexName(index)}/{typeof(T).FullName}/_search", UriKind.Relative);
 
             _log.LogDebug($"{nameof(QueryEntriesAsync)}: {uri} - {queryStr}");
 
@@ -74,6 +81,19 @@ namespace Kasbah.DataAccess.ElasticSearch
         public async Task<EntryWrapper<T>> GetEntryAsync<T>(string index, Guid id, int? version = null)
         {
             var res = await _webClient.GetStringAsync(ItemUri<T>(index, id, version: version));
+            var ent = JsonConvert.DeserializeObject<SearchResultHitsHit<T>>(res);
+
+            return new EntryWrapper<T>
+            {
+                Id = Guid.Parse(ent.Id),
+                Source = ent.Source,
+                Version = ent.Version
+            };
+        }
+
+        public async Task<EntryWrapper<T>> GetEntryAsync<T>(string index, Guid id, Type type, int? version = null)
+        {
+            var res = await _webClient.GetStringAsync(ItemUri(type, index, id, version: version));
             var ent = JsonConvert.DeserializeObject<SearchResultHitsHit<T>>(res);
 
             return new EntryWrapper<T>
@@ -112,6 +132,9 @@ namespace Kasbah.DataAccess.ElasticSearch
         }
 
         Uri ItemUri<T>(string index, Guid id, Guid? parent = null, int? version = null, bool waitForRefresh = false)
+            => ItemUri(typeof(T), index, id, parent, version, waitForRefresh);
+
+        Uri ItemUri(Type type, string index, Guid id, Guid? parent = null, int? version = null, bool waitForRefresh = false)
         {
             var queryString = new Dictionary<string, object>();
             if (parent.HasValue)
@@ -127,11 +150,13 @@ namespace Kasbah.DataAccess.ElasticSearch
                 queryString.Add("refresh", "wait_for");
             }
 
-            var indexName = string.IsNullOrEmpty(_settings.IndexPrefix) ? index : $"{_settings.IndexPrefix}_{index}";
+            var path = $"{IndexName(index)}/{type.FullName}/{id}";
 
-            var path = $"{indexName}/{typeof(T).FullName}/{id}";
             return new Uri(path + queryString.ToQueryString(), UriKind.Relative);
         }
+
+        string IndexName(string name)
+            => string.IsNullOrEmpty(_settings.IndexPrefix) ? name : $"{_settings.IndexPrefix}_{name}";
 
 
         class SearchResult<TEnt>

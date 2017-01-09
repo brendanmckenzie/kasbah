@@ -42,10 +42,14 @@ class Nested extends React.Component {
 
   get modal() {
     const value = typeof this.props.input.value === 'object' ? this.props.input.value : {}
+    const type = {
+      displayName: this.props.input.name,
+      fields: this.props.options.fields
+    }
 
     return (
       <NestedForm
-        type={{ fields: this.props.options.fields }}
+        type={type}
         initialValues={value}
         onSubmit={this.handleSubmit}
         onClose={this.handleHideModal} />
@@ -55,19 +59,31 @@ class Nested extends React.Component {
   get display() {
     const value = typeof this.props.input.value === 'object' ? this.props.input.value : {}
 
-    return this.props.options.fields.map(fld => (
-      <div key={fld.alias}>
-        <strong>{fld.displayName}</strong> {value[fld.alias]}
-      </div>
-    ))
+    return (
+      <blockquote>
+        {this.props.options.fields.map(fld => (
+          <div key={fld.alias} className='control'>
+            <label className='label'>{fld.displayName}</label>
+            <input type='text' className='input is-disabled' value={value[fld.alias]} />
+          </div>
+        ))}
+      </blockquote >
+    )
   }
 
   render() {
-    // const { input: { value, onChange } } = this.props
-
     return (<div>
+      <div className='has-text-right'>
+        <button type='button' className='button is-small' onClick={this.handleShowModal}>
+          Edit {this.props.input.name}
+        </button>
+      </div>
       {this.display}
-      <button type='button' onClick={this.handleShowModal} className='button'>Edit</button>
+      <div className='has-text-right'>
+        <button type='button' className='button is-small' onClick={this.handleShowModal}>
+          Edit {this.props.input.name}
+        </button>
+      </div>
       {this.state.showModal && this.modal}
     </div>)
   }

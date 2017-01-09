@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Kasbah.Content.Models;
 
 namespace Kasbah.Content
@@ -15,7 +16,14 @@ namespace Kasbah.Content
         }
 
         public void RegisterType(TypeDefinition type)
-            => _types.Add(type);
+        {
+            if (!typeof(Item).GetTypeInfo().IsAssignableFrom(Type.GetType(type.Alias)))
+            {
+                throw new InvalidOperationException($"All content models must inherit from {typeof(Item).FullName}");
+            }
+
+            _types.Add(type);
+        }
 
         public IEnumerable<TypeDefinition> ListTypes()
             => _types.AsEnumerable();
@@ -27,6 +35,7 @@ namespace Kasbah.Content
     public static class TypeRegistryExtensions
     {
         public static TypeRegistry Register<T>(this TypeRegistry registry, Action<TypeDefinitionBuilder> configure = null)
+            where T : Item
         {
             var builder = new TypeDefinitionBuilder<T>();
 

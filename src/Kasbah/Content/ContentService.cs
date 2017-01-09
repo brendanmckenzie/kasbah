@@ -67,10 +67,13 @@ namespace Kasbah.Content
         {
             try
             {
-                var nodeData = await _dataAccessProvider.GetEntryAsync<NodeData>(Indicies.Content, id, version);
+                var node = await GetNodeAsync(id);
+                var type = Type.GetType(node.Type);
 
-                var res = nodeData.Source.Data;
-                res["_version"] = nodeData.Version;
+                var data = await _dataAccessProvider.GetEntryAsync<IDictionary<string, object>>(Indicies.Content, id, type, version);
+
+                var res = data.Source;
+                res["_version"] = data.Version;
 
                 return res;
             }
@@ -90,9 +93,10 @@ namespace Kasbah.Content
 
         public async Task UpdateDataAsync(Guid id, IDictionary<string, object> data)
         {
-            await _dataAccessProvider.PutEntryAsync(Indicies.Content, id, new NodeData { Data = data });
-
             var node = await GetNodeAsync(id);
+            var type = Type.GetType(node.Type);
+
+            await _dataAccessProvider.PutEntryAsync(Indicies.Content, id, type, data);
 
             node.Modified = DateTime.UtcNow;
 

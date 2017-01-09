@@ -17,7 +17,7 @@ namespace Kasbah.Content
             { typeof(Media.Models.MediaItem), "mediaPicker" }
         };
 
-        static IEnumerable<Type> _basicEditors = new[] {
+        static IEnumerable<Type> _basicEditors = _knownTypeEditors.Keys.Concat(new[] {
             typeof(string),
             typeof(int),
             typeof(long),
@@ -25,6 +25,11 @@ namespace Kasbah.Content
             typeof(double),
             typeof(decimal),
             typeof(DateTime)
+        }).Distinct();
+
+        static IEnumerable<string> _reservedFields = new[] {
+            nameof(Item.Version),
+            nameof(Item.Id)
         };
 
         readonly Type _type;
@@ -37,7 +42,10 @@ namespace Kasbah.Content
         {
             _type = type;
             _typeInfo = type.GetTypeInfo();
-            _fields = _typeInfo.GetProperties().Select(MapProperty).ToList();
+            _fields = _typeInfo.GetProperties()
+                .Where(ent => !_reservedFields.Contains(ent.Name))
+                .Select(MapProperty)
+                .ToList();
             _options = new Dictionary<string, object>();
 
             _displayName = type.Name;

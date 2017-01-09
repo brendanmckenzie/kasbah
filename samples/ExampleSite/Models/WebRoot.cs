@@ -1,7 +1,9 @@
+using Kasbah.Content.Models;
+
 namespace ExampleSite.Models
 {
-    public class WebRoot
+    public class WebRoot : Item
     {
-        
+
     }
 }
