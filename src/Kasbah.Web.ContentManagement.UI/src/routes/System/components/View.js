@@ -5,20 +5,20 @@ export const View = () => (
     <div className='container'>
       <h1 className='title'>System</h1>
 
-      <div className='level'>
-        <div className='level-item has-text-centered'>
+      <div className='columns'>
+        <div className='column has-text-centered'>
           <p className='heading'>System start date</p>
           <p className='title'>Sun 8 Jan</p>
         </div>
-        <div className='level-item has-text-centered'>
+        <div className='column has-text-centered'>
           <p className='heading' title='In the past 24 hours'>Uptime</p>
           <p className='title'>4 days 12 hours</p>
         </div>
-        <div className='level-item has-text-centered'>
+        <div className='column has-text-centered'>
           <p className='heading'>Requests served</p>
           <p className='title'>1,200,234</p>
         </div>
-        <div className='level-item has-text-centered'>
+        <div className='column has-text-centered'>
           <p className='heading'>Requests per second</p>
           <p className='title'>0.24</p>
         </div>

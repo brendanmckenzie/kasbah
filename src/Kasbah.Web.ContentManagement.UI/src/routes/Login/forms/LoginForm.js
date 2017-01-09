@@ -16,7 +16,7 @@ const LoginForm = ({ handleSubmit, loading, error }) => (
         {error}
       </div>
     )}
-    <div className='control has-text-centered'>
+    <div className='has-text-centered'>
       <button className={'button is-primary ' + (loading ? 'is-loading' : '')}>Login</button>
     </div>
   </form>

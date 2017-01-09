@@ -32,7 +32,7 @@ export class View extends React.Component {
           <div className='container'>
             <div className='columns'>
               <div className='column is-4 is-offset-4'>
-                <div className='notification is-info'>
+                <div className='notification is-primary'>
                   <p className='heading'>Content authoring and marketing platform</p>
                   <div className='level'>
                     <div className='level-left'>
