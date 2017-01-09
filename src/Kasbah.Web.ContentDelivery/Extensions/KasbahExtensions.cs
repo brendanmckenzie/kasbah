@@ -52,10 +52,10 @@ namespace Kasbah.Web.ContentDelivery
             var application = services.GetService<KasbahWebApplication>();
 
             await services.GetService<ContentService>().InitialiseAsync();
-            await services.GetService<SecurityService>().InitialiseAsync();
             await services.GetService<AnalyticsService>().InitialiseAsync();
 
             var loggingService = services.GetService<LoggingService>();
+
             await loggingService.InitialiseAsync();
             await loggingService.RegisterInstanceAsync(application.Id, application.Started);
 

@@ -25,6 +25,7 @@ namespace Kasbah.Logging
 
         public async Task HeartbeatAsync(Guid instance)
         {
+            _log.LogDebug(nameof(HeartbeatAsync));
             await _dataAccessProvider.PutEntryAsync(Indicies.Logging, Guid.NewGuid(), new Heartbeat
             {
                 Instance = instance
@@ -33,6 +34,7 @@ namespace Kasbah.Logging
 
         public async Task RegisterInstanceAsync(Guid id, DateTime started)
         {
+            _log.LogDebug(nameof(RegisterInstanceAsync));
             await _dataAccessProvider.PutEntryAsync(Indicies.Logging, Guid.NewGuid(), new Instance
             {
                 Id = id,
@@ -40,7 +42,7 @@ namespace Kasbah.Logging
             });
         }
 
-        public async Task<IEnumerable<Instance>> ListActiveInstances()
+        public async Task<IEnumerable<InstanceStatus>> ListActiveInstances()
         {
             var query = new
             {
@@ -53,9 +55,30 @@ namespace Kasbah.Logging
                     }
                 }
             };
-            var entries = await _dataAccessProvider.QueryEntriesAsync<Instance>(Indicies.Logging, query);
 
-            return entries.Select(ent => ent.Source);
+            var heartbeats = (await _dataAccessProvider.QueryEntriesAsync<Heartbeat>(Indicies.Logging, query))
+                .Select(ent => ent.Source);
+
+            var instances = heartbeats.Any() ? (await _dataAccessProvider.QueryEntriesAsync<Instance>(Indicies.Logging, new
+            {
+                @bool = new
+                {
+                    should = heartbeats.Select(ent => ent.Instance).Distinct().Select(ent => new
+                    {
+                        match = new Dictionary<string, Guid> {
+                            { "Id", ent }
+                        }
+                    })
+                }
+            })).Select(ent => ent.Source) : Enumerable.Empty<Instance>();
+
+            return instances
+                .Select(ent => new InstanceStatus
+                {
+                    Id = ent.Id,
+                    Started = ent.Started,
+                    Heartbeat = heartbeats.Where(hb => hb.Instance == ent.Id).Max(hb => hb.Created)
+                });
         }
 
         public async Task InitialiseAsync()
@@ -63,5 +86,12 @@ namespace Kasbah.Logging
             _log.LogDebug($"Initialising {nameof(LoggingService)}");
             await _dataAccessProvider.EnsureIndexExists(Indicies.Logging);
         }
+    }
+
+    public class InstanceStatus
+    {
+        public Guid Id { get; set; }
+        public DateTime Started { get; set; }
+        public DateTime Heartbeat { get; set; }
     }
 }

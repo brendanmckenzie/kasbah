@@ -33,6 +33,7 @@ namespace Kasbah
             await services.GetService<ContentService>().InitialiseAsync();
             await services.GetService<MediaService>().InitialiseAsync();
             await services.GetService<SecurityService>().InitialiseAsync();
+            await services.GetService<LoggingService>().InitialiseAsync();
 
             var typeRegistry = services.GetService<TypeRegistry>();
             typeRegistry.Register<Folder>();

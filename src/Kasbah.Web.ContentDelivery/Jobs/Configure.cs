@@ -23,8 +23,6 @@ namespace Kasbah.Web.ContentDelivery.Jobs
             var factory = new StdSchedulerFactory();
             var scheduler = await factory.GetScheduler();
 
-            await scheduler.Start();
-
             var job = JobBuilder.Create<HeartbeatJob>()
                 .WithIdentity(nameof(HeartbeatJob))
                 .Build();
@@ -32,10 +30,12 @@ namespace Kasbah.Web.ContentDelivery.Jobs
             var trigger = TriggerBuilder.Create()
                 .WithIdentity($"{nameof(HeartbeatJob)}_trigger")
                 .StartNow()
-                .WithSimpleSchedule(sched => sched.WithIntervalInMinutes(1))
+                .WithSimpleSchedule(sched => sched.WithIntervalInMinutes(1).RepeatForever())
                 .Build();
 
             await scheduler.ScheduleJob(job, trigger);
+
+            await scheduler.Start();
         }
     }
 }
