@@ -169,6 +169,16 @@ namespace Kasbah.Content
                 .SingleOrDefault(ent => ent.Taxonomy.Ids.SequenceEqual(ids));
         }
 
+        public async Task<Node> GetChildByAliasAsync(Guid? parent, string alias)
+        {
+            throw await Task.FromResult(new NotImplementedException());
+        }
+
+        public async Task<IEnumerable<Node>> GetChildrenAsync(Guid? parent)
+        {
+            throw await Task.FromResult(new NotImplementedException());
+        }
+
         public async Task InitialiseAsync()
         {
             _log.LogDebug($"Initialising {nameof(ContentService)}");
