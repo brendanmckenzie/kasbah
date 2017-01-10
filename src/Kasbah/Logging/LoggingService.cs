@@ -23,13 +23,10 @@ namespace Kasbah.Logging
             _dataAccessProvider = dataAccessProvider;
         }
 
-        public async Task HeartbeatAsync(Guid instance)
+        public async Task HeartbeatAsync(Heartbeat heartbeat)
         {
             _log.LogDebug(nameof(HeartbeatAsync));
-            await _dataAccessProvider.PutEntryAsync(Indicies.Logging, Guid.NewGuid(), new Heartbeat
-            {
-                Instance = instance
-            });
+            await _dataAccessProvider.PutEntryAsync(Indicies.Logging, Guid.NewGuid(), heartbeat);
         }
 
         public async Task RegisterInstanceAsync(Guid id, DateTime started)
@@ -77,7 +74,9 @@ namespace Kasbah.Logging
                 {
                     Id = ent.Id,
                     Started = ent.Started,
-                    Heartbeat = heartbeats.Where(hb => hb.Instance == ent.Id).Max(hb => hb.Created)
+                    Heartbeat = heartbeats.Where(hb => hb.Instance == ent.Id).Max(hb => hb.Created),
+                    RequestsTotal = heartbeats.Where(hb => hb.Instance == ent.Id).Max(hb => hb.RequestsTotal),
+                    RequestsLatest = heartbeats.Where(hb => hb.Instance == ent.Id).Max(hb => hb.RequestsLatest)
                 });
         }
 
@@ -93,5 +92,7 @@ namespace Kasbah.Logging
         public Guid Id { get; set; }
         public DateTime Started { get; set; }
         public DateTime Heartbeat { get; set; }
+        public ulong RequestsTotal { get; set; }
+        public ulong RequestsLatest { get; set; }
     }
 }

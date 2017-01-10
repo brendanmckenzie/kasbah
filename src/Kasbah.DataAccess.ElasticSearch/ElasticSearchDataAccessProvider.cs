@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Kasbah.Models;
@@ -39,6 +40,10 @@ namespace Kasbah.DataAccess.ElasticSearch
 
         public async Task PutEntryAsync(string index, Guid id, Type type, IDictionary<string, object> data, Guid? parent = null)
         {
+            if (data?.ContainsKey("_version") == true)
+            {
+                data.Remove("_version");
+            }
             var json = JsonConvert.SerializeObject(data);
 
             await _webClient.PutAsync(ItemUri(type, index, id, parent, waitForRefresh: true), new StringContent(json, Encoding.UTF8, "application/json"));
@@ -109,14 +114,57 @@ namespace Kasbah.DataAccess.ElasticSearch
             // TODO: make this nicer
             try
             {
-                var indexName = string.IsNullOrEmpty(_settings.IndexPrefix) ? index : $"{_settings.IndexPrefix}_{index}";
-
-                await _webClient.PutAsync(new Uri(indexName, UriKind.Relative), new StringContent(string.Empty, Encoding.UTF8, "application/json"));
+                await _webClient.PutAsync(new Uri(IndexName(index), UriKind.Relative), new StringContent(string.Empty, Encoding.UTF8, "application/json"));
             }
             catch
             {
 
             }
+        }
+
+        object MapType(Type type, bool nested)
+        {
+            var typeMappings = new Dictionary<Type, string>
+            {
+                { typeof(string), "text" },
+                { typeof(Guid), "text" },
+                { typeof(long), "long" },
+                { typeof(int), "integer" },
+                { typeof(short), "short" },
+                { typeof(byte), "byte" },
+                { typeof(double), "double" },
+                { typeof(float), "float" },
+                { typeof(DateTime), "date" },
+                { typeof(bool), "boolean" },
+            };
+
+            var typeInfo = type.GetTypeInfo();
+            if (nested && typeInfo.GetProperties().Any(ent => ent.Name == "Id"))
+            {
+                return new { type = "text" };
+            }
+            return new
+            {
+                properties = typeInfo.GetProperties().ToDictionary(ent => ent.Name, ent => (typeMappings.ContainsKey(ent.PropertyType) ? new
+                {
+                    type = typeMappings[ent.PropertyType]
+                } : MapType(ent.PropertyType, true)))
+            };
+        }
+
+        public async Task PutTypeMapping(string index, Type type)
+        {
+            var uri = new Uri($"{IndexName(index)}/_mapping/{type.FullName}", UriKind.Relative);
+            var body = MapType(type, false);
+
+            var json = JsonConvert.SerializeObject(body);
+
+            _log.LogDebug($"{nameof(PutTypeMapping)} {type.FullName}");
+            _log.LogDebug(json);
+
+            var res = await _webClient.PutAsync(uri, new StringContent(json, Encoding.UTF8, "application/json"));
+
+            _log.LogDebug(await res.Content.ReadAsStringAsync());
         }
 
         object ParseQuery(object query)

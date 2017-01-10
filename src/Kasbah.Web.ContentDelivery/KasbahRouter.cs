@@ -36,6 +36,9 @@ namespace Kasbah.Web.ContentDelivery
 
         public async Task RouteAsync(RouteContext context)
         {
+            _kasbahWebApplication.RequestsTotal++;
+            Jobs.HeartbeatJob.RequestsLatest++;
+
             var kasbahWebContext = new KasbahWebContext
             {
                 WebApplication = _kasbahWebApplication,
