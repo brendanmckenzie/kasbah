@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Kasbah.Content.Models;
+using Kasbah.Media.Models;
 using Kasbah.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -139,7 +141,7 @@ namespace Kasbah.DataAccess.ElasticSearch
             };
 
             var typeInfo = type.GetTypeInfo();
-            if (nested && typeInfo.GetProperties().Any(ent => ent.Name == "Id"))
+            if (nested && (typeof(Item).IsAssignableFrom(type) || typeof(MediaItem) == type))
             {
                 return new { type = "text" };
             }
