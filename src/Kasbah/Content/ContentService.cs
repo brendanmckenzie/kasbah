@@ -189,7 +189,7 @@ namespace Kasbah.Content
 
         async Task UpdateNodeAsync(Guid id, Node node)
         {
-            await _dataAccessProvider.PutEntryAsync(Indicies.Nodes, id, node, node.Parent);
+            await _dataAccessProvider.PutEntryAsync(Indicies.Nodes, id, node);
         }
 
         async Task<NodeTaxonomy> CalculateTaxonomyAsync(Guid? parent, Guid id, string alias)
