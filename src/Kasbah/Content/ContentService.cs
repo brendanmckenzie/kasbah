@@ -169,11 +169,23 @@ namespace Kasbah.Content
                 .SingleOrDefault(ent => ent.Taxonomy.Ids.SequenceEqual(ids));
         }
 
+        public async Task<Node> GetChildByAliasAsync(Guid? parent, string alias)
+        {
+            throw await Task.FromResult(new NotImplementedException());
+        }
+
+        public async Task<IEnumerable<Node>> GetChildrenAsync(Guid? parent)
+        {
+            throw await Task.FromResult(new NotImplementedException());
+        }
+
         public async Task InitialiseAsync()
         {
             _log.LogDebug($"Initialising {nameof(ContentService)}");
             await _dataAccessProvider.EnsureIndexExists(Indicies.Nodes);
             await _dataAccessProvider.EnsureIndexExists(Indicies.Content);
+
+            await UpdateMappingsAsync();
         }
 
         public async Task<Node> GetNodeAsync(Guid id)
@@ -232,43 +244,14 @@ namespace Kasbah.Content
             if (tree.Any(ent => ent.Alias == alias && ent.Parent == parent)) { throw new InvalidOperationException($"Node with alias {alias} already exists under {parent}"); }
         }
 
+        async Task UpdateMappingsAsync()
+        {
+            foreach (var typeDefinition in _typeRegistry.ListTypes())
+            {
+                await _dataAccessProvider.PutTypeMapping(Indicies.Content, Type.GetType(typeDefinition.Alias));
+            }
+        }
+
         #endregion
     }
 }
-
-
-// public async Task<IEnumerable<Node>> ListChildrenAsync(Guid? parent)
-// {
-//     object query = null;
-
-//     if (parent.HasValue)
-//     {
-//         query = new
-//         {
-//             term = new
-//             {
-//                 Parent = parent.Value.ToString()
-//             }
-//         };
-//     }
-//     else
-//     {
-//         query = new
-//         {
-//             @bool = new
-//             {
-//                 must_not = new
-//                 {
-//                     exists = new
-//                     {
-//                         field = "Parent"
-//                     }
-//                 }
-//             }
-//         };
-//     }
-
-//     var entries = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
-
-//     return entries.Select(ent => ent.Entry);
-// }

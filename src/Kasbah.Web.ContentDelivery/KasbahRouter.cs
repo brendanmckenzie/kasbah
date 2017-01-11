@@ -36,11 +36,15 @@ namespace Kasbah.Web.ContentDelivery
 
         public async Task RouteAsync(RouteContext context)
         {
+            _kasbahWebApplication.RequestsTotal++;
+            Jobs.HeartbeatJob.RequestsLatest++;
+
             var kasbahWebContext = new KasbahWebContext
             {
                 WebApplication = _kasbahWebApplication,
                 HttpContext = context.HttpContext,
-                ContentService = _contentService
+                ContentService = _contentService,
+                TypeRegistry = _typeRegistry
             };
 
             await _analyticsService.TrackEvent(new AnalyticsEvent

@@ -48,6 +48,8 @@ class View extends React.Component {
                 <th>Started</th>
                 <th>Uptime</th>
                 <th>Heartbeat</th>
+                <th>Total Requests</th>
+                <th>Recent requests</th>
               </tr>
             </thead>
             <tbody>
@@ -57,6 +59,8 @@ class View extends React.Component {
                   <td>{moment.utc(ent.started).calendar()}</td>
                   <td>{moment.utc(ent.started).fromNow(true)}</td>
                   <td>{moment.utc(ent.heartbeat).fromNow()}</td>
+                  <td>{ent.requestsTotal}</td>
+                  <td>{ent.requestsLatest}</td>
                 </tr>
               ))}
             </tbody>

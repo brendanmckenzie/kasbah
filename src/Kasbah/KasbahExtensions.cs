@@ -29,12 +29,6 @@ namespace Kasbah
 
         public static async Task InitialiseKasbahAsync(this IServiceProvider services)
         {
-            await services.GetService<AnalyticsService>().InitialiseAsync();
-            await services.GetService<ContentService>().InitialiseAsync();
-            await services.GetService<MediaService>().InitialiseAsync();
-            await services.GetService<SecurityService>().InitialiseAsync();
-            await services.GetService<LoggingService>().InitialiseAsync();
-
             var typeRegistry = services.GetService<TypeRegistry>();
             typeRegistry.Register<Folder>();
 
@@ -44,6 +38,12 @@ namespace Kasbah
 
             registration.RegisterTypes(typeRegistry);
             registration.RegisterSites(siteRegistry);
+
+            await services.GetService<AnalyticsService>().InitialiseAsync();
+            await services.GetService<ContentService>().InitialiseAsync();
+            await services.GetService<MediaService>().InitialiseAsync();
+            await services.GetService<SecurityService>().InitialiseAsync();
+            await services.GetService<LoggingService>().InitialiseAsync();
         }
     }
 }
