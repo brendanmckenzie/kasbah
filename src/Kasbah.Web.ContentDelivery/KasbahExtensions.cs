@@ -32,6 +32,7 @@ namespace Kasbah.Web.ContentDelivery
 
         public static IApplicationBuilder UseKasbahPublic(this IApplicationBuilder app)
         {
+            app.UseMiddleware<Middleware.AnalyticsMiddleware>();
             app.UseMvc(routes =>
             {
                 var kasbahRouter = app.ApplicationServices.GetService<KasbahRouter>();

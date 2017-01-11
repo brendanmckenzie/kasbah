@@ -7,6 +7,17 @@
     this.init(existingEvents);
   }
 
+  AnalyticsTracker.prototype.checkCookie = function () {
+    if (document.cookie) {
+      var cookies = document.cookie.split(';').map(function (ent) { return ent.trim().split('=') });
+      var trackingCookie = cookies.filter(function (ent) { return ent[0] === '__kastrk'; })[0];
+      if (trackingCookie) {
+        this.trackingCookie = trackingCookie[1];
+      }
+    }
+
+  }
+
   AnalyticsTracker.prototype.init = function (existingEvents) {
     var initReq = {
       persona: typeof localStorage['kasbah:persona'] === 'undefined' ? null : localStorage['kasbah:persona'],
