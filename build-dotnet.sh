@@ -1,6 +1,6 @@
 set -e
 
-COMMIT_COUNT=$(git log | wc -l | awk '{print $1}')
+COMMIT_COUNT=$(git rev-list --all --count)
 DOTNET_PACK_OPTS="-c Release -o ./artifacts --version-suffix=build$COMMIT_COUNT"
 
 dotnet restore src/**/project.json

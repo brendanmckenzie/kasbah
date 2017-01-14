@@ -28,4 +28,4 @@ build:dotnet:
 deploy:
     stage: deploy
     script:
-        - ls -la
+        - sh deploy.sh
