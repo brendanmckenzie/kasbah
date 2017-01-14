@@ -1,5 +1,5 @@
 {
-  "userSecretsId": "aspnet-WebApplication-0799fe3e-6eaf-4c5f-b40e-7c6bfd5dfa9a",
+  "version": "1.0.0-*",
   "dependencies": {
     "Kasbah": "1.0.0-*",
     "Microsoft.AspNetCore.Authentication.Cookies": "1.1.0",
@@ -8,11 +8,11 @@
     "Microsoft.AspNetCore.Mvc": "1.1.0",
     "Microsoft.AspNetCore.Identity": "1.1.0",
     "AspNet.Security.OpenIdConnect.Server": "1.0.0-beta7-final",
-    "AspNet.Security.OAuth.Validation": "1.0.0-alpha2-final"
-    // "ImageSharp": "1.0.0-*",
-    // "ImageSharp.Processing": "1.0.0-*",
-    // "ImageSharp.Formats.Jpeg": "1.0.0-*",
-    // "ImageSharp.Formats.Png": "1.0.0-*"
+    "AspNet.Security.OAuth.Validation": "1.0.0-alpha2-final",
+    "ImageSharp": "1.0.0-*",
+    "ImageSharp.Processing": "1.0.0-*",
+    "ImageSharp.Formats.Jpeg": "1.0.0-*",
+    "ImageSharp.Formats.Png": "1.0.0-*"
   },
   "frameworks": {
     "netstandard1.6": {

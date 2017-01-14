@@ -1,5 +1,5 @@
 for f in artifacts/*.nupkg
 do
     echo "Deploying $f"
-    curl -X POST https://www.myget.org/F/kasbah/api/v2/package -H "X-NuGet-ApiKey: $MYGET_KEY" -F "data=@$f"
+    curl -X POST https://www.myget.org/F/kasbah/api/v2/package -H "X-NuGet-ApiKey: 93888c8f-2ab2-4ee6-b9fa-4c99f47f0bb9" -F "data=@$f"
 done
