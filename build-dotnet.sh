@@ -1,11 +1,5 @@
 set -e
 
-cd src/Kasbah.Web.ContentManagement.UI
-npm install
-npm run deploy:prod
-
-cd ../../
-
 COMMIT_COUNT=$(git log | wc -l | awk '{print $1}')
 DOTNET_PACK_OPTS="-c Release -o ./artifacts --version-suffix=build$COMMIT_COUNT"
 

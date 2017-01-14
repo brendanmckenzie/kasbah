@@ -1,6 +1,11 @@
-image: microsoft/dotnet
-
-build:
+build_admin_ui:
     stage: build
+    image: node:6
     script:
-        - sh build.sh
+        - sh build-admin-ui.sh
+
+build_dotnet:
+    stage: build
+    image: microsoft/dotnet
+    script:
+        - sh build-dotnet.sh
