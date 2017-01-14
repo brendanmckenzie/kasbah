@@ -17,8 +17,6 @@ build:dotnet:
     image: microsoft/dotnet
     dependencies:
     - build:admin_ui
-    before_script:
-        - ls -la
     script:
         - sh build-dotnet.sh
     artifacts:
