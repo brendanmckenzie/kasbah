@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Kasbah.Content.Attributes;
 using Kasbah.Content.Models;
 
 namespace Kasbah.Content
@@ -117,18 +118,26 @@ namespace Kasbah.Content
         {
             var typeInfo = property.PropertyType.GetTypeInfo();
 
+            var editor = _knownTypeEditors.ContainsKey(property.PropertyType) ? _knownTypeEditors[property.PropertyType] : DefaultEditor;
+
+            var editorAttribute = typeInfo.GetCustomAttribute<FieldEditorAttribute>();
+            if (editorAttribute != null)
+            {
+                editor = editorAttribute.Editor;
+            }
+
             var ret = new TypeDefinition.Field
             {
                 DisplayName = property.Name,
                 Alias = property.Name,
                 Type = property.PropertyType.Name,
-                Editor = _knownTypeEditors.ContainsKey(property.PropertyType) ? _knownTypeEditors[property.PropertyType] : DefaultEditor
+                Editor = editor
             };
 
             if (!_basicEditors.Contains(property.PropertyType))
             {
                 ret.Editor = "nested";
-                ret.Options["fields"] = typeInfo.GetProperties().Select(MapProperty);
+                ret.Options["fields"] = typeInfo.GetProperties().Select(MapProperty); // TODO: guard against recurrsion
             }
 
             return ret;

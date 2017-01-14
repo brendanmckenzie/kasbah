@@ -56,9 +56,9 @@ namespace Kasbah.DataAccess.ElasticSearch
             await _webClient.DeleteAsync(ItemUri<T>(index, id));
         }
 
-        public async Task<IEnumerable<EntryWrapper<T>>> QueryEntriesAsync<T>(string index, object query = null)
+        public async Task<IEnumerable<EntryWrapper<T>>> QueryEntriesAsync<T>(string index, object query = null, int? skip = 0, int? take = 10)
         {
-            var queryObj = ParseQuery(query);
+            var queryObj = ParseQuery(query, skip, take);
             var queryStr = queryObj == null ? null : JsonConvert.SerializeObject(queryObj);
 
             var uri = new Uri($"{IndexName(index)}/{typeof(T).FullName}/_search", UriKind.Relative);
@@ -169,16 +169,33 @@ namespace Kasbah.DataAccess.ElasticSearch
             _log.LogDebug(await res.Content.ReadAsStringAsync());
         }
 
-        object ParseQuery(object query)
+        object ParseQuery(object query, int? skip = null, int? take = null)
         {
-            if (query == null) { return null; }
+            var ret = new Dictionary<string, object>();
 
-            if (query is string)
+            if (query != null)
             {
-                return new { query = new { query_string = query } };
+                if (query is string)
+                {
+                    ret["query"] = new { query_string = query };
+                }
+                else
+                {
+                    ret["query"] = query;
+                }
             }
 
-            return new { query };
+            if (skip.HasValue)
+            {
+                ret["from"] = skip;
+            }
+
+            if (take.HasValue)
+            {
+                ret["size"] = take;
+            }
+
+            return ret;
         }
 
         Uri ItemUri<T>(string index, Guid id, Guid? parent = null, int? version = null, bool waitForRefresh = false)

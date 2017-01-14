@@ -65,6 +65,20 @@ class View extends React.Component {
     this.props.publishRequest({ id: this.props.id, version: this.state.payload.data['_version'] })
   }
 
+  get breadcrumb() {
+    const { taxonomy, id } = this.state.payload.node
+
+    return (<ul className='breadcrumb'>
+      {taxonomy.aliases.map((ent, index) => (
+        <li key={index}>
+          {taxonomy.ids[index] === id
+            ? (<span>{ent}</span>)
+            : (<Link to={`/content/${taxonomy.ids[index]}`}>{ent}</Link>)}
+        </li>
+      ))}
+    </ul>)
+  }
+
   render() {
     if (this.props.getDetail.loading) {
       return <Loading />
@@ -74,16 +88,10 @@ class View extends React.Component {
       return <Error />
     }
 
-    const { taxonomy } = this.state.payload.node
-
     return (
       <div>
         <h2 className='subtitle'>{this.state.payload.node.displayName}</h2>
-        <ul className='breadcrumb'>
-          {taxonomy.aliases.map((ent, index) => (
-            <li key={index}><Link to={`/content/${taxonomy.ids[index]}`}>{ent}</Link></li>
-          ))}
-        </ul>
+        {this.breadcrumb}
         <div className='columns'>
           <div className='column'>
             <ContentEditor

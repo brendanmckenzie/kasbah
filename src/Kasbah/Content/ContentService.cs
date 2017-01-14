@@ -58,7 +58,7 @@ namespace Kasbah.Content
 
         public async Task<IEnumerable<Node>> DescribeTreeAsync()
         {
-            var entries = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes);
+            var entries = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, take: 1024);
 
             return entries.Select(ent => ent.Source);
         }
