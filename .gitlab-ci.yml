@@ -11,7 +11,7 @@ build_dotnet:
     stage: build
     image: microsoft/dotnet
     dependencies:
-        - build_admin_ui
+    - build_admin_ui
     before_script:
         - ls -la
     script:
