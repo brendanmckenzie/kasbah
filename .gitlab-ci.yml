@@ -5,11 +5,14 @@ build_admin_ui:
         - sh build-admin-ui.sh
     artifacts:
         paths:
-        - src/Kasbah.Web.ContentManagement.UI/dist
+        - src/Kasbah.Web.ContentManagement.UI/dist/
 
 build_dotnet:
     stage: build
     image: microsoft/dotnet
-    dependencies: build_admin_ui
+    dependencies:
+        - build_admin_ui
+    before_script:
+        - ls -la
     script:
         - sh build-dotnet.sh
