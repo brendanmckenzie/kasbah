@@ -1,3 +1,8 @@
+stages:
+    - build_ui
+    - build
+    - deploy
+
 build:admin_ui:
     stage: build_ui
     image: node:6
@@ -19,3 +24,8 @@ build:dotnet:
     artifacts:
         paths:
         - artifacts/
+
+deploy:
+    stage: deploy
+    script:
+        - ls -la
