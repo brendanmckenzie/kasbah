@@ -278,3 +278,5 @@ coverage/
 
 # Build
 .build/
+
+artifacts/
