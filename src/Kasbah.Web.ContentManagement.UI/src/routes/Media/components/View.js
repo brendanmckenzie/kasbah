@@ -13,12 +13,6 @@ class View extends React.Component {
     uploadMediaRequest: React.PropTypes.func.isRequired
   }
 
-  constructor() {
-    super()
-
-    this.uploadFilesRequest = this.uploadFilesRequest.bind(this)
-  }
-
   componentWillMount() {
     this.handleRefresh()
   }

@@ -57,14 +57,6 @@ namespace Kasbah.Content
                 return await MapTypeAsync(dict, property.PropertyType.AssemblyQualifiedName);
             }
 
-            // TODO: gross. find out why/where nested objects are being serialized to strings
-            if (sourceType == typeof(string) && property.PropertyType != typeof(string))
-            {
-                var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>((string)source);
-
-                return await MapTypeAsync(dict, property.PropertyType.AssemblyQualifiedName);
-            }
-
             // Linked objects
             if (_typeRegistry.GetType(property.PropertyType.AssemblyQualifiedName) != null)
             {
