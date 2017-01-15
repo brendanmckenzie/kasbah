@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Kasbah.Analytics;
 using Kasbah.Content;
 using Kasbah.Logging;
-using Kasbah.Security;
 using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;

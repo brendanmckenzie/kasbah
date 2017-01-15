@@ -35,6 +35,24 @@ namespace Kasbah.Web.ContentManagement.Controllers
             var item = await _mediaService.GetMediaItemAsync(id);
             var stream = await _mediaService.GetMediaStreamAsync(id);
 
+            if (!request.IsEmpty)
+            {
+                // TODO: fix this error:
+                // Could not load file or assembly 'ImageSharp, ...'
+                // var image = new Image(stream);
+                // var resized = image.Resize(new ResizeOptions
+                // {
+                //     // TODO: scale this
+                //     Size = new Size(request.Width ?? image.Width, request.Height ?? image.Height)
+                // });
+                // using (var resizedStream = new MemoryStream())
+                // {
+                //     resized.Save(resizedStream);
+                //     resizedStream.Seek(0, SeekOrigin.Begin);
+                //     return new FileStreamResult(resizedStream, item.ContentType);
+                // }
+            }
+
             return new FileStreamResult(stream, item.ContentType);
         }
     }
