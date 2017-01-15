@@ -22,7 +22,12 @@ const NestedForm = ({ handleSubmit, type, onClose }) => (
                 {type.fields.filter(fld => fld.category === ent).map((fld, fldIndex) => (
                   <div key={fldIndex} className='control'>
                     <label className='label' htmlFor={fld.alias}>{fld.displayName}</label>
-                    <Field name={fld.alias} id={fld.alias} component={kasbah.getEditor(fld.editor)} options={fld.options} className='input' />
+                    <Field
+                      name={fld.alias}
+                      id={fld.alias}
+                      component={kasbah.getEditor(fld.editor)}
+                      options={fld.options}
+                      className='input' />
                     {fld.helpText && <span className='help'>{fld.helpText}</span>}
                   </div>
                 ))}

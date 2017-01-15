@@ -13,7 +13,12 @@ const ContentEditorForm = ({ handleSubmit, onPublish, type, loading, publishing 
             {type.fields.filter(fld => fld.category === ent).map((fld, fldIndex) => (
               <div key={fldIndex} className='control'>
                 <label className='label' htmlFor={fld.alias}>{fld.displayName}</label>
-                <Field name={fld.alias} id={fld.alias} component={kasbah.getEditor(fld.editor)} options={fld.options} className='input' />
+                <Field
+                  name={fld.alias}
+                  id={fld.alias}
+                  component={kasbah.getEditor(fld.editor)}
+                  options={fld.options}
+                  className='input' />
                 {fld.helpText && <span className='help'>{fld.helpText}</span>}
               </div>
             ))}
@@ -23,7 +28,9 @@ const ContentEditorForm = ({ handleSubmit, onPublish, type, loading, publishing 
     </Tabs>
     <hr />
     <div className='has-text-right'>
-      <button className={'button ' + ((publishing || loading) ? 'is-loading' : '')} type='button' onClick={onPublish}>Publish</button>
+      <button
+        className={'button ' + ((publishing || loading) ? 'is-loading' : '')}
+        type='button' onClick={onPublish}>Publish</button>
       <button className={'button is-primary' + ((loading || loading) ? ' is-loading' : '')}>Save changes</button>
     </div>
   </form>

@@ -33,10 +33,6 @@ class View extends React.Component {
     this.props.listMediaRequest()
   }
 
-  uploadFilesRequest(files) {
-    console.log(files)
-  }
-
   render() {
     if (this.props.listMedia.loading) {
       return <Loading />

@@ -1,7 +1,5 @@
 import React from 'react'
-import _ from 'lodash'
 import NestedForm from './NestedForm'
-
 
 class Nested extends React.Component {
   static propTypes = {
