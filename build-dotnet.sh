@@ -1,5 +1,7 @@
 set -e
 
+cp -r src/Kasbah.Web.ContentManagement.UI/dist src/Kasbah.Web.ContentManagement/wwwroot
+
 COMMIT_COUNT=$(git rev-list --all --count)
 DOTNET_PACK_OPTS="-c Release -o ./artifacts --version-suffix=build$COMMIT_COUNT"
 
