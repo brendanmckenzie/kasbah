@@ -209,7 +209,8 @@ namespace Kasbah.Content
                 return new NodeTaxonomy
                 {
                     Ids = new[] { id },
-                    Aliases = new[] { alias }
+                    Aliases = new[] { alias },
+                    Length = 1
                 };
             }
             else
@@ -219,7 +220,8 @@ namespace Kasbah.Content
                 return new NodeTaxonomy
                 {
                     Ids = node.Taxonomy.Ids.Concat(new[] { id }),
-                    Aliases = node.Taxonomy.Aliases.Concat(new[] { alias })
+                    Aliases = node.Taxonomy.Aliases.Concat(new[] { alias }),
+                    Length = node.Taxonomy.Aliases.Count() + 1
                 };
             }
         }
