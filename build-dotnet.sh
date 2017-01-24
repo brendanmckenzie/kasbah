@@ -9,5 +9,6 @@ dotnet restore src/**/project.json
 
 dotnet pack src/Kasbah $DOTNET_PACK_OPTS
 dotnet pack src/Kasbah.DataAccess.ElasticSearch $DOTNET_PACK_OPTS
+dotnet pack src/Kasbah.Media.S3 $DOTNET_PACK_OPTS
 dotnet pack src/Kasbah.Web.ContentDelivery $DOTNET_PACK_OPTS
 dotnet pack src/Kasbah.Web.ContentManagement $DOTNET_PACK_OPTS
