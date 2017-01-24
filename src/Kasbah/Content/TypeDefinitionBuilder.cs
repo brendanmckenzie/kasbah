@@ -119,10 +119,9 @@ namespace Kasbah.Content
             var typeInfo = property.PropertyType.GetTypeInfo();
 
             var editor = _knownTypeEditors.ContainsKey(property.PropertyType) ? _knownTypeEditors[property.PropertyType] : DefaultEditor;
-            var editorAttribute = typeInfo.GetCustomAttribute<FieldEditorAttribute>();
+            var editorAttribute = property.GetCustomAttribute<FieldEditorAttribute>();
             if (editorAttribute != null)
             {
-                // TODO: figure out why this isn't working.
                 editor = editorAttribute.Editor;
             }
 
