@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Kasbah.Media;
+using Kasbah.Media.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -12,10 +14,12 @@ namespace Kasbah.Content
     {
         readonly ContentService _contentService;
         readonly TypeRegistry _typeRegistry;
+        readonly MediaService _mediaService;
 
-        public TypeMapper(ContentService contentService, TypeRegistry typeRegistry)
+        public TypeMapper(ContentService contentService, MediaService mediaService, TypeRegistry typeRegistry)
         {
             _contentService = contentService;
+            _mediaService = mediaService;
             _typeRegistry = typeRegistry;
         }
 
@@ -71,6 +75,12 @@ namespace Kasbah.Content
                 return Task.WhenAll((source as IEnumerable<string>).Select(async ent => await MapLinkedObjectAsync(ent)));
             }
 
+            // Linked media
+            if (typeof(MediaItem).IsAssignableFrom(property.PropertyType))
+            {
+                return await MapLinkedMediaAsync(source);
+            }
+
             try
             {
                 return Convert.ChangeType(source, property.PropertyType);
@@ -91,6 +101,17 @@ namespace Kasbah.Content
                 {
                     return await _contentService.GetTypedDataAsync(id, node.PublishedVersion.Value);
                 }
+            }
+
+            return null;
+        }
+
+        async Task<object> MapLinkedMediaAsync(object source)
+        {
+            Guid id;
+            if (Guid.TryParse((string)source, out id))
+            {
+                return await _mediaService.GetMediaItemAsync(id);
             }
 
             return null;

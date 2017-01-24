@@ -6,6 +6,7 @@ using Kasbah.Content.Models;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
+using Kasbah.Media;
 
 namespace Kasbah.Content
 {
@@ -22,14 +23,15 @@ namespace Kasbah.Content
         readonly TypeRegistry _typeRegistry;
         readonly TypeMapper _typeMapper;
 
-        public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, TypeRegistry typeRegistry)
+        public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, TypeRegistry typeRegistry, MediaService mediaService)
         {
             _log = loggerFactory.CreateLogger<ContentService>();
             _dataAccessProvider = dataAccessProvider;
             _typeRegistry = typeRegistry;
 
             // TODO: this isn't great. remove the circular dependency
-            _typeMapper = new TypeMapper(this, _typeRegistry);
+            // TODO: extra not great, the cross-reference to MediaService
+            _typeMapper = new TypeMapper(this, mediaService, _typeRegistry);
         }
 
         #region Public methods

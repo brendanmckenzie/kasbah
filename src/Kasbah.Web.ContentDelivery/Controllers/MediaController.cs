@@ -1,19 +1,15 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using ImageSharp;
 using ImageSharp.Processing;
 using Kasbah.Media;
-using Kasbah.Media.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Kasbah.Web.ContentManagement.Controllers
+// TODO: find a way to not have this duplicated in CD and CM
+namespace Kasbah.Web.ContentDelivery.Controllers
 {
-    [Authorize]
     [Route("media")]
     public class MediaController : Controller
     {
@@ -23,14 +19,6 @@ namespace Kasbah.Web.ContentManagement.Controllers
         {
             _mediaService = mediaService;
         }
-
-        [Route("list"), HttpGet]
-        public async Task<IEnumerable<MediaItem>> List()
-            => await _mediaService.ListMediaAsync();
-
-        [Route("upload"), HttpPost]
-        public async Task<IEnumerable<Guid>> Upload(IEnumerable<IFormFile> files)
-            => await Task.WhenAll(files.Concat(Request.Form.Files).Select(async ent => await _mediaService.PutMediaAsync(ent.OpenReadStream(), ent.FileName, ent.ContentType)));
 
         [Route("{id}"), HttpGet, AllowAnonymous]
         public async Task<FileResult> GetMedia(Guid id, [FromQuery] GetMediaRequest request)

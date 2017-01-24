@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Kasbah.Content.Models;
 using Kasbah.Web.Models;
 
 namespace Kasbah.Web
@@ -25,6 +26,13 @@ namespace Kasbah.Web
 
         public Site GetSiteByDomain(string domain)
             => _sites.FirstOrDefault(ent => ent.Domains.Contains(domain));
+
+        public Site GetSiteByNode(Node node)
+        {
+            var taxonomy = node.Taxonomy.Aliases;
+
+            return _sites.FirstOrDefault(ent => ent.ContentRoot.SequenceEqual(taxonomy.Take(ent.ContentRoot.Count())));
+        }
     }
 
     public static class SiteRegistryExtensions

@@ -11,7 +11,11 @@
     "Microsoft.AspNetCore.Routing": "1.1.0",
     "Microsoft.AspNetCore.Mvc": "1.1.0",
     "Microsoft.Extensions.DependencyInjection.Abstractions": "1.1.0",
-    "Quartz": "3.0.0-alpha2"
+    "Quartz": "3.0.0-alpha2",
+    "ImageSharp": "1.0.0-*",
+    "ImageSharp.Processing": "1.0.0-*",
+    "ImageSharp.Formats.Jpeg": "1.0.0-*",
+    "ImageSharp.Formats.Png": "1.0.0-*"
   },
   "frameworks": {
     "netstandard1.6": {
