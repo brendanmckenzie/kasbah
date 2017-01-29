@@ -76,8 +76,13 @@ blockquote {
     margin-bottom: 10px;
 }
 
-.media-picker .card {
+.media-picker .card, .node-picker .card {
+    cursor: pointer;
     &.is-selected {
         background-color: $turquoise;
+        color: white;
+        strong {
+            color: white;
+        }
     }
 }

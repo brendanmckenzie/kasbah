@@ -133,7 +133,16 @@ namespace Kasbah.Content
                 Editor = editor
             };
 
-            if (!_basicEditors.Contains(property.PropertyType))
+            if (typeof(Item).IsAssignableFrom(property.PropertyType))
+            {
+                ret.Editor = "nodePicker";
+            }
+            else if (typeof(IEnumerable<Item>).IsAssignableFrom(property.PropertyType))
+            {
+                ret.Editor = "nodePickerMulti";
+                ret.Type = property.PropertyType.GenericTypeArguments.First().Name;
+            }
+            else if (!_basicEditors.Contains(property.PropertyType))
             {
                 ret.Editor = "nested";
                 ret.Options["fields"] = typeInfo.GetProperties().Select(MapProperty).ToList(); // TODO: guard against recurrsion

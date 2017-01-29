@@ -41,6 +41,11 @@ namespace Kasbah.Web.ContentManagement.Controllers
             {
                 data[kvp.Key] = (kvp.Value as JObject).ToObject<IDictionary<string, object>>();
             }
+            foreach (var kvp in data.Where(ent => ent.Value is JArray).ToList())
+            {
+                data[kvp.Key] = (kvp.Value as JArray).ToArray();
+            }
+
             await _contentService.UpdateDataAsync(id, data);
 
             return await GetNodeDataForEditing(id);

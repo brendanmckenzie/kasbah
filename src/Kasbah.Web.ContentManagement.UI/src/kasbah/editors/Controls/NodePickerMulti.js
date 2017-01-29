@@ -1,14 +1,14 @@
 import React from 'react'
 import Loading from 'components/Loading'
-import { API_BASE, makeApiRequest } from 'store/util'
+import { makeApiRequest } from 'store/util'
 
-class MediaPicker extends React.Component {
+class NodePicker extends React.Component {
   static propTypes = {
     input: React.PropTypes.object.isRequired,
-    options: React.PropTypes.object
+    type: React.PropTypes.string
   }
 
-  static alias = 'mediaPicker'
+  static alias = 'nodePickerMulti'
 
   constructor() {
     super()
@@ -16,8 +16,8 @@ class MediaPicker extends React.Component {
     this.state = {
       showModal: false,
       loading: true,
-      media: [],
-      selection: null
+      nodes: [],
+      selection: []
     }
 
     this.handleHideModal = this.handleHideModal.bind(this)
@@ -27,11 +27,11 @@ class MediaPicker extends React.Component {
   }
 
   componentWillMount() {
-    makeApiRequest({ url: '/media/list', method: 'GET' })
-      .then(media => {
+    makeApiRequest({ url: '/content/tree', method: 'GET' })
+      .then(nodes => {
         this.setState({
           loading: false,
-          media
+          nodes: nodes.filter(ent => ent.type.indexOf(this.props.type) !== -1) // TODO: filter this server-side
         })
       })
   }
@@ -50,7 +50,9 @@ class MediaPicker extends React.Component {
 
   handleSelect(item) {
     this.setState({
-      selection: item
+      selection: this.state.selection.indexOf(item) === -1
+        ? [...this.state.selection, item]
+        : this.state.selection.filter(ent => ent !== item)
     })
   }
 
@@ -67,35 +69,31 @@ class MediaPicker extends React.Component {
 
     if (!value) { return null }
 
-    return (<div>
-      <img src={`${API_BASE}/media/${value}?width=600&height=450`} />
-    </div>)
+    return (<pre>{JSON.stringify(value, null, 2)}</pre>)
   }
 
   get modal() {
+    if (!this.state.showModal) { return null }
+
     return (<div className='modal is-active'>
       <div className='modal-background' />
       <div className='modal-card'>
         <header className='modal-card-head'>
           <span className='modal-card-title'>
-            Media picker
+            Node selector
           </span>
         </header>
         <section className='modal-card-body'>
           <div className='columns is-multiline'>
             {this.state.loading ? <Loading /> : (
-              this.state.media.map(ent => (
+              this.state.nodes.map(ent => (
                 <div key={ent.id} className='column is-4'>
                   <div
-                    className={'card ' + (this.state.selection === ent.id ? 'is-selected' : '')}
+                    className={'card' + (this.state.selection.indexOf(ent.id) === -1 ? '' : ' is-selected')}
                     onClick={() => this.handleSelect(ent.id)}>
-                    <div className='card-image'>
-                      <figure className='image is-4by3'>
-                        <img src={`${API_BASE}/media/${ent.id}?width=600&height=450`} />
-                      </figure>
-                    </div>
                     <div className='card-content'>
-                      <code>{ent.contentType}</code>
+                      <p><strong>{ent.displayName}</strong></p>
+                      <p><small>{ent.alias}</small></p>
                     </div>
                   </div>
                 </div>
@@ -112,16 +110,16 @@ class MediaPicker extends React.Component {
   }
 
   render() {
-    return (<div className='media-picker'>
+    return (<div className='node-picker'>
       {this.display}
       <div className='has-text-right'>
         <button type='button' className='button is-small' onClick={this.handleShowModal}>
-          Select media
+          Select nodes
         </button>
       </div>
-      {this.state.showModal && this.modal}
+      {this.modal}
     </div>)
   }
 }
 
-export default MediaPicker
+export default NodePicker

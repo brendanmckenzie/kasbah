@@ -1,8 +1,10 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Kasbah.Content.Models;
 using Kasbah.Media;
 using Kasbah.Media.Models;
 using Newtonsoft.Json;
@@ -23,7 +25,7 @@ namespace Kasbah.Content
             _typeRegistry = typeRegistry;
         }
 
-        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName)
+        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Guid? id = null)
         {
             var type = Type.GetType(typeName);
             var typeInfo = type.GetTypeInfo();
@@ -41,6 +43,14 @@ namespace Kasbah.Content
 
                         property.SetValue(ret, dest);
                     }
+                }
+            }
+
+            if (ret is Item)
+            {
+                if (id.HasValue)
+                {
+                    (ret as Item).Id = id.Value;
                 }
             }
 
@@ -68,11 +78,25 @@ namespace Kasbah.Content
             }
 
             // Linked objects (multiple)
-            if (property.PropertyType.IsGenericParameter && (_typeRegistry.GetType(property.PropertyType.GenericTypeArguments[0].AssemblyQualifiedName) != null))
+            if (property.PropertyType.GenericTypeArguments.Any()
+                && (_typeRegistry.GetType(property.PropertyType.GenericTypeArguments.First().AssemblyQualifiedName) != null))
             {
-                var typeName = property.PropertyType.GenericTypeArguments[0].AssemblyQualifiedName;
+                // TODO: this could be tidied up
+                var type = property.PropertyType.GenericTypeArguments.First(); ;
+                var typeName = type.AssemblyQualifiedName;
+                var ret = Activator.CreateInstance(typeof(List<>).MakeGenericType(type)) as IList;
 
-                return Task.WhenAll((source as IEnumerable<string>).Select(async ent => await MapLinkedObjectAsync(ent)));
+                var ids = (source as JArray).ToArray().Select(ent => ent.ToString());
+                foreach (var id in ids)
+                {
+                    var obj = await MapLinkedObjectAsync(id);
+                    if (obj != null)
+                    {
+                        ret.Add(obj);
+                    }
+                }
+
+                return ret;
             }
 
             // Linked media

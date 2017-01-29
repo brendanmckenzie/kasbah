@@ -145,6 +145,11 @@ namespace Kasbah.DataAccess.ElasticSearch
             {
                 return new { type = "text" };
             }
+            if (nested && (typeof(IEnumerable<Item>).IsAssignableFrom(type) || typeof(IEnumerable<MediaItem>) == type))
+            {
+                return new { type = "string" };
+            }
+
             return new
             {
                 properties = typeInfo.GetProperties().ToDictionary(ent => ent.Name, ent => (typeMappings.ContainsKey(ent.PropertyType) ? new

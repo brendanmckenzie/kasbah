@@ -44,7 +44,8 @@ namespace Kasbah.Web.ContentDelivery
                 WebApplication = _kasbahWebApplication,
                 HttpContext = context.HttpContext,
                 ContentService = _contentService,
-                TypeRegistry = _typeRegistry
+                TypeRegistry = _typeRegistry,
+                SiteRegistry = _siteRegistry
             };
 
             await _analyticsService.TrackEvent(new AnalyticsEvent

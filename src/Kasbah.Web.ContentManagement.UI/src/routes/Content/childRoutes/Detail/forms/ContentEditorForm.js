@@ -18,6 +18,7 @@ const ContentEditorForm = ({ handleSubmit, onPublish, type, loading, publishing 
                   id={fld.alias}
                   component={kasbah.getEditor(fld.editor)}
                   options={fld.options}
+                  type={fld.type}
                   className='input' />
                 {fld.helpText && <span className='help'>{fld.helpText}</span>}
               </div>

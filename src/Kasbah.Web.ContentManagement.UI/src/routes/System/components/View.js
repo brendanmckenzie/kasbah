@@ -58,7 +58,7 @@ class View extends React.Component {
             </thead>
             <tbody>
               {this.props.listInstances.payload.map(ent => (
-                <tr>
+                <tr key={ent.id}>
                   <td>{ent.id}</td>
                   <td>{moment.utc(ent.started).calendar()}</td>
                   <td>{moment.utc(ent.started).fromNow(true)}</td>

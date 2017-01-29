@@ -62,7 +62,8 @@ class Nested extends React.Component {
         {this.props.options.fields.map(fld => (
           <div key={fld.alias} className='control'>
             <label className='label'>{fld.displayName}</label>
-            <input type='text' className='input is-disabled' value={value[fld.alias]} />
+            <pre>{value[fld.alias]}</pre>
+            {/* <input type='text' className='input is-disabled' value={value[fld.alias]} /> */}
           </div>
         ))}
       </blockquote >

@@ -90,7 +90,7 @@ namespace Kasbah.Content
             var node = await GetNodeAsync(id);
             var data = await GetRawDataAsync(id, version);
 
-            return await _typeMapper.MapTypeAsync(data, node.Type);
+            return await _typeMapper.MapTypeAsync(data, node.Type, node.Id);
         }
 
         public async Task UpdateDataAsync(Guid id, IDictionary<string, object> data)
