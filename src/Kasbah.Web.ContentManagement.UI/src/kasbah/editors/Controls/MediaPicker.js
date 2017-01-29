@@ -95,7 +95,8 @@ class MediaPicker extends React.Component {
                       </figure>
                     </div>
                     <div className='card-content'>
-                      <code>{ent.contentType}</code>
+                      <p>{ent.fileName}</p>
+                      <p><small>{ent.contentType}</small></p>
                     </div>
                   </div>
                 </div>

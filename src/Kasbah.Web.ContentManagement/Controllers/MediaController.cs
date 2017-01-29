@@ -32,7 +32,7 @@ namespace Kasbah.Web.ContentManagement.Controllers
         public async Task<IEnumerable<Guid>> Upload(IEnumerable<IFormFile> files)
             => await Task.WhenAll(files.Concat(Request.Form.Files).Select(async ent => await _mediaService.PutMediaAsync(ent.OpenReadStream(), ent.FileName, ent.ContentType)));
 
-        [Route("{id}"), HttpGet, AllowAnonymous]
+        [Route("{id}"), HttpGet, AllowAnonymous, ResponseCache(Duration = 3600)]
         public async Task<FileResult> GetMedia(Guid id, [FromQuery] GetMediaRequest request)
         {
             var item = await _mediaService.GetMediaItemAsync(id);

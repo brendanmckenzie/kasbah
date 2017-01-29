@@ -20,7 +20,7 @@ namespace Kasbah.Web.ContentDelivery.Controllers
             _mediaService = mediaService;
         }
 
-        [Route("{id}"), HttpGet, AllowAnonymous]
+        [Route("{id}"), HttpGet, AllowAnonymous, ResponseCache(Duration = 3600)]
         public async Task<FileResult> GetMedia(Guid id, [FromQuery] GetMediaRequest request)
         {
             var item = await _mediaService.GetMediaItemAsync(id);
