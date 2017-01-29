@@ -62,8 +62,7 @@ class Nested extends React.Component {
         {this.props.options.fields.map(fld => (
           <div key={fld.alias} className='control'>
             <label className='label'>{fld.displayName}</label>
-            <pre>{value[fld.alias]}</pre>
-            {/* <input type='text' className='input is-disabled' value={value[fld.alias]} /> */}
+            <div className='field-value'>{value[fld.alias]}</div>
           </div>
         ))}
       </blockquote >
@@ -71,7 +70,7 @@ class Nested extends React.Component {
   }
 
   render() {
-    return (<div>
+    return (<div className='field-editor__nested'>
       <div className='has-text-right'>
         <button type='button' className='button is-small' onClick={this.handleShowModal}>
           Edit {this.props.input.name}
