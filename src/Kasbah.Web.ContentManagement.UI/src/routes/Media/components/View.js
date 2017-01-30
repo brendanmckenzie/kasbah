@@ -4,6 +4,7 @@ import moment from 'moment'
 import Dropzone from 'react-dropzone'
 import Loading from 'components/Loading'
 import Error from 'components/Error'
+import { API_BASE } from 'store/util'
 
 class View extends React.Component {
   static propTypes = {
@@ -67,7 +68,7 @@ class View extends React.Component {
                       <div className='media'>
                         <figure className='media-left'>
                           <span className='image is-64x64'>
-                            <img src={`http://localhost:5000/media/${ent.id}?width=128&height=128`} />
+                            <img src={`${API_BASE}/media/${ent.id}?width=128&height=128`} />
                           </span>
                         </figure>
                         <div className='media-content'>
