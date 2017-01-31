@@ -47,7 +47,7 @@ namespace Kasbah.Media
 
         public async Task<IEnumerable<MediaItem>> ListMediaAsync()
         {
-            var entries = await _dataAccessProvider.QueryEntriesAsync<MediaItem>(IndexName);
+            var entries = await _dataAccessProvider.QueryEntriesAsync<MediaItem>(IndexName, take: 1024);
 
             return entries.Select(ent => ent.Source);
         }
