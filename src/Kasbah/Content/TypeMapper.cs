@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Kasbah.Content.Models;
 using Kasbah.Media;
 using Kasbah.Media.Models;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Kasbah.Content

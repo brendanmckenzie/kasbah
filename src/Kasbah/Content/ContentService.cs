@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using Kasbah.Media;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 
 namespace Kasbah.Content
 {
@@ -20,13 +22,15 @@ namespace Kasbah.Content
 
         readonly ILogger _log;
         readonly IDataAccessProvider _dataAccessProvider;
+        readonly IDistributedCache _cache;
         readonly TypeRegistry _typeRegistry;
         readonly TypeMapper _typeMapper;
 
-        public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, TypeRegistry typeRegistry, MediaService mediaService)
+        public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, IDistributedCache cache, TypeRegistry typeRegistry, MediaService mediaService)
         {
             _log = loggerFactory.CreateLogger<ContentService>();
             _dataAccessProvider = dataAccessProvider;
+            _cache = cache;
             _typeRegistry = typeRegistry;
 
             // TODO: this isn't great. remove the circular dependency
@@ -55,29 +59,37 @@ namespace Kasbah.Content
 
             await _dataAccessProvider.PutEntryAsync(Indicies.Nodes, id, node);
 
+            await _cache.RemoveAsync(nameof(DescribeTreeAsync));
+
             return id;
         }
 
         public async Task<IEnumerable<Node>> DescribeTreeAsync()
         {
-            var entries = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, take: 1024);
+            return await CacheGetOrSet(nameof(DescribeTreeAsync), async () =>
+            {
+                var entries = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, take: 1024);
 
-            return entries.Select(ent => ent.Source);
+                return entries.Select(ent => ent.Source);
+            });
         }
 
         public async Task<IDictionary<string, object>> GetRawDataAsync(Guid id, int? version = null)
         {
             try
             {
-                var node = await GetNodeAsync(id);
-                var type = Type.GetType(node.Type);
+                return await CacheGetOrSet($"{nameof(GetRawDataAsync)}_{id}_{version}", async () =>
+                {
+                    var node = await GetNodeAsync(id);
+                    var type = Type.GetType(node.Type);
 
-                var data = await _dataAccessProvider.GetEntryAsync<IDictionary<string, object>>(Indicies.Content, id, type, version);
+                    var data = await _dataAccessProvider.GetEntryAsync<IDictionary<string, object>>(Indicies.Content, id, type, version);
 
-                var res = data.Source;
-                res["_version"] = data.Version;
+                    var res = data.Source;
+                    res["_version"] = data.Version;
 
-                return res;
+                    return res;
+                });
             }
             catch (HttpRequestException)
             {
@@ -103,6 +115,8 @@ namespace Kasbah.Content
             node.Modified = DateTime.UtcNow;
 
             await UpdateNodeAsync(id, node);
+
+            await _cache.RemoveAsync($"{nameof(GetRawDataAsync)}_{id}_{null}");
         }
 
         public async Task PublishNodeVersionAsync(Guid id, int? version)
@@ -133,22 +147,25 @@ namespace Kasbah.Content
         // TODO: these still aren't entirely ideal, find a way to make the query only return 1 item
         public async Task<Node> GetNodeByTaxonomy(IEnumerable<string> aliases)
         {
-            var query = new
+            return await CacheGetOrSet($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", aliases)}", async () =>
             {
-                @bool = new
+                var query = new
                 {
-                    must = aliases.Select(ent => new
+                    @bool = new
                     {
-                        match = new Dictionary<string, string> {
-                            { "Taxonomy.Aliases", ent }
-                        }
-                    })
-                }
-            };
-            var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
+                        must = aliases.Select(ent => new
+                        {
+                            match = new Dictionary<string, string> {
+                                { "Taxonomy.Aliases", ent }
+                            }
+                        })
+                    }
+                };
+                var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
 
-            return items.Select(ent => ent.Source)
-                .SingleOrDefault(ent => ent.Taxonomy.Aliases.SequenceEqual(aliases));
+                return items.Select(ent => ent.Source)
+                    .SingleOrDefault(ent => ent.Taxonomy.Aliases.SequenceEqual(aliases));
+            });
         }
 
         public async Task<Node> GetNodeByTaxonomy(IEnumerable<Guid> ids)
@@ -192,7 +209,10 @@ namespace Kasbah.Content
 
         public async Task<Node> GetNodeAsync(Guid id)
         {
-            return (await _dataAccessProvider.GetEntryAsync<Node>(Indicies.Nodes, id)).Source;
+            return await CacheGetOrSet($"{nameof(GetNodeAsync)}_{id}", async () =>
+            {
+                return (await _dataAccessProvider.GetEntryAsync<Node>(Indicies.Nodes, id)).Source;
+            });
         }
 
         #endregion
@@ -202,6 +222,9 @@ namespace Kasbah.Content
         async Task UpdateNodeAsync(Guid id, Node node)
         {
             await _dataAccessProvider.PutEntryAsync(Indicies.Nodes, id, node);
+
+            await _cache.RemoveAsync($"{nameof(GetNodeAsync)}_{id}");
+            await _cache.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", node.Taxonomy.Aliases)}");
         }
 
         async Task<NodeTaxonomy> CalculateTaxonomyAsync(Guid? parent, Guid id, string alias)
@@ -253,6 +276,24 @@ namespace Kasbah.Content
             foreach (var typeDefinition in _typeRegistry.ListTypes())
             {
                 await _dataAccessProvider.PutTypeMapping(Indicies.Content, Type.GetType(typeDefinition.Alias));
+            }
+        }
+
+        async Task<T> CacheGetOrSet<T>(string key, Func<Task<T>> generator)
+        {
+            var cacheValue = await _cache.GetStringAsync(key);
+            if (cacheValue == null)
+            {
+                _log.LogDebug($"Cache miss: {key}");
+                var generatedValue = await generator();
+
+                await _cache.SetStringAsync(key, JsonConvert.SerializeObject(generatedValue));
+
+                return generatedValue;
+            }
+            else
+            {
+                return JsonConvert.DeserializeObject<T>(cacheValue);
             }
         }
 

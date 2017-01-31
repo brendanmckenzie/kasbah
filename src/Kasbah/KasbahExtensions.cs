@@ -39,11 +39,12 @@ namespace Kasbah
             registration.RegisterTypes(typeRegistry);
             registration.RegisterSites(siteRegistry);
 
-            await services.GetService<AnalyticsService>().InitialiseAsync();
-            await services.GetService<ContentService>().InitialiseAsync();
-            await services.GetService<MediaService>().InitialiseAsync();
-            await services.GetService<SecurityService>().InitialiseAsync();
-            await services.GetService<LoggingService>().InitialiseAsync();
+            await Task.WhenAll(
+                services.GetService<AnalyticsService>().InitialiseAsync(),
+                services.GetService<ContentService>().InitialiseAsync(),
+                services.GetService<MediaService>().InitialiseAsync(),
+                services.GetService<SecurityService>().InitialiseAsync(),
+                services.GetService<LoggingService>().InitialiseAsync());
         }
     }
 }
