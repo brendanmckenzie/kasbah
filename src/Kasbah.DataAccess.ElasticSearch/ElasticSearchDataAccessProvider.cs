@@ -30,17 +30,17 @@ namespace Kasbah.DataAccess.ElasticSearch
             };
         }
 
-        public async Task PutEntryAsync<T>(string index, Guid id, T data, Guid? parent = null)
+        public async Task PutEntryAsync<T>(string index, Guid id, T data, Guid? parent = null, bool waitForCommit = true)
         {
             var json = JsonConvert.SerializeObject(data);
 
-            await _webClient.PutAsync(ItemUri<T>(index, id, parent, waitForRefresh: true), new StringContent(json, Encoding.UTF8, "application/json"));
+            await _webClient.PutAsync(ItemUri<T>(index, id, parent, waitForRefresh: waitForCommit), new StringContent(json, Encoding.UTF8, "application/json"));
         }
 
-        public async Task PutEntryAsync<T>(string index, Guid id, IDictionary<string, object> data, Guid? parent = null)
-            => await PutEntryAsync(index, id, typeof(T), data, parent);
+        public async Task PutEntryAsync<T>(string index, Guid id, IDictionary<string, object> data, Guid? parent = null, bool waitForCommit = true)
+            => await PutEntryAsync(index, id, typeof(T), data, parent, waitForCommit);
 
-        public async Task PutEntryAsync(string index, Guid id, Type type, IDictionary<string, object> data, Guid? parent = null)
+        public async Task PutEntryAsync(string index, Guid id, Type type, IDictionary<string, object> data, Guid? parent = null, bool waitForCommit = true)
         {
             if (data?.ContainsKey("_version") == true)
             {
@@ -48,7 +48,7 @@ namespace Kasbah.DataAccess.ElasticSearch
             }
             var json = JsonConvert.SerializeObject(data);
 
-            await _webClient.PutAsync(ItemUri(type, index, id, parent, waitForRefresh: true), new StringContent(json, Encoding.UTF8, "application/json"));
+            await _webClient.PutAsync(ItemUri(type, index, id, parent, waitForRefresh: waitForCommit), new StringContent(json, Encoding.UTF8, "application/json"));
         }
 
         public async Task DeleteEntryAsync<T>(string index, Guid id)

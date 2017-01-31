@@ -26,7 +26,7 @@ namespace Kasbah.Analytics
 
         public async Task TrackEvent(AnalyticsEvent ev)
         {
-            await _dataAccessProvider.PutEntryAsync(Indicies.Analytics, Guid.NewGuid(), ev);
+            await _dataAccessProvider.PutEntryAsync(Indicies.Analytics, Guid.NewGuid(), ev, waitForCommit: false);
         }
 
         public async Task InitialiseAsync()
