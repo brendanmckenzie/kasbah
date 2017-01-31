@@ -63,9 +63,13 @@ export class AuthManager extends React.Component {
   }
 
   queueCheckRefresh() {
-    this.setState({
-      timeout: setTimeout(this.checkRefresh, 1000)
-    })
+    try {
+      this.setState({
+        timeout: setTimeout(this.checkRefresh, 1000)
+      })
+    } catch (ex) {
+      console.log('probably dismounted')
+    }
   }
 
   render() {

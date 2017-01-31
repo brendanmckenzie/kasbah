@@ -99,6 +99,11 @@ blockquote {
 
         .level-left {
             font-size: 90%;
+            flex-shrink: 1;
+
+            .level-item {
+                flex-shrink: 1;
+            }
         }
 
         .button.add-node {

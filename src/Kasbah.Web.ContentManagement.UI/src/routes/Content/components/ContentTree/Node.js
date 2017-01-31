@@ -4,50 +4,57 @@ import NodeTree from './NodeTree'
 
 class Node extends React.Component {
   static propTypes = {
-    node: React.PropTypes.object.isRequired,
-    tree: React.PropTypes.array.isRequired,
-    onCreateNode: React.PropTypes.func.isRequired
+    node: React.PropTypes.object.isRequired
+  }
+
+  static contextTypes = {
+    onToggleNode: React.PropTypes.func.isRequired,
+    expandedNodes: React.PropTypes.object.isRequired
   }
 
   constructor() {
     super()
 
-    this.state = { expanded: false }
-
     this.handleToggleExpand = this.handleToggleExpand.bind(this)
   }
 
   get tree() {
-    if (!this.state.expanded) { return null }
+    const { node: { id } } = this.props
 
-    const { node, tree, onCreateNode } = this.props
+    if (!this.expanded) { return null }
 
-    return <NodeTree parent={node.id} tree={tree} onCreateNode={onCreateNode} />
+    return <NodeTree parent={id} />
   }
 
   handleToggleExpand() {
-    this.setState({
-      expanded: !this.state.expanded
-    })
+    const { node: { id } } = this.props
+
+    this.context.onToggleNode(id)
+  }
+
+  get expanded() {
+    const { node: { id } } = this.props
+
+    return this.context.expandedNodes[id]
   }
 
   render() {
-    const { node } = this.props
+    const { node: { id, displayName } } = this.props
 
     return (
       <li>
         <div className='level'>
           <div className='level-left'>
-            <Link to={`/content/${node.id}`}
-              className='level-item'
-              activeClassName='is-active'>{node.displayName}</Link>
+            <Link to={`/content/${id}`}
+              className='level-item level-shrink'
+              activeClassName='is-active'>{displayName}</Link>
           </div>
           <div className='level-right'>
             <button
               className='button is-small add-node'
               onClick={this.handleToggleExpand}>
               <span className='icon is-small'>
-                <i className={this.state.expanded ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'} />
+                <i className={this.expanded ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'} />
               </span>
             </button>
           </div>
