@@ -32,7 +32,7 @@ class NodeTree extends React.Component {
         ))}
         <li>
           <button
-            className='button is-primary is-small is-fullwidth is-outlined'
+            className='button is-small is-fullwidth'
             onClick={this.handleCreateNode}>Create node</button>
         </li>
       </ul>
