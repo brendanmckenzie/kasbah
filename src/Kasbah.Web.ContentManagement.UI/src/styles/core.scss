@@ -92,3 +92,17 @@ blockquote {
 
     }
 }
+
+.content-tree {
+    .level {
+        margin-bottom: 0;
+
+        .level-left {
+            font-size: 90%;
+        }
+
+        .button.add-node {
+            border: 0;
+        }
+    }
+}

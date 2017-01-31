@@ -21,8 +21,6 @@ export class View extends React.Component {
       localStorage.user = JSON.stringify(nextProps.login.payload)
       localStorage.accessTokenExpires = moment().add(nextProps.login.payload.expires_in, 'seconds').format()
 
-      console.log(localStorage.accessTokenExpires)
-
       this.context.router.push('/')
     }
   }

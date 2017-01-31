@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router'
+import Node from './Node'
 
 class NodeTree extends React.Component {
   constructor() {
@@ -14,12 +14,17 @@ class NodeTree extends React.Component {
 
   render() {
     const { parent, tree } = this.props
+
     return (
       <ul className='content-tree'>
         {tree.filter(ent => ent.parent === parent).map(ent => (
           <Node key={ent.id} node={ent} tree={tree} onCreateNode={this.props.onCreateNode} />
         ))}
-        <li><button className='button is-small' onClick={this.handleCreateNode}>Create node</button></li>
+        <li>
+          <button
+            className='button is-primary is-small is-fullwidth'
+            onClick={this.handleCreateNode}>Create node</button>
+        </li>
       </ul>
     )
   }
@@ -27,19 +32,6 @@ class NodeTree extends React.Component {
 
 NodeTree.propTypes = {
   parent: React.PropTypes.string,
-  tree: React.PropTypes.array.isRequired,
-  onCreateNode: React.PropTypes.func.isRequired
-}
-
-const Node = ({ node, tree, onCreateNode }) => (
-  <li>
-    <Link to={`/content/${node.id}`} activeClassName='is-active'>{node.displayName}</Link>
-    <NodeTree parent={node.id} tree={tree} onCreateNode={onCreateNode} />
-  </li>
-)
-
-Node.propTypes = {
-  node: React.PropTypes.object.isRequired,
   tree: React.PropTypes.array.isRequired,
   onCreateNode: React.PropTypes.func.isRequired
 }
