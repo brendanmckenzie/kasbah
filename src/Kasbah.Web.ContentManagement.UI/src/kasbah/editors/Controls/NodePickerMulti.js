@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router'
 import Loading from 'components/Loading'
 import { makeApiRequest } from 'store/util'
 
@@ -17,7 +18,8 @@ class NodePicker extends React.Component {
       showModal: false,
       loading: true,
       nodes: [],
-      selection: []
+      selection: [],
+      nodeDetail: {}
     }
 
     this.handleHideModal = this.handleHideModal.bind(this)
@@ -34,6 +36,8 @@ class NodePicker extends React.Component {
           nodes: nodes.filter(ent => ent.type.indexOf(this.props.type) !== -1) // TODO: filter this server-side
         })
       })
+
+    this.handleReloadNodeDetail(this.props.input.value)
   }
 
   handleShowModal() {
@@ -61,7 +65,49 @@ class NodePicker extends React.Component {
 
     onChange(this.state.selection)
 
+    this.handleReloadNodeDetail(this.state.selection)
+
     this.handleHideModal()
+  }
+
+  handleReloadNodeDetail(value) {
+    if (!value) { return }
+
+    Promise.all(value.map(ent => makeApiRequest({ url: `/content/node/${ent}`, method: 'GET' })))
+      .then(res => {
+        let detail = {}
+        res.forEach(ent => {
+          detail[ent.id] = ent
+        })
+        this.setState({
+          nodeDetail: detail
+        })
+      })
+  }
+
+  renderNode(id) {
+    if (this.state.nodeDetail[id]) {
+      const item = this.state.nodeDetail[id]
+      return (
+        <div className='level'>
+          <div className='level-left'>
+            <div className='level-item'>
+              <p><Link to={`/content/${id}`}>{item.displayName}</Link></p>
+              <p><small>{item.alias}</small></p>
+            </div>
+          </div>
+          <div className='level-right'>
+            <span className={`tag ` + (item.publishedVersion ? ' is-primary' : ' is-warning')}>
+              {item.publishedVersion ? `v${item.publishedVersion}` : 'not published'}
+            </span>
+          </div>
+        </div>
+      )
+    } else {
+      return (
+        <Link to={`/content/${id}`}>{id}</Link>
+      )
+    }
   }
 
   get display() {
@@ -69,7 +115,13 @@ class NodePicker extends React.Component {
 
     if (!value) { return null }
 
-    return (<pre>{JSON.stringify(value, null, 2)}</pre>)
+    return (<ul>
+      {value.map(ent => (
+        <li key={ent}>
+          {this.renderNode(ent)}
+        </li>
+      ))}
+    </ul>)
   }
 
   get modal() {

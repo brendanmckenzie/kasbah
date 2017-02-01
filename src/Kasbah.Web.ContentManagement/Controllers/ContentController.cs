@@ -62,6 +62,10 @@ namespace Kasbah.Web.ContentManagement.Controllers
         [Route("node"), HttpPost]
         public async Task<Guid> CreateNode([FromBody] CreateNodeRequest request)
             => await _contentService.CreateNodeAsync(request.Parent, request.Alias, request.Type, request.DisplayName);
+
+        [Route("node/{id}"), HttpGet]
+        public async Task<Node> GetNode(Guid id)
+            => await _contentService.GetNodeAsync(id);
     }
 
     public class CreateNodeRequest

@@ -75,6 +75,16 @@ blockquote {
     }
 }
 
+.node-picker {
+    ul li {
+        margin-bottom: 4px;
+
+        .level-item {
+            display: initial;
+        }
+    }
+}
+
 ul.content-tree {
     li ul {
         padding-left: 10px;

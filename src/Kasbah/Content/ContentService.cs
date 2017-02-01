@@ -273,10 +273,10 @@ namespace Kasbah.Content
 
         async Task UpdateMappingsAsync()
         {
-            foreach (var typeDefinition in _typeRegistry.ListTypes())
-            {
-                await _dataAccessProvider.PutTypeMapping(Indicies.Content, Type.GetType(typeDefinition.Alias));
-            }
+            await Task.WhenAll(
+                _typeRegistry.ListTypes()
+                    .Select(ent => _dataAccessProvider.PutTypeMapping(Indicies.Content, Type.GetType(ent.Alias)))
+            );
         }
 
         async Task<T> CacheGetOrSet<T>(string key, Func<Task<T>> generator)
