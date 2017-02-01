@@ -144,48 +144,58 @@ namespace Kasbah.Content
             };
         }
 
-        // TODO: these still aren't entirely ideal, find a way to make the query only return 1 item
         public async Task<Node> GetNodeByTaxonomy(IEnumerable<string> aliases)
         {
-            return await CacheGetOrSet($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", aliases)}", async () =>
+            var key = $"{nameof(GetNodeByTaxonomy)}_{string.Join("_", aliases)}";
+            return await CacheGetOrSet(key, async () =>
             {
                 var query = new
                 {
                     @bool = new
                     {
-                        must = aliases.Select(ent => new
+                        must = aliases.Select(ent => new QueryMatch
                         {
-                            match = new Dictionary<string, string> {
+                            Match = new Dictionary<string, string> {
                                 { "Taxonomy.Aliases", ent }
                             }
-                        })
+                        }).Concat(new[] { new QueryMatch {
+                            Match = new Dictionary<string, int> {
+                                { "Taxonomy.Length", aliases.Count() }
+                            }
+                        }})
                     }
                 };
                 var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
 
-                return items.Select(ent => ent.Source)
-                    .SingleOrDefault(ent => ent.Taxonomy.Aliases.SequenceEqual(aliases));
+                return items.Select(ent => ent.Source).FirstOrDefault();
             });
         }
 
         public async Task<Node> GetNodeByTaxonomy(IEnumerable<Guid> ids)
         {
-            var query = new
+            var key = $"{nameof(GetNodeByTaxonomy)}_{string.Join("_", ids)}";
+            return await CacheGetOrSet(key, async () =>
             {
-                @bool = new
+                var query = new
                 {
-                    must = ids.Select(ent => new
+                    @bool = new
                     {
-                        match = new Dictionary<string, Guid> {
+                        must = ids.Select(ent => new QueryMatch
+                        {
+                            Match = new Dictionary<string, Guid> {
                             { "Taxonomy.Ids", ent }
                         }
-                    })
-                }
-            };
-            var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
+                        }).Concat(new[] { new QueryMatch {
+                            Match = new Dictionary<string, int> {
+                                { "Taxonomy.Length", ids.Count() }
+                            }
+                        }})
+                    }
+                };
+                var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
 
-            return items.Select(ent => ent.Source)
-                .SingleOrDefault(ent => ent.Taxonomy.Ids.SequenceEqual(ids));
+                return items.Select(ent => ent.Source).FirstOrDefault();
+            });
         }
 
         public async Task<Node> GetChildByAliasAsync(Guid? parent, string alias)
@@ -281,13 +291,14 @@ namespace Kasbah.Content
 
         async Task<T> CacheGetOrSet<T>(string key, Func<Task<T>> generator)
         {
-            var cacheValue = await _cache.GetStringAsync(key);
+            // TODO: find out why GetStringAsync/SetStringAsync don't work
+            var cacheValue = _cache.GetString(key);
             if (cacheValue == null)
             {
                 _log.LogDebug($"Cache miss: {key}");
                 var generatedValue = await generator();
 
-                await _cache.SetStringAsync(key, JsonConvert.SerializeObject(generatedValue));
+                _cache.SetString(key, JsonConvert.SerializeObject(generatedValue));
 
                 return generatedValue;
             }
@@ -298,5 +309,11 @@ namespace Kasbah.Content
         }
 
         #endregion
+
+        class QueryMatch
+        {
+            [JsonProperty("match")]
+            public object Match { get; set; }
+        }
     }
 }
