@@ -1,5 +1,6 @@
 set -e
 
+rm -rf src/Kasbah.Web.ContentManagement/wwwroot
 cp -r src/Kasbah.Web.ContentManagement.UI/dist src/Kasbah.Web.ContentManagement/wwwroot
 
 COMMIT_COUNT=$(git rev-list --all --count)
