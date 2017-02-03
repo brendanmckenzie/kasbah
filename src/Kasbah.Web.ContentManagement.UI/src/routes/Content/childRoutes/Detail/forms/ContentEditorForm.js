@@ -29,10 +29,10 @@ const ContentEditorForm = ({ handleSubmit, onSave, type, loading, publishing }) 
     </Tabs>
     <hr />
     <div className='has-text-right'>
-      <button className={'button ' + (loading) ? 'is-loading' : ''} type='button' onClick={onSave}>Save</button>
-      <button className={'button is-primary' + (loading) ? ' is-loading' : ''}>Save and publish</button>
+      <button className={'button ' + (loading ? ' is-loading' : '')} type='button' onClick={onSave}>Save</button>
+      <button className={'button is-primary' + (loading ? ' is-loading' : '')}>Save and publish</button>
     </div>
-  </form >
+  </form>
 )
 
 ContentEditorForm.propTypes = {

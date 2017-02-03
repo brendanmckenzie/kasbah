@@ -43,12 +43,6 @@ class View extends React.Component {
         payload: nextProps.putDetail.payload
       })
     }
-
-    if (nextProps.publish.success && nextProps.publish.success !== this.props.publish.success) {
-      this.setState({
-        payload: nextProps.publish.payload
-      })
-    }
   }
 
   handleLoad(id) {
@@ -92,12 +86,13 @@ class View extends React.Component {
         {this.breadcrumb}
         <div className='columns'>
           <div className='column'>
-            <ContentEditor
-              payload={this.state.payload}
-              loading={this.props.putDetail.loading}
-              publishing={this.props.publish.loading}
-              onSubmit={this.handleSaveAndPublish}
-              onSave={this.handleSave} />
+            {this.state.payload.type.fields.length === 0
+              ? <p>This content type does not define any editable fields.</p>
+              : <ContentEditor
+                payload={this.state.payload}
+                loading={this.props.putDetail.loading}
+                onSubmit={this.handleSaveAndPublish}
+                onSave={this.handleSave} />}
           </div>
           <div className='column is-3'>
             <SideBar {...this.state.payload} />

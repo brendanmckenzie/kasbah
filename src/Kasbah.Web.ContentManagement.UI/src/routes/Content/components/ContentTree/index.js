@@ -14,6 +14,10 @@ class ContentTree extends React.Component {
     listTypes: React.PropTypes.object.isRequired
   }
 
+  static contextTypes = {
+    router: React.PropTypes.object.isRequired
+  }
+
   static childContextTypes = {
     expandedNodes: React.PropTypes.object,
     tree: React.PropTypes.array,
