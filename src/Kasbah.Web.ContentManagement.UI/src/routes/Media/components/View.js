@@ -30,6 +30,7 @@ class View extends React.Component {
     if (nextProps.uploadMedia.success && nextProps.uploadMedia.success !== this.props.uploadMedia.success) {
       this.handleRefresh()
     }
+
     if (nextProps.deleteMedia.success && nextProps.deleteMedia.success !== this.props.deleteMedia.success) {
       this.handleRefresh()
     }

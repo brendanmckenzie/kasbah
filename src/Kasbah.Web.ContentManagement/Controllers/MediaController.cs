@@ -33,8 +33,12 @@ namespace Kasbah.Web.ContentManagement.Controllers
             => await Task.WhenAll(files.Concat(Request.Form.Files).Select(async ent => await _mediaService.PutMediaAsync(ent.OpenReadStream(), ent.FileName, ent.ContentType)));
 
         [Route("{id}"), HttpDelete]
-        public async Task DeleteAsync(Guid id)
-            => await _mediaService.DeleteMediaItemAsync(id);
+        public async Task<bool> DeleteAsync(Guid id)
+        {
+            await _mediaService.DeleteMediaItemAsync(id);
+
+            return true;
+        }
 
         [Route("{id}"), HttpGet, AllowAnonymous, ResponseCache(Duration = 3600)]
         public async Task<FileResult> GetMedia(Guid id, [FromQuery] GetMediaRequest request)
