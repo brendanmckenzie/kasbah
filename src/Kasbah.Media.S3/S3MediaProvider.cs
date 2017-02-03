@@ -47,6 +47,18 @@ namespace Kasbah.Media.S3
             }
         }
 
+        public async Task DeleteMediaAsync(Guid id)
+        {
+            using (var client = GetClient())
+            {
+                var ret = await client.DeleteObjectAsync(new DeleteObjectRequest
+                {
+                    BucketName = _settings.BucketName,
+                    Key = id.ToString()
+                });
+            }
+        }
+
         AmazonS3Client GetClient()
             => new AmazonS3Client(
                 new BasicAWSCredentials(_settings.AwsAccessKeyId, _settings.AwsSecretAccessKey),

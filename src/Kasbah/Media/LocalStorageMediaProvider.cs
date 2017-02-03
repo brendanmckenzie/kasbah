@@ -35,6 +35,13 @@ namespace Kasbah.Media
             return id;
         }
 
+        public async Task DeleteMediaAsync(Guid id)
+        {
+            File.Delete(GetPath(id));
+
+            await Task.Delay(0);
+        }
+
         string GetPath(Guid id)
             => Path.Combine(_settings.ContentRoot, id.ToString());
     }

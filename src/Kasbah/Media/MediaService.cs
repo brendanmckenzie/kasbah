@@ -60,8 +60,9 @@ namespace Kasbah.Media
 
         public async Task DeleteMediaItemAsync(Guid id)
         {
-            await _dataAccessProvider.DeleteEntryAsync<MediaItem>(IndexName, id);
-            // TODO: delete from media storage
+            await Task.WhenAll(
+                _dataAccessProvider.DeleteEntryAsync<MediaItem>(IndexName, id),
+                _mediaStorageProvider.DeleteMediaAsync(id));
         }
     }
 }

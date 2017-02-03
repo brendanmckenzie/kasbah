@@ -8,5 +8,6 @@ namespace Kasbah.Media
     {
         Task<Guid> StoreMediaAsync(Stream source);
         Task<Stream> GetMediaAsync(Guid id);
+        Task DeleteMediaAsync(Guid id);
     }
 }
