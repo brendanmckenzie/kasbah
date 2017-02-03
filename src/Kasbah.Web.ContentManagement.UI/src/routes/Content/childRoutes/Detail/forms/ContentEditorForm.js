@@ -4,7 +4,7 @@ import _ from 'lodash'
 import { Tabs, Tab } from 'components/Tabs'
 import kasbah from 'kasbah'
 
-const ContentEditorForm = ({ handleSubmit, onPublish, type, loading, publishing }) => (
+const ContentEditorForm = ({ handleSubmit, onSave, type, loading, publishing }) => (
   <form onSubmit={handleSubmit} className='content-editor__form' disabled={loading || publishing}>
     <Tabs>
       {_(type.fields).map(ent => ent.category).uniq().value().map((ent, index) => (
@@ -29,17 +29,15 @@ const ContentEditorForm = ({ handleSubmit, onPublish, type, loading, publishing 
     </Tabs>
     <hr />
     <div className='has-text-right'>
-      <button
-        className={'button ' + ((publishing || loading) ? 'is-loading' : '')}
-        type='button' onClick={onPublish}>Publish</button>
-      <button className={'button is-primary' + ((loading || loading) ? ' is-loading' : '')}>Save changes</button>
+      <button className={'button ' + (loading) ? 'is-loading' : ''} type='button' onClick={onSave}>Save</button>
+      <button className={'button is-primary' + (loading) ? ' is-loading' : ''}>Save and publish</button>
     </div>
-  </form>
+  </form >
 )
 
 ContentEditorForm.propTypes = {
   handleSubmit: React.PropTypes.func.isRequired,
-  onPublish: React.PropTypes.func.isRequired,
+  onSave: React.PropTypes.func.isRequired,
   type: React.PropTypes.object.isRequired,
   loading: React.PropTypes.bool,
   publishing: React.PropTypes.bool,

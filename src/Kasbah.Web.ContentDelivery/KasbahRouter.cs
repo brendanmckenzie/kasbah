@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Kasbah.Analytics;
 using Kasbah.Analytics.Models;
 using Kasbah.Content;
+using Kasbah.Web.ContentDelivery.Models;
 using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
@@ -19,9 +20,10 @@ namespace Kasbah.Web.ContentDelivery
         readonly TypeRegistry _typeRegistry;
         readonly KasbahWebApplication _kasbahWebApplication;
         readonly AnalyticsService _analyticsService;
+        readonly TypeMapper _typeMapper;
 
 
-        public KasbahRouter(ILoggerFactory loggerFactory, ContentService contentService, SiteRegistry siteRegistry, TypeRegistry typeRegistry, KasbahWebApplication kasbahWebApplication, AnalyticsService analyticsService)
+        public KasbahRouter(ILoggerFactory loggerFactory, ContentService contentService, SiteRegistry siteRegistry, TypeRegistry typeRegistry, KasbahWebApplication kasbahWebApplication, AnalyticsService analyticsService, TypeMapper typeMapper)
         {
             _log = loggerFactory.CreateLogger<KasbahRouter>();
             _contentService = contentService;
@@ -29,6 +31,7 @@ namespace Kasbah.Web.ContentDelivery
             _typeRegistry = typeRegistry;
             _kasbahWebApplication = kasbahWebApplication;
             _analyticsService = analyticsService;
+            _typeMapper = typeMapper;
         }
 
         public VirtualPathData GetVirtualPath(VirtualPathContext context)
@@ -45,6 +48,7 @@ namespace Kasbah.Web.ContentDelivery
                 HttpContext = context.HttpContext,
                 ContentService = _contentService,
                 TypeRegistry = _typeRegistry,
+                TypeMapper = _typeMapper,
                 SiteRegistry = _siteRegistry
             };
 
@@ -98,7 +102,8 @@ namespace Kasbah.Web.ContentDelivery
 
                     routeData.Values["node"] = node;
 
-                    var content = await _contentService.GetTypedDataAsync(node.Id, node.PublishedVersion);
+                    var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
+                    var content = await _typeMapper.MapTypeAsync(data, node.Type, node.Id);
 
                     routeData.Values["content"] = content;
 
@@ -108,6 +113,12 @@ namespace Kasbah.Web.ContentDelivery
                     foreach (var key in type.Options.Keys)
                     {
                         routeData.Values[key] = type.Options[key];
+                    }
+
+                    var resolvedView = (content as IViewResolver).GetView();
+                    if (!string.IsNullOrEmpty(resolvedView))
+                    {
+                        routeData.Values["view"] = resolvedView;
                     }
 
                     context.RouteData = routeData;

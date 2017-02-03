@@ -15,6 +15,7 @@ namespace Kasbah
     {
         public static IServiceCollection AddKasbah(this IServiceCollection services)
         {
+            services.AddSingleton<TypeMapper>();
             services.AddSingleton<TypeRegistry>();
             services.AddSingleton<SiteRegistry>();
 

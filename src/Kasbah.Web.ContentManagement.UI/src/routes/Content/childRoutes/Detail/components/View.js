@@ -11,9 +11,7 @@ class View extends React.Component {
     getDetailRequest: React.PropTypes.func.isRequired,
     getDetail: React.PropTypes.object.isRequired,
     putDetailRequest: React.PropTypes.func.isRequired,
-    putDetail: React.PropTypes.object.isRequired,
-    publishRequest: React.PropTypes.func.isRequired,
-    publish: React.PropTypes.object.isRequired
+    putDetail: React.PropTypes.object.isRequired
   }
 
   constructor() {
@@ -21,8 +19,8 @@ class View extends React.Component {
 
     this.state = { payload: null }
 
+    this.handleSaveAndPublish = this.handleSaveAndPublish.bind(this)
     this.handleSave = this.handleSave.bind(this)
-    this.handlePublish = this.handlePublish.bind(this)
   }
 
   componentWillMount() {
@@ -57,12 +55,12 @@ class View extends React.Component {
     this.props.getDetailRequest({ id })
   }
 
-  handleSave(data) {
-    this.props.putDetailRequest({ id: this.props.id, data })
+  handleSaveAndPublish(data) {
+    this.props.putDetailRequest({ id: this.props.id, data, publish: true })
   }
 
-  handlePublish() {
-    this.props.publishRequest({ id: this.props.id, version: this.state.payload.data['_version'] })
+  handleSave() {
+    this.props.putDetailRequest({ id: this.props.id, publish: false })
   }
 
   get breadcrumb() {
@@ -98,8 +96,8 @@ class View extends React.Component {
               payload={this.state.payload}
               loading={this.props.putDetail.loading}
               publishing={this.props.publish.loading}
-              onSubmit={this.handleSave}
-              onPublish={this.handlePublish} />
+              onSubmit={this.handleSaveAndPublish}
+              onSave={this.handleSave} />
           </div>
           <div className='column is-3'>
             <SideBar {...this.state.payload} />

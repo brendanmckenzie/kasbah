@@ -24,7 +24,7 @@ namespace Kasbah.Content
             _typeRegistry = typeRegistry;
         }
 
-        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Guid? id = null)
+        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Guid? id = null, int? version = null)
         {
             var type = Type.GetType(typeName);
             var typeInfo = type.GetTypeInfo();
@@ -32,16 +32,20 @@ namespace Kasbah.Content
             var ret = Activator.CreateInstance(type);
             if (data != null)
             {
-                foreach (var property in typeInfo.GetProperties())
+                var values = await Task.WhenAll(typeInfo.GetProperties().Select(async prop =>
                 {
-                    var key = property.Name;
-                    if (data.ContainsKey(key))
+                    var key = prop.Name;
+                    return new
                     {
-                        var source = data[key];
-                        var dest = await MapPropertyAsync(source, property);
+                        Key = key,
+                        Property = prop,
+                        Value = data.ContainsKey(key) ? await MapPropertyAsync(data[key], prop) : null
+                    };
+                }));
 
-                        property.SetValue(ret, dest);
-                    }
+                foreach (var property in values.Where(ent => ent.Value != null))
+                {
+                    property.Property.SetValue(ret, property.Value);
                 }
             }
 
@@ -50,6 +54,10 @@ namespace Kasbah.Content
                 if (id.HasValue)
                 {
                     (ret as Item).Id = id.Value;
+                }
+                if (version.HasValue)
+                {
+                    (ret as Item).Version = version.Value;
                 }
             }
 
@@ -122,7 +130,8 @@ namespace Kasbah.Content
                 var node = await _contentService.GetNodeAsync(id);
                 if (node.PublishedVersion.HasValue)
                 {
-                    return await _contentService.GetTypedDataAsync(id, node.PublishedVersion.Value);
+                    var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
+                    return await MapTypeAsync(data, node.Type, node.Id);
                 }
             }
 

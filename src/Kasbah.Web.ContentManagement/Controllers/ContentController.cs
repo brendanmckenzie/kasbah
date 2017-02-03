@@ -26,16 +26,8 @@ namespace Kasbah.Web.ContentManagement.Controllers
         public async Task<NodeDataForEditing> GetNodeDataForEditing(Guid id)
             => await _contentService.GetNodeDataForEditingAsync(id);
 
-        [Route("{id}/publish/{version}"), HttpPost]
-        public async Task<NodeDataForEditing> PublishNodeVersion(Guid id, int? version)
-        {
-            await _contentService.PublishNodeVersionAsync(id, version);
-
-            return await GetNodeDataForEditing(id);
-        }
-
         [Route("{id}"), HttpPost]
-        public async Task<NodeDataForEditing> UpdateNodeData(Guid id, [FromBody]IDictionary<string, object> data)
+        public async Task<NodeDataForEditing> UpdateNodeData(Guid id, [FromBody]IDictionary<string, object> data, [FromQuery] bool publish)
         {
             foreach (var kvp in data.Where(ent => ent.Value is JObject).ToList())
             {
@@ -46,7 +38,7 @@ namespace Kasbah.Web.ContentManagement.Controllers
                 data[kvp.Key] = (kvp.Value as JArray).ToArray();
             }
 
-            await _contentService.UpdateDataAsync(id, data);
+            await _contentService.UpdateDataAsync(id, data, publish);
 
             return await GetNodeDataForEditing(id);
         }

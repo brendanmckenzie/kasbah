@@ -30,17 +30,21 @@ namespace Kasbah.DataAccess.ElasticSearch
             };
         }
 
-        public async Task PutEntryAsync<T>(string index, Guid id, T data, Guid? parent = null, bool waitForCommit = true)
+        public async Task<long> PutEntryAsync<T>(string index, Guid id, T data, Guid? parent = null, bool waitForCommit = true)
         {
             var json = JsonConvert.SerializeObject(data);
 
-            await _webClient.PutAsync(ItemUri<T>(index, id, parent, waitForRefresh: waitForCommit), new StringContent(json, Encoding.UTF8, "application/json"));
+            var response = await _webClient.PutAsync(ItemUri<T>(index, id, parent, waitForRefresh: waitForCommit), new StringContent(json, Encoding.UTF8, "application/json"));
+            var responseJson = await response.Content.ReadAsStringAsync();
+            var responseData = JsonConvert.DeserializeObject<IDictionary<string, object>>(responseJson);
+
+            return (long)responseData["_version"];
         }
 
-        public async Task PutEntryAsync<T>(string index, Guid id, IDictionary<string, object> data, Guid? parent = null, bool waitForCommit = true)
+        public async Task<long> PutEntryAsync<T>(string index, Guid id, IDictionary<string, object> data, Guid? parent = null, bool waitForCommit = true)
             => await PutEntryAsync(index, id, typeof(T), data, parent, waitForCommit);
 
-        public async Task PutEntryAsync(string index, Guid id, Type type, IDictionary<string, object> data, Guid? parent = null, bool waitForCommit = true)
+        public async Task<long> PutEntryAsync(string index, Guid id, Type type, IDictionary<string, object> data, Guid? parent = null, bool waitForCommit = true)
         {
             if (data?.ContainsKey("_version") == true)
             {
@@ -48,7 +52,11 @@ namespace Kasbah.DataAccess.ElasticSearch
             }
             var json = JsonConvert.SerializeObject(data);
 
-            await _webClient.PutAsync(ItemUri(type, index, id, parent, waitForRefresh: waitForCommit), new StringContent(json, Encoding.UTF8, "application/json"));
+            var response = await _webClient.PutAsync(ItemUri(type, index, id, parent, waitForRefresh: waitForCommit), new StringContent(json, Encoding.UTF8, "application/json"));
+            var responseJson = await response.Content.ReadAsStringAsync();
+            var responseData = JsonConvert.DeserializeObject<IDictionary<string, object>>(responseJson);
+
+            return (long)responseData["_version"];
         }
 
         public async Task DeleteEntryAsync<T>(string index, Guid id)
@@ -85,7 +93,7 @@ namespace Kasbah.DataAccess.ElasticSearch
             }) ?? Enumerable.Empty<EntryWrapper<T>>();
         }
 
-        public async Task<EntryWrapper<T>> GetEntryAsync<T>(string index, Guid id, int? version = null)
+        public async Task<EntryWrapper<T>> GetEntryAsync<T>(string index, Guid id, long? version = null)
         {
             var res = await _webClient.GetStringAsync(ItemUri<T>(index, id, version: version));
             var ent = JsonConvert.DeserializeObject<SearchResultHitsHit<T>>(res);
@@ -98,7 +106,7 @@ namespace Kasbah.DataAccess.ElasticSearch
             };
         }
 
-        public async Task<EntryWrapper<T>> GetEntryAsync<T>(string index, Guid id, Type type, int? version = null)
+        public async Task<EntryWrapper<T>> GetEntryAsync<T>(string index, Guid id, Type type, long? version = null)
         {
             var res = await _webClient.GetStringAsync(ItemUri(type, index, id, version: version));
             var ent = JsonConvert.DeserializeObject<SearchResultHitsHit<T>>(res);
@@ -203,10 +211,10 @@ namespace Kasbah.DataAccess.ElasticSearch
             return ret;
         }
 
-        Uri ItemUri<T>(string index, Guid id, Guid? parent = null, int? version = null, bool waitForRefresh = false)
+        Uri ItemUri<T>(string index, Guid id, Guid? parent = null, long? version = null, bool waitForRefresh = false)
             => ItemUri(typeof(T), index, id, parent, version, waitForRefresh);
 
-        Uri ItemUri(Type type, string index, Guid id, Guid? parent = null, int? version = null, bool waitForRefresh = false)
+        Uri ItemUri(Type type, string index, Guid id, Guid? parent = null, long? version = null, bool waitForRefresh = false)
         {
             var queryString = new Dictionary<string, object>();
             if (parent.HasValue)

@@ -6,7 +6,6 @@ using Kasbah.Content.Models;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
-using Kasbah.Media;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 
@@ -24,18 +23,13 @@ namespace Kasbah.Content
         readonly IDataAccessProvider _dataAccessProvider;
         readonly IDistributedCache _cache;
         readonly TypeRegistry _typeRegistry;
-        readonly TypeMapper _typeMapper;
 
-        public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, IDistributedCache cache, TypeRegistry typeRegistry, MediaService mediaService)
+        public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, TypeRegistry typeRegistry, IDistributedCache cache = null)
         {
             _log = loggerFactory.CreateLogger<ContentService>();
             _dataAccessProvider = dataAccessProvider;
             _cache = cache;
             _typeRegistry = typeRegistry;
-
-            // TODO: this isn't great. remove the circular dependency
-            // TODO: extra not great, the cross-reference to MediaService
-            _typeMapper = new TypeMapper(this, mediaService, _typeRegistry);
         }
 
         #region Public methods
@@ -74,7 +68,7 @@ namespace Kasbah.Content
             });
         }
 
-        public async Task<IDictionary<string, object>> GetRawDataAsync(Guid id, int? version = null)
+        public async Task<IDictionary<string, object>> GetRawDataAsync(Guid id, long? version = null)
         {
             try
             {
@@ -97,34 +91,20 @@ namespace Kasbah.Content
             }
         }
 
-        public async Task<object> GetTypedDataAsync(Guid id, int? version = null)
-        {
-            var node = await GetNodeAsync(id);
-            var data = await GetRawDataAsync(id, version);
-
-            return await _typeMapper.MapTypeAsync(data, node.Type, node.Id);
-        }
-
-        public async Task UpdateDataAsync(Guid id, IDictionary<string, object> data)
+        public async Task UpdateDataAsync(Guid id, IDictionary<string, object> data, bool publish)
         {
             var node = await GetNodeAsync(id);
             var type = Type.GetType(node.Type);
 
-            await _dataAccessProvider.PutEntryAsync(Indicies.Content, id, type, data);
-
-            node.Modified = DateTime.UtcNow;
-
-            await UpdateNodeAsync(id, node);
+            var version = await _dataAccessProvider.PutEntryAsync(Indicies.Content, id, type, data);
 
             await _cache.RemoveAsync($"{nameof(GetRawDataAsync)}_{id}_{null}");
-        }
-
-        public async Task PublishNodeVersionAsync(Guid id, int? version)
-        {
-            var node = await GetNodeAsync(id);
 
             node.Modified = DateTime.UtcNow;
-            node.PublishedVersion = version;
+            if (publish)
+            {
+                node.PublishedVersion = version;
+            }
 
             await UpdateNodeAsync(id, node);
         }

@@ -69,10 +69,7 @@
       }
     }
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/davezuko/react-redux-starter-kit.git"
-  },
+  "repository": "git+https://github.com/davezuko/react-redux-starter-kit.git",
   "author": "David Zukowski <david@zuko.me> (http://zuko.me)",
   "license": "MIT",
   "dependencies": {

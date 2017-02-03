@@ -1,6 +1,8 @@
 // import 'whatwg-fetch'
 import { makeApiRequest } from 'store/util'
 
+const API_FAILURE = 'API_FAILURE'
+
 export const middleware = ({ dispatch, getState }) => {
   return next => action => {
     const {
@@ -24,6 +26,9 @@ export const middleware = ({ dispatch, getState }) => {
       .then(res => {
         dispatch({ type: successType, payload: res })
       })
-      .catch(ex => dispatch({ type: failureType, payload: { errorMessage: 'An error has occurred', detail: ex } }))
+      .catch(ex => {
+        dispatch({ type: failureType, payload: { errorMessage: 'An error has occurred', detail: ex } })
+        dispatch({ type: API_FAILURE })
+      })
   }
 }
