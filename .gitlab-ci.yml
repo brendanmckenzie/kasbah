@@ -7,6 +7,7 @@ build:admin_ui:
     stage: build_ui
     image: node:6
     script:
+        - npm install -g yarn
         - sh build-admin-ui.sh
     artifacts:
         paths:

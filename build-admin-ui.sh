@@ -1,6 +1,6 @@
 set -e
 
 cd src/Kasbah.Web.ContentManagement.UI
-npm install
+yarn
 npm run deploy:prod
 
