@@ -24,7 +24,7 @@ class ItemButton extends React.Component {
 ItemButton.propTypes = {
   item: React.PropTypes.any.isRequired,
   onClick: React.PropTypes.func.isRequired,
-  children: React.PropTypes.any.isRequired,
+  children: React.PropTypes.any,
   className: React.PropTypes.string,
   action: React.PropTypes.any
 }

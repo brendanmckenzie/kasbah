@@ -61,7 +61,9 @@ namespace Kasbah.DataAccess.ElasticSearch
 
         public async Task DeleteEntryAsync<T>(string index, Guid id)
         {
-            await _webClient.DeleteAsync(ItemUri<T>(index, id));
+            _log.LogDebug($"{nameof(DeleteEntryAsync)}");
+            var response = await _webClient.DeleteAsync(ItemUri<T>(index, id));
+            _log.LogDebug($"{nameof(DeleteEntryAsync)}: {await response.Content.ReadAsStringAsync()}");
         }
 
         public async Task<IEnumerable<EntryWrapper<T>>> QueryEntriesAsync<T>(string index, object query = null, int? skip = 0, int? take = 10)
