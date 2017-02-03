@@ -53,8 +53,8 @@ class View extends React.Component {
     this.props.putDetailRequest({ id: this.props.id, data, publish: true })
   }
 
-  handleSave() {
-    this.props.putDetailRequest({ id: this.props.id, publish: false })
+  handleSave(data) {
+    this.props.putDetailRequest({ id: this.props.id, data, publish: false })
   }
 
   get breadcrumb() {
