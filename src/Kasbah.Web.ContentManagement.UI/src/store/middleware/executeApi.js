@@ -19,12 +19,16 @@ export const middleware = ({ dispatch, getState }) => {
       throw new Error('Expected an array of three string types.')
     }
 
-    const [ requestType, successType, failureType ] = types
+    const [requestType, successType, failureType] = types
 
     dispatch({ type: requestType })
     return makeApiRequest(request)
       .then(res => {
-        dispatch({ type: successType, payload: res })
+        if (res.error) {
+          dispatch({ type: failureType, payload: { errorMessage: 'An error has occurred', detail: res.error } })
+        } else {
+          dispatch({ type: successType, payload: res })
+        }
       })
       .catch(ex => {
         dispatch({ type: failureType, payload: { errorMessage: 'An error has occurred', detail: ex } })

@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Kasbah.DataAccess;
 using Kasbah.Security.Models;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.Logging;
 
 namespace Kasbah.Security
@@ -13,11 +16,15 @@ namespace Kasbah.Security
         const string IndexName = "security";
         readonly IDataAccessProvider _dataAccessProvider;
         readonly ILogger _log;
+        readonly int _iterCount = 4;
+        readonly RandomNumberGenerator _rng;
 
         public SecurityService(IDataAccessProvider dataAccessProvider, ILoggerFactory loggerFactory)
         {
             _log = loggerFactory.CreateLogger<SecurityService>();
             _dataAccessProvider = dataAccessProvider;
+
+            _rng = RandomNumberGenerator.Create();
         }
 
         #region Public methods
@@ -27,10 +34,8 @@ namespace Kasbah.Security
             var user = await GetUserAsync(username);
             if (user != null)
             {
-                // TODO: encrypt this... obviously.
-                if (user.Password == password)
+                if (VerifyPassword(password, user.Password))
                 {
-                    // TODO: immutability
                     user.LastLogin = DateTime.UtcNow;
 
                     await _dataAccessProvider.PutEntryAsync(IndexName, user.Id, user);
@@ -59,7 +64,7 @@ namespace Kasbah.Security
             {
                 Id = id,
                 Username = username,
-                Password = password, // TODO: ENCRYPT
+                Password = EncryptPassword(password),
                 Name = name,
                 Email = email,
                 Created = DateTime.UtcNow,
@@ -106,6 +111,121 @@ namespace Kasbah.Security
             var entries = await _dataAccessProvider.QueryEntriesAsync<User>(IndexName, new { term = new { Username = username } });
 
             return entries.FirstOrDefault()?.Source;
+        }
+
+        string EncryptPassword(string input)
+        {
+            return Convert.ToBase64String(HashPassword(input));
+        }
+
+        bool VerifyPassword(string input, string hashed)
+        {
+            int iterCount;
+            return VerifyHashedPassword(Convert.FromBase64String(hashed), input, out iterCount);
+        }
+
+        // 'Borrowed' from ASP.NET Identity - PasswordHasher
+        // https://github.com/aspnet/Identity/blob/5480aa182bad3fb3b729a0169d0462873331e306/src/Microsoft.AspNetCore.Identity/PasswordHasher.cs
+        byte[] HashPassword(string password)
+        {
+            return HashPassword(password, _rng,
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterCount: _iterCount,
+                saltSize: 128 / 8,
+                numBytesRequested: 256 / 8);
+        }
+
+        static byte[] HashPassword(string password, RandomNumberGenerator rng, KeyDerivationPrf prf, int iterCount, int saltSize, int numBytesRequested)
+        {
+            // Produce a version 3 (see comment above) text hash.
+            byte[] salt = new byte[saltSize];
+            rng.GetBytes(salt);
+            byte[] subkey = KeyDerivation.Pbkdf2(password, salt, prf, iterCount, numBytesRequested);
+
+            var outputBytes = new byte[13 + salt.Length + subkey.Length];
+            outputBytes[0] = 0x01; // format marker
+            WriteNetworkByteOrder(outputBytes, 1, (uint)prf);
+            WriteNetworkByteOrder(outputBytes, 5, (uint)iterCount);
+            WriteNetworkByteOrder(outputBytes, 9, (uint)saltSize);
+            Buffer.BlockCopy(salt, 0, outputBytes, 13, salt.Length);
+            Buffer.BlockCopy(subkey, 0, outputBytes, 13 + saltSize, subkey.Length);
+            return outputBytes;
+        }
+
+        static bool VerifyHashedPassword(byte[] hashedPassword, string password, out int iterCount)
+        {
+            iterCount = default(int);
+
+            try
+            {
+                // Read header information
+                KeyDerivationPrf prf = (KeyDerivationPrf)ReadNetworkByteOrder(hashedPassword, 1);
+                iterCount = (int)ReadNetworkByteOrder(hashedPassword, 5);
+                int saltLength = (int)ReadNetworkByteOrder(hashedPassword, 9);
+
+                // Read the salt: must be >= 128 bits
+                if (saltLength < 128 / 8)
+                {
+                    return false;
+                }
+                byte[] salt = new byte[saltLength];
+                Buffer.BlockCopy(hashedPassword, 13, salt, 0, salt.Length);
+
+                // Read the subkey (the rest of the payload): must be >= 128 bits
+                int subkeyLength = hashedPassword.Length - 13 - salt.Length;
+                if (subkeyLength < 128 / 8)
+                {
+                    return false;
+                }
+                byte[] expectedSubkey = new byte[subkeyLength];
+                Buffer.BlockCopy(hashedPassword, 13 + salt.Length, expectedSubkey, 0, expectedSubkey.Length);
+
+                // Hash the incoming password and verify it
+                byte[] actualSubkey = KeyDerivation.Pbkdf2(password, salt, prf, iterCount, subkeyLength);
+                return ByteArraysEqual(actualSubkey, expectedSubkey);
+            }
+            catch
+            {
+                // This should never occur except in the case of a malformed payload, where
+                // we might go off the end of the array. Regardless, a malformed payload
+                // implies verification failed.
+                return false;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+        private static bool ByteArraysEqual(byte[] a, byte[] b)
+        {
+            if (a == null && b == null)
+            {
+                return true;
+            }
+            if (a == null || b == null || a.Length != b.Length)
+            {
+                return false;
+            }
+            var areSame = true;
+            for (var i = 0; i < a.Length; i++)
+            {
+                areSame &= (a[i] == b[i]);
+            }
+            return areSame;
+        }
+
+        static uint ReadNetworkByteOrder(byte[] buffer, int offset)
+        {
+            return ((uint)(buffer[offset + 0]) << 24)
+                | ((uint)(buffer[offset + 1]) << 16)
+                | ((uint)(buffer[offset + 2]) << 8)
+                | ((uint)(buffer[offset + 3]));
+        }
+
+        static void WriteNetworkByteOrder(byte[] buffer, int offset, uint value)
+        {
+            buffer[offset + 0] = (byte)(value >> 24);
+            buffer[offset + 1] = (byte)(value >> 16);
+            buffer[offset + 2] = (byte)(value >> 8);
+            buffer[offset + 3] = (byte)(value >> 0);
         }
 
         #endregion
