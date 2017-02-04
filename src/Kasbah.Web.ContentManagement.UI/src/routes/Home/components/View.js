@@ -1,7 +1,8 @@
 import React from 'react'
 import { Link } from 'react-router'
+import Content from './Content'
 
-export const View = () => (
+export const View = (props) => (
   <div className='section'>
     <div className='container'>
       <div className='tile is-ancestor'>
@@ -19,36 +20,33 @@ export const View = () => (
               </Link>
             </div>
             <div className='tile is-parent'>
-              <Link to='/analytics' className='tile is-child notification is-info'>
-                <p className='title'>Analytics</p>
+              <div className='tile is-child notification is-info'>
+                <h2 className='title'><Link to='/analytics'>Analytics</Link></h2>
                 <p className='subtitle'>Some sort of analytics here</p>
-              </Link>
+              </div>
             </div>
           </div>
           <div className='tile is-parent'>
-            <Link to='/system' className='tile is-child notification'>
-              <p className='title'>System information</p>
+            <div className='tile is-light is-child notification'>
+              <h2 className='title'><Link to='/system'>System information</Link></h2>
               <p className='subtitle'>Aligned with the right tile</p>
               <div className='content'>
                 <p>Server statistics, requests/minute, uptime, total # of requests...</p>
               </div>
-            </Link>
+            </div>
           </div>
         </div>
         <div className='tile is-parent'>
-          <Link to='/content' className='tile is-child notification is-success'>
-            <div className='content'>
-              <p className='title'>Content</p>
-              <p className='subtitle'>Maybe put the content tree here?</p>
-              <div className='content'>
-                <p>Or maybe a small listing of recently updated content items?</p>
-              </div>
-            </div>
-          </Link>
+          <Content {...props} />
         </div>
       </div>
     </div>
   </div>
 )
+
+View.propTypes = {
+  listLatestUpdatesRequest: React.PropTypes.func.isRequired,
+  listLatestUpdates: React.PropTypes.object.isRequired
+}
 
 export default View

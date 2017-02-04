@@ -49,14 +49,16 @@ ul.breadcrumb {
     }
 }
 
-a.tile {
-    color: $text;
+@each $name, $pair in $colors {
+    $color: nth($pair, 1);
+    $color-invert: nth($pair, 2);
 
-    &:hover {
-      opacity: 0.9;
+    .tile.is-#{$name} {
+        a {
+            color: $color-invert;
+        }
     }
 }
-
 
 blockquote {
     padding-left: 10px;

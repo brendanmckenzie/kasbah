@@ -62,6 +62,10 @@ namespace Kasbah.Web.ContentManagement.Controllers
         [Route("nodes/by-type"), HttpPost]
         public async Task<IEnumerable<Node>> GetNodesByType([FromBody] GetNodesByTypeRequest request)
             => await _contentService.GetNodesByType(request.Type, request.Inherit);
+
+        [Route("nodes/recent"), HttpGet]
+        public async Task<IEnumerable<Node>> GetRecentlyModified([FromQuery] int take)
+            => await _contentService.GetRecentlyModified(take);
     }
 
     public class CreateNodeRequest

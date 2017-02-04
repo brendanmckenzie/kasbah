@@ -19,8 +19,10 @@
   }
 
   AnalyticsTracker.prototype.init = function (existingEvents) {
+    this.checkCookie()
+
     var initReq = {
-      persona: typeof localStorage['kasbah:persona'] === 'undefined' ? null : localStorage['kasbah:persona'],
+      persona: localStorage['kasbah:persona'] || null
     }
 
     this.makeRequest('/analytics/init', initReq).then(function (res) {

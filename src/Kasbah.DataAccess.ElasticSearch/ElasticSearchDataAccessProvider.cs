@@ -66,9 +66,14 @@ namespace Kasbah.DataAccess.ElasticSearch
             _log.LogDebug($"{nameof(DeleteEntryAsync)}: {await response.Content.ReadAsStringAsync()}");
         }
 
-        public async Task<IEnumerable<EntryWrapper<T>>> QueryEntriesAsync<T>(string index, object query = null, int? skip = 0, int? take = 10)
+        public async Task<IEnumerable<EntryWrapper<T>>> QueryEntriesAsync<T>(string index, object query = null, int? skip = 0, int? take = 10, object sort = null)
         {
-            var queryObj = ParseQuery(query, skip, take);
+            if (take == 0)
+            {
+                return Enumerable.Empty<EntryWrapper<T>>();
+            }
+
+            var queryObj = ParseQuery(query, skip, take, sort);
             var queryStr = queryObj == null ? null : JsonConvert.SerializeObject(queryObj);
 
             var uri = new Uri($"{IndexName(index)}/{typeof(T).FullName}/_search", UriKind.Relative);
@@ -202,7 +207,7 @@ namespace Kasbah.DataAccess.ElasticSearch
             };
         }
 
-        object ParseQuery(object query, int? skip = null, int? take = null)
+        object ParseQuery(object query, int? skip = null, int? take = null, object sort = null)
         {
             var ret = new Dictionary<string, object>();
 
@@ -226,6 +231,11 @@ namespace Kasbah.DataAccess.ElasticSearch
             if (take.HasValue)
             {
                 ret["size"] = take;
+            }
+
+            if (sort != null)
+            {
+                ret["sort"] = sort;
             }
 
             return ret;

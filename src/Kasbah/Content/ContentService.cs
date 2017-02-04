@@ -233,6 +233,22 @@ namespace Kasbah.Content
             return items.Select(ent => ent.Source);
         }
 
+        public async Task<IEnumerable<Node>> GetRecentlyModified(int take)
+        {
+            var sort = new object[] {
+                new {
+                    Modified = new {
+                        order = "desc"
+                    }
+                },
+                "_score"
+            };
+
+            var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, take: take, sort: sort);
+
+            return items.Select(ent => ent.Source);
+        }
+
         #endregion
 
         #region Private methods

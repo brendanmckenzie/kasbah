@@ -4,9 +4,11 @@ export const LOGIN_REQUEST = 'LOGIN_REQUEST'
 export const LOGIN_REQUEST_SUCCESS = 'LOGIN_REQUEST_SUCCESS'
 export const LOGIN_REQUEST_FAILURE = 'LOGIN_REQUEST_FAILURE'
 
+const types = [LOGIN_REQUEST, LOGIN_REQUEST_SUCCESS, LOGIN_REQUEST_FAILURE]
+
 export const action = (request) => {
   return {
-    types: [LOGIN_REQUEST, LOGIN_REQUEST_SUCCESS, LOGIN_REQUEST_FAILURE],
+    types,
     request: {
       url: '/connect/token',
       headers: {
@@ -17,4 +19,4 @@ export const action = (request) => {
   }
 }
 
-export const reducer = createReducer([LOGIN_REQUEST, LOGIN_REQUEST_SUCCESS, LOGIN_REQUEST_FAILURE], { loading: false })
+export const reducer = createReducer(types, { loading: false })
