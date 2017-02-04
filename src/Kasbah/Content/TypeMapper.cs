@@ -7,18 +7,21 @@ using System.Threading.Tasks;
 using Kasbah.Content.Models;
 using Kasbah.Media;
 using Kasbah.Media.Models;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
 namespace Kasbah.Content
 {
     public class TypeMapper
     {
+        readonly ILogger _log;
         readonly ContentService _contentService;
         readonly TypeRegistry _typeRegistry;
         readonly MediaService _mediaService;
 
-        public TypeMapper(ContentService contentService, MediaService mediaService, TypeRegistry typeRegistry)
+        public TypeMapper(ILoggerFactory loggerFactory, ContentService contentService, MediaService mediaService, TypeRegistry typeRegistry)
         {
+            _log = loggerFactory.CreateLogger<TypeMapper>();
             _contentService = contentService;
             _mediaService = mediaService;
             _typeRegistry = typeRegistry;
@@ -141,7 +144,7 @@ namespace Kasbah.Content
                     }
                     catch
                     {
-                        // deleted node
+                        _log.LogDebug($"Failed to map linked object {id}");
                         return null;
                     }
                 }
@@ -161,7 +164,7 @@ namespace Kasbah.Content
                 }
                 catch
                 {
-                    // deleted media
+                        _log.LogDebug($"Failed to map linked media {id}");
                     return null;
                 }
             }
