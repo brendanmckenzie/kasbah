@@ -47,6 +47,18 @@ class ContentTree extends React.Component {
     if (nextProps.createNode.success && nextProps.createNode.success !== this.props.createNode.success) {
       this.handleRefresh()
     }
+    if (nextProps.describeTree.success && nextProps.describeTree.success !== this.props.describeTree.success) {
+      const getNode = id => nextProps.describeTree.payload.filter(ent => ent.id === id)[0]
+      let node = getNode(this.context.router.params.id)
+      let expandedNodes = {}
+      while (node.parent !== null) {
+        expandedNodes[node.parent] = true
+        node = getNode(node.parent)
+      }
+      this.setState({
+        expandedNodes
+      })
+    }
   }
 
   getChildContext() {
