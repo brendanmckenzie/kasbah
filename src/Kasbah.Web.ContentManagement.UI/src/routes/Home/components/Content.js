@@ -45,8 +45,7 @@ class Content extends React.Component {
     return (
       (
         <div className='tile is-child notification is-success'>
-          <h2 className='title'><Link to='/content'>Content</Link></h2>
-          <p className='subtitle'>Recent updates</p>
+          <h2 className='title'><Link to='/content'>Recent updates</Link></h2>
           {this.list}
         </div>
       )
