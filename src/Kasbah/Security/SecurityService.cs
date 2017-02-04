@@ -91,7 +91,7 @@ namespace Kasbah.Security
         public async Task InitialiseAsync()
         {
             _log.LogDebug($"Initialising {nameof(SecurityService)}");
-            await _dataAccessProvider.EnsureIndexExists(IndexName);
+            await _dataAccessProvider.EnsureIndexExistsAsync(IndexName);
 
             // This isn't ideal, but we need to seed the data somehow/somewhere
             var adminUser = await GetUserAsync("admin");

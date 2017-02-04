@@ -103,7 +103,7 @@ namespace Kasbah.Web.ContentDelivery
                     routeData.Values["node"] = node;
 
                     var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
-                    var content = await _typeMapper.MapTypeAsync(data, node.Type, node.Id);
+                    var content = await _typeMapper.MapTypeAsync(data, node.Type, node);
 
                     routeData.Values["content"] = content;
 
@@ -115,7 +115,7 @@ namespace Kasbah.Web.ContentDelivery
                         routeData.Values[key] = type.Options[key];
                     }
 
-                    var resolvedView = (content as IViewResolver).GetView();
+                    var resolvedView = (content as IViewResolver).GetView(kasbahWebContext);
                     if (!string.IsNullOrEmpty(resolvedView))
                     {
                         routeData.Values["view"] = resolvedView;

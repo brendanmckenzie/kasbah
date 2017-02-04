@@ -24,7 +24,7 @@ namespace Kasbah.Content
             _typeRegistry = typeRegistry;
         }
 
-        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Guid? id = null, int? version = null)
+        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Node node = null, int? version = null)
         {
             var type = Type.GetType(typeName);
             var typeInfo = type.GetTypeInfo();
@@ -51,10 +51,14 @@ namespace Kasbah.Content
 
             if (ret is Item)
             {
-                if (id.HasValue)
+                var item = ret as Item;
+
+                if (item != null)
                 {
-                    (ret as Item).Id = id.Value;
+                    item.Node = node;
+                    item.Id = node?.Id ?? Guid.Empty;
                 }
+
                 if (version.HasValue)
                 {
                     (ret as Item).Version = version.Value;
@@ -131,7 +135,7 @@ namespace Kasbah.Content
                 if (node.PublishedVersion.HasValue)
                 {
                     var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
-                    return await MapTypeAsync(data, node.Type, node.Id);
+                    return await MapTypeAsync(data, node.Type, node);
                 }
             }
 

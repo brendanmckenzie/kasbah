@@ -14,7 +14,8 @@ namespace Kasbah.DataAccess
         Task<IEnumerable<EntryWrapper<T>>> QueryEntriesAsync<T>(string index, object query = null, int? skip = 0, int? take = 10);
         Task<EntryWrapper<T>> GetEntryAsync<T>(string index, Guid id, long? version = null);
         Task<EntryWrapper<T>> GetEntryAsync<T>(string index, Guid id, Type type, long? version = null);
-        Task EnsureIndexExists(string index);
-        Task PutTypeMapping(string index, Type type);
+        Task EnsureIndexExistsAsync(string index);
+        Task PutTypeMappingAsync(string index, Type type);
+        Task PutTypeMappingRawAsync(string index, Type type, object mapping);
     }
 }

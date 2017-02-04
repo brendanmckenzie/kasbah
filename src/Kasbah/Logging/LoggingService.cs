@@ -83,7 +83,7 @@ namespace Kasbah.Logging
         public async Task InitialiseAsync()
         {
             _log.LogDebug($"Initialising {nameof(LoggingService)}");
-            await _dataAccessProvider.EnsureIndexExists(Indicies.Logging);
+            await _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Logging);
         }
     }
 

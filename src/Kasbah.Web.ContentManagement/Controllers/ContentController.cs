@@ -58,6 +58,10 @@ namespace Kasbah.Web.ContentManagement.Controllers
         [Route("node/{id}"), HttpGet]
         public async Task<Node> GetNode(Guid id)
             => await _contentService.GetNodeAsync(id);
+
+        [Route("nodes/by-type"), HttpPost]
+        public async Task<IEnumerable<Node>> GetNodesByType([FromBody] GetNodesByTypeRequest request)
+            => await _contentService.GetNodesByType(request.Type, request.Inherit);
     }
 
     public class CreateNodeRequest
@@ -66,5 +70,11 @@ namespace Kasbah.Web.ContentManagement.Controllers
         public string Alias { get; set; }
         public string DisplayName { get; set; }
         public string Type { get; set; }
+    }
+
+    public class GetNodesByTypeRequest
+    {
+        public string Type { get; set; }
+        public bool Inherit { get; set; }
     }
 }

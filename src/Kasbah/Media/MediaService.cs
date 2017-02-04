@@ -26,7 +26,7 @@ namespace Kasbah.Media
         public async Task InitialiseAsync()
         {
             _log.LogDebug($"Initialising {nameof(MediaService)}");
-            await _dataAccessProvider.EnsureIndexExists(IndexName);
+            await _dataAccessProvider.EnsureIndexExistsAsync(IndexName);
         }
 
         public async Task<Guid> PutMediaAsync(Stream source, string fileName, string contentType)

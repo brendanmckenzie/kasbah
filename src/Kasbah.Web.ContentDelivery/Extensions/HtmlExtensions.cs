@@ -59,7 +59,7 @@ namespace Kasbah.Web.ContentDelivery.Extensions
                         }
                         var typeDefinition = kasbahWebContext.TypeRegistry.GetType(moduleNode.Type);
                         var moduleNodeData = await kasbahWebContext.ContentService.GetRawDataAsync(moduleNode.Id, moduleNode.PublishedVersion);
-                        var module = kasbahWebContext.TypeMapper.MapTypeAsync(moduleNodeData, moduleNode.Type, moduleNode.Id);
+                        var module = kasbahWebContext.TypeMapper.MapTypeAsync(moduleNodeData, moduleNode.Type, moduleNode);
                         var view = typeDefinition.Options.SafeGet("view");
                         var viewComponent = typeDefinition.Options.SafeGet("viewComponent");
                         if (viewComponent != null)

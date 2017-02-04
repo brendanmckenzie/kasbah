@@ -12,9 +12,9 @@ class ItemButton extends React.Component {
   }
 
   render () {
-    const { children, className } = this.props
+    const { children, className, type } = this.props
     return (
-      <button className={className} onClick={this.handleClick}>
+      <button className={className} onClick={this.handleClick} type={type}>
         {children}
       </button>
     )
@@ -26,6 +26,7 @@ ItemButton.propTypes = {
   onClick: React.PropTypes.func.isRequired,
   children: React.PropTypes.any,
   className: React.PropTypes.string,
+  type: React.PropTypes.string,
   action: React.PropTypes.any
 }
 

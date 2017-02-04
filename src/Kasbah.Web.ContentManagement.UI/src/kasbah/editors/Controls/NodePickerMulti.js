@@ -1,4 +1,6 @@
 import React from 'react'
+import moment from 'moment'
+import _ from 'lodash'
 import { Link } from 'react-router'
 import Loading from 'components/Loading'
 import { makeApiRequest } from 'store/util'
@@ -29,18 +31,28 @@ class NodePicker extends React.Component {
   }
 
   componentWillMount() {
-    makeApiRequest({ url: '/content/tree', method: 'GET' })
-      .then(nodes => {
-        this.setState({
-          loading: false,
-          nodes: nodes.filter(ent => ent.type.indexOf(this.props.type) !== -1) // TODO: filter this server-side
-        })
-      })
-
     this.handleReloadNodeDetail(this.props.input.value)
   }
 
+  handleRefresh() {
+    makeApiRequest({
+      url: '/content/nodes/by-type',
+      method: 'POST',
+      body: {
+        type: this.props.type,
+        inherit: true
+      }
+    })
+      .then(nodes => {
+        this.setState({
+          loading: false,
+          nodes
+        })
+      })
+  }
+
   handleShowModal() {
+    this.handleRefresh()
     this.setState({
       showModal: true
     })
@@ -136,22 +148,20 @@ class NodePicker extends React.Component {
           </span>
         </header>
         <section className='modal-card-body'>
-          <div className='columns is-multiline'>
-            {this.state.loading ? <Loading /> : (
-              this.state.nodes.map(ent => (
-                <div key={ent.id} className='column is-4'>
-                  <div
-                    className={'card' + (this.state.selection.indexOf(ent.id) === -1 ? '' : ' is-selected')}
-                    onClick={() => this.handleSelect(ent.id)}>
-                    <div className='card-content'>
-                      <p><strong>{ent.displayName}</strong></p>
-                      <p><small>{ent.alias}</small></p>
-                    </div>
+          {this.state.loading ? <Loading /> : (
+            _(this.state.nodes).sortBy('modified').reverse().value().map(ent => (
+              <div key={ent.id} className='control'>
+                <div
+                  className={'card' + (this.state.selection.indexOf(ent.id) === -1 ? '' : ' is-selected')}
+                  onClick={() => this.handleSelect(ent.id)}>
+                  <div className='card-content'>
+                    <p><strong>{ent.displayName}</strong> <small>{ent.alias}</small></p>
+                    <p><small>{moment(ent.modified).fromNow()}</small></p>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              </div>
+            ))
+          )}
         </section>
         <footer className='modal-card-foot'>
           <button type='button' className='button is-primary' onClick={this.handleCommit}>Select</button>

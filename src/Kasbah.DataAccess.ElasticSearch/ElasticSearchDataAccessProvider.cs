@@ -121,7 +121,7 @@ namespace Kasbah.DataAccess.ElasticSearch
             };
         }
 
-        public async Task EnsureIndexExists(string index)
+        public async Task EnsureIndexExistsAsync(string index)
         {
             // TODO: make this nicer
             try
@@ -132,6 +132,35 @@ namespace Kasbah.DataAccess.ElasticSearch
             {
 
             }
+        }
+
+        public async Task PutTypeMappingAsync(string index, Type type)
+        {
+            var uri = new Uri($"{IndexName(index)}/_mapping/{type.FullName}", UriKind.Relative);
+            var body = MapType(type, false);
+
+            var json = JsonConvert.SerializeObject(body);
+
+            _log.LogDebug($"{nameof(PutTypeMappingAsync)} {type.FullName}");
+            _log.LogDebug(json);
+
+            var res = await _webClient.PutAsync(uri, new StringContent(json, Encoding.UTF8, "application/json"));
+
+            _log.LogDebug(await res.Content.ReadAsStringAsync());
+        }
+
+        public async Task PutTypeMappingRawAsync(string index, Type type, object mapping)
+        {
+            var uri = new Uri($"{IndexName(index)}/_mapping/{type.FullName}", UriKind.Relative);
+
+            var json = JsonConvert.SerializeObject(mapping);
+
+            _log.LogDebug($"{nameof(PutTypeMappingAsync)} {type.FullName}");
+            _log.LogDebug(json);
+
+            var res = await _webClient.PutAsync(uri, new StringContent(json, Encoding.UTF8, "application/json"));
+
+            _log.LogDebug(await res.Content.ReadAsStringAsync());
         }
 
         object MapType(Type type, bool nested)
@@ -150,6 +179,12 @@ namespace Kasbah.DataAccess.ElasticSearch
                 { typeof(bool), "boolean" },
             };
 
+            var excludedProperties = new[] {
+                "Id",
+                "Node",
+                "Version"
+            };
+
             var typeInfo = type.GetTypeInfo();
             if (nested && (typeof(Item).IsAssignableFrom(type) || typeof(MediaItem) == type))
             {
@@ -162,26 +197,13 @@ namespace Kasbah.DataAccess.ElasticSearch
 
             return new
             {
-                properties = typeInfo.GetProperties().ToDictionary(ent => ent.Name, ent => (typeMappings.ContainsKey(ent.PropertyType) ? new
-                {
-                    type = typeMappings[ent.PropertyType]
-                } : MapType(ent.PropertyType, true)))
+                properties = typeInfo.GetProperties()
+                    .Where(ent => !excludedProperties.Contains(ent.Name))
+                    .ToDictionary(ent => ent.Name, ent => (typeMappings.ContainsKey(ent.PropertyType) ? new
+                    {
+                        type = typeMappings[ent.PropertyType]
+                    } : MapType(ent.PropertyType, true)))
             };
-        }
-
-        public async Task PutTypeMapping(string index, Type type)
-        {
-            var uri = new Uri($"{IndexName(index)}/_mapping/{type.FullName}", UriKind.Relative);
-            var body = MapType(type, false);
-
-            var json = JsonConvert.SerializeObject(body);
-
-            _log.LogDebug($"{nameof(PutTypeMapping)} {type.FullName}");
-            _log.LogDebug(json);
-
-            var res = await _webClient.PutAsync(uri, new StringContent(json, Encoding.UTF8, "application/json"));
-
-            _log.LogDebug(await res.Content.ReadAsStringAsync());
         }
 
         object ParseQuery(object query, int? skip = null, int? take = null)

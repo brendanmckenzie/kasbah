@@ -30,7 +30,8 @@ namespace Kasbah.Content
 
         static IEnumerable<string> _reservedFields = new[] {
             nameof(Item.Version),
-            nameof(Item.Id)
+            nameof(Item.Id),
+            nameof(Item.Node)
         };
 
         readonly Type _type;
@@ -136,11 +137,12 @@ namespace Kasbah.Content
             if (typeof(Item).IsAssignableFrom(property.PropertyType))
             {
                 ret.Editor = "nodePicker";
+                ret.Type = property.PropertyType.AssemblyQualifiedName;
             }
             else if (typeof(IEnumerable<Item>).IsAssignableFrom(property.PropertyType))
             {
                 ret.Editor = "nodePickerMulti";
-                ret.Type = property.PropertyType.GenericTypeArguments.First().Name;
+                ret.Type = property.PropertyType.GenericTypeArguments.First().AssemblyQualifiedName;
             }
             else if (!_basicEditors.Contains(property.PropertyType))
             {

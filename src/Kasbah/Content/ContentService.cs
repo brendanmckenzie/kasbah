@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
+using System.Reflection;
 
 namespace Kasbah.Content
 {
@@ -191,8 +192,8 @@ namespace Kasbah.Content
         public async Task InitialiseAsync()
         {
             _log.LogDebug($"Initialising {nameof(ContentService)}");
-            await _dataAccessProvider.EnsureIndexExists(Indicies.Nodes);
-            await _dataAccessProvider.EnsureIndexExists(Indicies.Content);
+            await _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Nodes);
+            await _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Content);
 
             await UpdateMappingsAsync();
         }
@@ -203,6 +204,33 @@ namespace Kasbah.Content
             {
                 return (await _dataAccessProvider.GetEntryAsync<Node>(Indicies.Nodes, id)).Source;
             });
+        }
+
+        public async Task<IEnumerable<Node>> GetNodesByType(string type, bool inherit = false)
+        {
+            var typesToQuery = new[] { type }.AsEnumerable();
+
+            if (inherit)
+            {
+                var typeObj = Type.GetType(type);
+                typesToQuery = typesToQuery
+                    .Concat(_typeRegistry.ListTypes()
+                        .Where(ent => typeObj.GetTypeInfo().IsAssignableFrom(Type.GetType(ent.Alias)))
+                        .Select(ent => ent.Alias));
+
+            }
+
+            var query = new
+            {
+                terms = new
+                {
+                    Type = typesToQuery
+                }
+            };
+
+            var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
+
+            return items.Select(ent => ent.Source);
         }
 
         #endregion
@@ -263,10 +291,35 @@ namespace Kasbah.Content
 
         async Task UpdateMappingsAsync()
         {
+            await UpdateNodeMappingAsync();
+
             await Task.WhenAll(
                 _typeRegistry.ListTypes()
-                    .Select(ent => _dataAccessProvider.PutTypeMapping(Indicies.Content, Type.GetType(ent.Alias)))
+                    .Select(ent => _dataAccessProvider.PutTypeMappingAsync(Indicies.Content, Type.GetType(ent.Alias)))
             );
+        }
+
+        async Task UpdateNodeMappingAsync()
+        {
+            var properties = new Dictionary<string, object> {
+                { nameof(Node.Id), new { type = "keyword" } },
+                { nameof(Node.Parent), new { type = "keyword" } },
+                { nameof(Node.Taxonomy), new {
+                    properties = new Dictionary<string, object> {
+                        { nameof(NodeTaxonomy.Ids), new { type = "keyword" } },
+                        { nameof(NodeTaxonomy.Aliases), new { type = "keyword" } },
+                        { nameof(NodeTaxonomy.Length), new { type = "integer" } }
+                    }
+                 } },
+                { nameof(Node.Alias), new { type = "keyword" } },
+                { nameof(Node.Type), new { type = "keyword" } },
+                { nameof(Node.DisplayName), new { type = "text" } },
+                { nameof(Node.PublishedVersion), new { type = "integer" } },
+                { nameof(Node.Created), new { type = "date" } },
+                { nameof(Node.Modified), new { type = "date" } }
+            };
+
+            await _dataAccessProvider.PutTypeMappingRawAsync(Indicies.Nodes, typeof(Node), new { properties });
         }
 
         async Task<T> CacheGetOrSet<T>(string key, Func<Task<T>> generator)

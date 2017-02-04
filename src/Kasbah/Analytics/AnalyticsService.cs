@@ -32,7 +32,7 @@ namespace Kasbah.Analytics
         public async Task InitialiseAsync()
         {
             _log.LogDebug($"Initialising {nameof(AnalyticsService)}");
-            await _dataAccessProvider.EnsureIndexExists(Indicies.Analytics);
+            await _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Analytics);
         }
 
         public async Task<IEnumerable<AnalyticsEvent>> EventDumpAsync()
