@@ -135,21 +135,9 @@ namespace Kasbah.DataAccess.ElasticSearch
         }
 
         public async Task PutTypeMappingAsync(string index, Type type)
-        {
-            var uri = new Uri($"{IndexName(index)}/_mapping/{type.FullName}", UriKind.Relative);
-            var body = MapType(type, false);
+            => await PutTypeMappingAsync(index, type, MapType(type, false));
 
-            var json = JsonConvert.SerializeObject(body);
-
-            _log.LogDebug($"{nameof(PutTypeMappingAsync)} {type.FullName}");
-            _log.LogDebug(json);
-
-            var res = await _webClient.PutAsync(uri, new StringContent(json, Encoding.UTF8, "application/json"));
-
-            _log.LogDebug(await res.Content.ReadAsStringAsync());
-        }
-
-        public async Task PutTypeMappingRawAsync(string index, Type type, object mapping)
+        public async Task PutTypeMappingAsync(string index, Type type, object mapping)
         {
             var uri = new Uri($"{IndexName(index)}/_mapping/{type.FullName}", UriKind.Relative);
 
@@ -160,7 +148,15 @@ namespace Kasbah.DataAccess.ElasticSearch
 
             var res = await _webClient.PutAsync(uri, new StringContent(json, Encoding.UTF8, "application/json"));
 
-            _log.LogDebug(await res.Content.ReadAsStringAsync());
+            var resJson = await res.Content.ReadAsStringAsync();
+
+            _log.LogDebug(resJson);
+
+            var resObj = JsonConvert.DeserializeObject<PutTypeMappingResult>(resJson);
+            if (!resObj.Acknowledged)
+            {
+                throw new InvalidOperationException($"Type mapping for {type.Name} on index {index} failed.\n{resJson}");
+            }
         }
 
         object MapType(Type type, bool nested)
@@ -296,6 +292,11 @@ namespace Kasbah.DataAccess.ElasticSearch
             public int Version { get; set; }
             [JsonProperty("_source")]
             public TEnt Source { get; set; }
+        }
+
+        class PutTypeMappingResult
+        {
+            public bool Acknowledged { get; set; }
         }
     }
 

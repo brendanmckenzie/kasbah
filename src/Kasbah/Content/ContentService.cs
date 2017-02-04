@@ -319,7 +319,7 @@ namespace Kasbah.Content
                 { nameof(Node.Modified), new { type = "date" } }
             };
 
-            await _dataAccessProvider.PutTypeMappingRawAsync(Indicies.Nodes, typeof(Node), new { properties });
+            await _dataAccessProvider.PutTypeMappingAsync(Indicies.Nodes, typeof(Node), new { properties });
         }
 
         async Task<T> CacheGetOrSet<T>(string key, Func<Task<T>> generator)
