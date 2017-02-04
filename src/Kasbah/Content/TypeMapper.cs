@@ -95,19 +95,16 @@ namespace Kasbah.Content
             if (property.PropertyType.GenericTypeArguments.Any()
                 && (_typeRegistry.GetType(property.PropertyType.GenericTypeArguments.First().AssemblyQualifiedName) != null))
             {
-                // TODO: this could be tidied up
-                var type = property.PropertyType.GenericTypeArguments.First(); ;
-                var typeName = type.AssemblyQualifiedName;
+                var type = property.PropertyType.GenericTypeArguments.First();
                 var ret = Activator.CreateInstance(typeof(List<>).MakeGenericType(type)) as IList;
 
-                var ids = (source as JArray).ToArray().Select(ent => ent.ToString());
-                foreach (var id in ids)
+                var entries = await Task.WhenAll((source as JArray).ToArray()
+                    .Select(ent => ent.ToString())
+                    .Select(async id => await MapLinkedObjectAsync(id)));
+
+                foreach (var entry in entries)
                 {
-                    var obj = await MapLinkedObjectAsync(id);
-                    if (obj != null)
-                    {
-                        ret.Add(obj);
-                    }
+                    ret.Add(entry);
                 }
 
                 return ret;
@@ -164,7 +161,7 @@ namespace Kasbah.Content
                 }
                 catch
                 {
-                        _log.LogDebug($"Failed to map linked media {id}");
+                    _log.LogDebug($"Failed to map linked media {id}");
                     return null;
                 }
             }
