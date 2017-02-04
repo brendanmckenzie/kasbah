@@ -1,4 +1,5 @@
 import React from 'react'
+import moment from 'moment'
 import Loading from 'components/Loading'
 import { API_BASE, makeApiRequest } from 'store/util'
 
@@ -87,16 +88,17 @@ class MediaPicker extends React.Component {
               this.state.media.map(ent => (
                 <div key={ent.id} className='column is-4'>
                   <div
-                    className={'card ' + (this.state.selection === ent.id ? 'is-selected' : '')}
+                    className={'media ' + (this.state.selection === ent.id ? 'is-selected' : '')}
                     onClick={() => this.handleSelect(ent.id)}>
-                    <div className='card-image'>
-                      <figure className='image is-4by3'>
-                        <img src={`${API_BASE}/media/${ent.id}?width=600&height=450`} />
-                      </figure>
-                    </div>
-                    <div className='card-content'>
-                      <p>{ent.fileName}</p>
-                      <p><small>{ent.contentType}</small></p>
+                    <figure className='media-left'>
+                      <span className='image is-64x64'>
+                        <img src={`${API_BASE}/media/${ent.id}?width=128&height=128`} />
+                      </span>
+                    </figure>
+                    <div className='media-content'>
+                      <p><strong>{ent.fileName}</strong></p>
+                      <p>{ent.contentType}</p>
+                      <p><small>{moment(ent.created).fromNow()}</small></p>
                     </div>
                   </div>
                 </div>

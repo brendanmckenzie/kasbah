@@ -64,8 +64,9 @@ blockquote {
     margin-bottom: 10px;
 }
 
-.media-picker .card, .node-picker .card {
+.media-picker .media, .node-picker .card {
     cursor: pointer;
+
     &.is-selected {
         background-color: $turquoise;
         color: white;
