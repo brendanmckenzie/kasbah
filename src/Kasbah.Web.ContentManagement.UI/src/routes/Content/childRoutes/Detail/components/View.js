@@ -17,7 +17,10 @@ class View extends React.Component {
   constructor() {
     super()
 
-    this.state = { payload: null }
+    this.state = {
+      payload: null,
+      initialLoad: true
+    }
 
     this.handleSaveAndPublish = this.handleSaveAndPublish.bind(this)
     this.handleSave = this.handleSave.bind(this)
@@ -34,6 +37,7 @@ class View extends React.Component {
 
     if (nextProps.getDetail.success && nextProps.getDetail.success !== this.props.getDetail.success) {
       this.setState({
+        initialLoad: false,
         payload: nextProps.getDetail.payload
       })
     }
@@ -72,7 +76,7 @@ class View extends React.Component {
   }
 
   render() {
-    if (this.props.getDetail.loading) {
+    if (this.props.getDetail.loading || this.state.initialLoad) {
       return <Loading />
     }
 
