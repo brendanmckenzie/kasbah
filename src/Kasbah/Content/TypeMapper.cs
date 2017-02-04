@@ -134,8 +134,16 @@ namespace Kasbah.Content
                 var node = await _contentService.GetNodeAsync(id);
                 if (node.PublishedVersion.HasValue)
                 {
-                    var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
-                    return await MapTypeAsync(data, node.Type, node);
+                    try
+                    {
+                        var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
+                        return await MapTypeAsync(data, node.Type, node);
+                    }
+                    catch
+                    {
+                        // deleted node
+                        return null;
+                    }
                 }
             }
 
@@ -147,7 +155,15 @@ namespace Kasbah.Content
             Guid id;
             if (Guid.TryParse((string)source, out id))
             {
-                return await _mediaService.GetMediaItemAsync(id);
+                try
+                {
+                    return await _mediaService.GetMediaItemAsync(id);
+                }
+                catch
+                {
+                    // deleted media
+                    return null;
+                }
             }
 
             return null;

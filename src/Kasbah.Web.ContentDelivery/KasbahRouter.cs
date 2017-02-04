@@ -115,7 +115,7 @@ namespace Kasbah.Web.ContentDelivery
                         routeData.Values[key] = type.Options[key];
                     }
 
-                    var resolvedView = (content as IViewResolver).GetView(kasbahWebContext);
+                    var resolvedView = (content as IViewResolver)?.GetView(kasbahWebContext);
                     if (!string.IsNullOrEmpty(resolvedView))
                     {
                         routeData.Values["view"] = resolvedView;
