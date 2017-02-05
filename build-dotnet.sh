@@ -4,7 +4,8 @@ rm -rf src/Kasbah.Web.ContentManagement/wwwroot
 cp -r src/Kasbah.Web.ContentManagement.UI/dist src/Kasbah.Web.ContentManagement/wwwroot
 
 COMMIT_COUNT=$(git rev-list --all --count)
-DOTNET_PACK_OPTS="-c Release -o ./artifacts --version-suffix=build$COMMIT_COUNT"
+COMMIT_COUNT_PADDED=$(printf "%04d" $COMMIT_COUNT)
+DOTNET_PACK_OPTS="-c Release -o ./artifacts --version-suffix=build$COMMIT_COUNT_PADDED"
 
 dotnet restore src/**/project.json
 
