@@ -12,18 +12,16 @@ const sections = [
 export const Header = () => (
   <header className='nav'>
     <div className='container'>
-      <ul className='nav-left'>
-        <li className='nav-item'><IndexLink to='/'><strong>KASBAH</strong></IndexLink></li>
-      </ul>
+      <div className='nav-left'>
+        <IndexLink className='nav-item' to='/'><strong>KASBAH</strong></IndexLink>
+      </div>
 
-      <ul className='nav-right'>
+      <div className='nav-right'>
         {sections.map((ent, index) => (
-          <li key={index} className='nav-item'>
-            <Link activeClassName='is-active' to={ent.link}>{ent.title}</Link>
-          </li>
+          <Link key={index} className='nav-item' activeClassName='is-active' to={ent.link}>{ent.title}</Link>
         ))}
-        <li className='nav-item'><Link to='/login'>Logout</Link></li>
-      </ul>
+        <Link className='nav-item' to='/login'>Logout</Link>
+      </div>
     </div>
   </header>
 )

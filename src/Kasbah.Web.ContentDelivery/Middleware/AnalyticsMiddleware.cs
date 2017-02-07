@@ -7,7 +7,7 @@ namespace Kasbah.Web.ContentDelivery.Middleware
 {
     public class AnalyticsMiddleware
     {
-        const string TrackingCookie = "__kastrk";
+        public const string TrackingCookie = "__kastrk";
 
         readonly RequestDelegate _next;
         readonly ILogger _log;
@@ -35,16 +35,25 @@ namespace Kasbah.Web.ContentDelivery.Middleware
                 return query[TrackingCookie];
             }
 
+            var cookies = context.Request.Cookies;
+            var cookieValue = default(string);
+            if (cookies.TryGetValue(TrackingCookie, out cookieValue))
+            {
+                return cookieValue;
+            }
+
+            if (context.Items.ContainsKey(TrackingCookie))
+            {
+                return context.Items[TrackingCookie] as string;
+            }
+
             return Convert.ToBase64String(Guid.NewGuid().ToByteArray());
         }
 
         void EnsureTrackingCookie(HttpContext context)
         {
-            var cookies = context.Request.Cookies;
-            if (!cookies.ContainsKey(TrackingCookie))
-            {
-                context.Response.Cookies.Append(TrackingCookie, GetTrackingCookieId(context));
-            }
+            context.Items["user:profile"] = GetTrackingCookieId(context);
+            context.Response.Cookies.Append(TrackingCookie, GetTrackingCookieId(context));
         }
 
         async Task CheckAndMergeProfilesAsync(HttpContext context)

@@ -1,6 +1,7 @@
 import React from 'react'
+import Navigation from './Navigation'
 
-export const View = () => (
+export const View = ({ children }) => (
   <div className='section'>
     <div className='container'>
       <h1 className='title'>Analytics</h1>
@@ -25,15 +26,19 @@ export const View = () => (
       </div>
 
       <div className='columns'>
-        <div className='column'>
-          tables and graphs here
+        <div className='column is-2'>
+          <Navigation />
         </div>
         <div className='column'>
-          tables and graphs here
+          {children}
         </div>
       </div>
     </div>
   </div>
 )
+
+View.propTypes = {
+  children: React.PropTypes.any
+}
 
 export default View

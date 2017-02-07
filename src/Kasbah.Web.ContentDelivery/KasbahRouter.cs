@@ -52,16 +52,23 @@ namespace Kasbah.Web.ContentDelivery
                 SiteRegistry = _siteRegistry
             };
 
-            await _analyticsService.TrackEvent(new AnalyticsEvent
+            var profile = context.HttpContext.Items["user:profile"] as string;
+            if (!string.IsNullOrEmpty(profile))
             {
-                Type = "request",
-                Source = nameof(KasbahRouter),
-                Data = new Dictionary<string, object>
+                kasbahWebContext.Profile = new Guid(Convert.FromBase64String(profile));
+            }
+
+            await _analyticsService.TrackEventAsync(new AnalyticsEvent
+            {
+                Profile = kasbahWebContext.Profile ?? Guid.Empty,
+                Type = "web:request",
+                Source = "router",
+                Data = new Dictionary<string, string>
                 {
-                    { "host", context.HttpContext.Request.Host },
+                    { "host", context.HttpContext.Request.Host.ToString() },
                     { "method", context.HttpContext.Request.Method },
                     { "path", context.HttpContext.Request.Path },
-                    { "request", kasbahWebContext.RequestId }
+                    { "request", kasbahWebContext.RequestId.ToString() }
                 }
             });
 
@@ -86,15 +93,16 @@ namespace Kasbah.Web.ContentDelivery
                 kasbahWebContext.Node = node;
                 if (node != null && node.PublishedVersion.HasValue)
                 {
-                    await _analyticsService.TrackEvent(new AnalyticsEvent
+                    await _analyticsService.TrackEventAsync(new AnalyticsEvent
                     {
-                        Type = "request:content",
-                        Source = nameof(KasbahRouter),
-                        Data = new Dictionary<string, object>
+                        Profile = kasbahWebContext.Profile ?? Guid.Empty,
+                        Type = "content:request",
+                        Source = "router",
+                        Data = new Dictionary<string, string>
                         {
-                            { "node", node.Id },
+                            { "node", node.Id.ToString() },
                             { "site", site.Alias },
-                            { "version", node.PublishedVersion }
+                            { "version", node.PublishedVersion.Value.ToString() }
                         }
                     });
 

@@ -20,26 +20,13 @@ namespace Kasbah.Web.ContentDelivery.Controllers
         [Route("track"), HttpPost]
         public async Task TrackEvent([FromBody] AnalyticsEvent ev)
         {
-            await _analyticsService.TrackEvent(ev);
-        }
+            var profile = ControllerContext.HttpContext.Items["user:profile"] as string;
+            if (!string.IsNullOrEmpty(profile))
+            {
+                ev.Profile = new Guid(Convert.FromBase64String(profile));
+            }
 
-        [Route("init"), HttpPost]
-        public async Task<AnalyticsInitResponse> Init([FromBody] AnalyticsInitRequest request)
-        {
-            if (request?.Persona.HasValue == true)
-            {
-                return new AnalyticsInitResponse
-                {
-                    Persona = request.Persona.Value
-                };
-            }
-            else
-            {
-                return new AnalyticsInitResponse
-                {
-                    Persona = await _analyticsService.CreatePersonaAsync()
-                };
-            }
+            await _analyticsService.TrackEventAsync(ev);
         }
 
         [Route("tracker.js"), HttpGet]
@@ -51,16 +38,5 @@ namespace Kasbah.Web.ContentDelivery.Controllers
 
             return new FileStreamResult(stream, "application/javascript");
         }
-    }
-
-    public class AnalyticsInitRequest
-    {
-        public Guid? Persona { get; set; }
-    }
-
-    public class AnalyticsInitResponse
-    {
-        public Guid Persona { get; set; }
-        public Guid Session { get; set; }
     }
 }

@@ -10,9 +10,12 @@ namespace Kasbah.Analytics
             switch (ev.Type)
             {
                 case "set_name":
-                    setAttribute.Invoke("name", ev.Data.SafeGet<string, string>("name"));
-                    setAttribute.Invoke("first_name", ev.Data.SafeGet<string, string>("first_name"));
-                    setAttribute.Invoke("last_name", ev.Data.SafeGet<string, string>("last_name"));
+                    setAttribute("name", ev.Data.SafeGet<string, string>("name"));
+                    setAttribute("first_name", ev.Data.SafeGet<string, string>("first_name"));
+                    setAttribute("last_name", ev.Data.SafeGet<string, string>("last_name"));
+                    break;
+                case "set_language":
+                    setAttribute("language", ev.Data.SafeGet<string, string>("language"));
                     break;
             }
 

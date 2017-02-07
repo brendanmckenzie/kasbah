@@ -4,9 +4,11 @@ export const LIST_INSTANCES = 'LIST_INSTANCES'
 export const LIST_INSTANCES_SUCCESS = 'LIST_INSTANCES_SUCCESS'
 export const LIST_INSTANCES_FAILURE = 'LIST_INSTANCES_FAILURE'
 
+const types = [LIST_INSTANCES, LIST_INSTANCES_SUCCESS, LIST_INSTANCES_FAILURE]
+
 export const action = (request) => {
   return {
-    types: [LIST_INSTANCES, LIST_INSTANCES_SUCCESS, LIST_INSTANCES_FAILURE],
+    types,
     request: {
       url: '/system/instances/list',
       method: 'GET'
@@ -14,4 +16,4 @@ export const action = (request) => {
   }
 }
 
-export const reducer = createReducer([LIST_INSTANCES, LIST_INSTANCES_SUCCESS, LIST_INSTANCES_FAILURE])
+export const reducer = createReducer(types)

@@ -1,11 +1,15 @@
-// import { injectReducer } from '../../store/reducers'
+import ProfileListRoute from './childRoutes/ProfileList'
+import ProfileDetailRoute from './childRoutes/ProfileDetail'
 
 export default (store) => ({
   path: 'analytics',
-  getComponent (nextState, cb) {
+  getComponent(nextState, cb) {
     require.ensure([], (require) => {
-      // injectReducer(store, { key: 'counter', reducer: require('./modules/counter').default })
       cb(null, require('./container').default)
     }, 'analyticsRoute')
-  }
+  },
+  indexRoute: ProfileListRoute(store),
+  childRoutes: [
+    ProfileDetailRoute(store)
+  ]
 })

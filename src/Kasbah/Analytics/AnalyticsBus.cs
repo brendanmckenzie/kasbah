@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace Kasbah.Analytics
 {
+    // TODO: find a better name for this
     public class AnalyticsBus
     {
         readonly ICollection<IAnalyticsProcessor> _processors;
@@ -9,6 +10,7 @@ namespace Kasbah.Analytics
         public AnalyticsBus()
         {
             _processors = new List<IAnalyticsProcessor>();
+            _traits = new List<string>();
         }
 
         public AnalyticsBus RegisterProcessor<TProcessor>()

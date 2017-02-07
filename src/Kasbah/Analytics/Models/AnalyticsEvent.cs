@@ -10,7 +10,5 @@ namespace Kasbah.Analytics.Models
         public string Type { get; set; }
         public string Source { get; set; }
         public IDictionary<string, string> Data { get; set; }
-        public Guid Persona { get; set; }
-        public Guid Session { get; set; }
     }
 }
