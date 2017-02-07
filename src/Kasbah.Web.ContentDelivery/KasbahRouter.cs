@@ -105,6 +105,8 @@ namespace Kasbah.Web.ContentDelivery
                     var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
                     var content = await _typeMapper.MapTypeAsync(data, node.Type, node);
 
+                    // TODO: apply patches
+
                     routeData.Values["content"] = content;
 
                     routeData.Values["controller"] = "DefaultContent";

@@ -32,9 +32,7 @@ namespace Kasbah.DataAccess.ElasticSearch
 
         public async Task<long> PutEntryAsync<T>(string index, Guid id, T data, Guid? parent = null, bool waitForCommit = true)
         {
-            var json = JsonConvert.SerializeObject(data);
-
-            var response = await _webClient.PutAsync(ItemUri<T>(index, id, parent, waitForRefresh: waitForCommit), new StringContent(json, Encoding.UTF8, "application/json"));
+            var response = await _webClient.PutAsync(ItemUri<T>(index, id, parent, waitForRefresh: waitForCommit), new JsonContent(data));
             var responseJson = await response.Content.ReadAsStringAsync();
             var responseData = JsonConvert.DeserializeObject<IDictionary<string, object>>(responseJson);
 
@@ -50,9 +48,8 @@ namespace Kasbah.DataAccess.ElasticSearch
             {
                 data.Remove("_version");
             }
-            var json = JsonConvert.SerializeObject(data);
 
-            var response = await _webClient.PutAsync(ItemUri(type, index, id, parent, waitForRefresh: waitForCommit), new StringContent(json, Encoding.UTF8, "application/json"));
+            var response = await _webClient.PutAsync(ItemUri(type, index, id, parent, waitForRefresh: waitForCommit), new JsonContent(data));
             var responseJson = await response.Content.ReadAsStringAsync();
             var responseData = JsonConvert.DeserializeObject<IDictionary<string, object>>(responseJson);
 
@@ -82,7 +79,7 @@ namespace Kasbah.DataAccess.ElasticSearch
 
             var req = new HttpRequestMessage(HttpMethod.Get, uri)
             {
-                Content = queryStr == null ? null : new StringContent(queryStr, Encoding.UTF8, "application/json")
+                Content = queryObj == null ? null : new JsonContent(queryObj)
             };
 
             var res = await _webClient.SendAsync(req);
@@ -151,7 +148,7 @@ namespace Kasbah.DataAccess.ElasticSearch
             _log.LogDebug($"{nameof(PutTypeMappingAsync)} {type.FullName}");
             _log.LogDebug(json);
 
-            var res = await _webClient.PutAsync(uri, new StringContent(json, Encoding.UTF8, "application/json"));
+            var res = await _webClient.PutAsync(uri, new JsonContent(mapping));
 
             var resJson = await res.Content.ReadAsStringAsync();
 
@@ -162,6 +159,19 @@ namespace Kasbah.DataAccess.ElasticSearch
             {
                 throw new InvalidOperationException($"Type mapping for {type.Name} on index {index} failed.\n{resJson}");
             }
+        }
+
+        public async Task DeleteEntriesAsync<T>(string index, object query = null)
+        {
+            var uri = new Uri($"{IndexName(index)}/{typeof(T).FullName}/_delete_by_query", UriKind.Relative);
+
+            _log.LogDebug($"{nameof(DeleteEntriesAsync)} ({index}): {typeof(T).FullName}");
+
+            var res = await _webClient.PostAsync(uri, new JsonContent(query));
+
+            var resJson = await res.Content.ReadAsStringAsync();
+
+            _log.LogDebug(resJson);
         }
 
         object MapType(Type type, bool nested)
@@ -318,6 +328,15 @@ namespace Kasbah.DataAccess.ElasticSearch
             var ret = string.Join("&", dict.Select(ent => $"{ent.Key}={ent.Value}"));
 
             return excludeQuestionMark ? ret : $"?{ret}";
+        }
+    }
+
+    class JsonContent : StringContent
+    {
+        public JsonContent(object data)
+            : base(JsonConvert.SerializeObject(data), Encoding.UTF8, "application/json")
+        {
+
         }
     }
 }

@@ -21,14 +21,11 @@
   AnalyticsTracker.prototype.init = function (existingEvents) {
     this.checkCookie()
 
-    var initReq = {
-      persona: localStorage['kasbah:persona'] || null
-    }
-
-    this.makeRequest('/analytics/init', initReq).then(function (res) {
+    this.makeRequest('/analytics/init').then(function (res) {
       localStorage['kasbah:persona'] = res.persona
       sessionStorage['kasbah:session'] = res.session
-    })
+      this.push({ type: 'page_view', source: 'website' })
+    }.bind(this))
 
     if (existingEvents instanceof Array) {
       for (var i = 0; i < existingEvents.length; i++) {
@@ -52,9 +49,11 @@
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Cookie': '__kastrk=' + this.trackingCookie
       },
-      body: JSON.stringify(data)
+      body: data ? JSON.stringify(data) : null,
+      credentials: 'same-origin'
     }
 
     return fetch(endpoint, fetchReq)

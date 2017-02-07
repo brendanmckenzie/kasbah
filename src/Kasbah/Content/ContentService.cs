@@ -18,6 +18,7 @@ namespace Kasbah.Content
         {
             public const string Nodes = "nodes";
             public const string Content = "content";
+            public const string PatchedContent = "content_patched";
         }
 
         readonly ILogger _log;
@@ -192,10 +193,12 @@ namespace Kasbah.Content
         public async Task InitialiseAsync()
         {
             _log.LogDebug($"Initialising {nameof(ContentService)}");
-            await _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Nodes);
-            await _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Content);
 
-            await UpdateMappingsAsync();
+            await Task.WhenAll(
+                _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Nodes),
+                _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Content),
+                _dataAccessProvider.EnsureIndexExistsAsync(Indicies.PatchedContent),
+                UpdateMappingsAsync());
         }
 
         public async Task<Node> GetNodeAsync(Guid id)
@@ -247,6 +250,18 @@ namespace Kasbah.Content
             var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, take: take, sort: sort);
 
             return items.Select(ent => ent.Source);
+        }
+
+        public async Task DeleteNodeAsync(Guid id)
+        {
+            var node = await GetNodeAsync(id);
+
+            throw await Task.FromResult(new NotImplementedException());
+        }
+
+        public async Task UpdateNodeAliasAsync(Guid id, string alias)
+        {
+            throw await Task.FromResult(new NotImplementedException());
         }
 
         #endregion

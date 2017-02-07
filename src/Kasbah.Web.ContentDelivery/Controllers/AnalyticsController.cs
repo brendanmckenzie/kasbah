@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Kasbah.Web.ContentDelivery.Controllers
 {
     [Route("analytics")]
-    public class AnalyticsController
+    public class AnalyticsController : Controller
     {
         readonly AnalyticsService _analyticsService;
 
@@ -18,7 +18,7 @@ namespace Kasbah.Web.ContentDelivery.Controllers
         }
 
         [Route("track"), HttpPost]
-        public async Task TrackEvent(AnalyticsEvent ev)
+        public async Task TrackEvent([FromBody] AnalyticsEvent ev)
         {
             await _analyticsService.TrackEvent(ev);
         }
@@ -26,7 +26,7 @@ namespace Kasbah.Web.ContentDelivery.Controllers
         [Route("init"), HttpPost]
         public async Task<AnalyticsInitResponse> Init([FromBody] AnalyticsInitRequest request)
         {
-            if (request.Persona.HasValue)
+            if (request?.Persona.HasValue == true)
             {
                 return new AnalyticsInitResponse
                 {
