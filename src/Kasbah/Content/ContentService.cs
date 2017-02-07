@@ -256,7 +256,23 @@ namespace Kasbah.Content
         {
             var node = await GetNodeAsync(id);
 
-            throw await Task.FromResult(new NotImplementedException());
+            var query = new
+            {
+                @bool = new
+                {
+                    must = node.Taxonomy.Aliases.Select(ent => new QueryMatch
+                    {
+                        Match = new Dictionary<string, string> {
+                                { "Taxonomy.Aliases", ent }
+                            }
+                    })
+                }
+            };
+            var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
+
+            await _dataAccessProvider.DeleteEntriesAsync<Node>(Indicies.Nodes, query);
+            await Task.WhenAll(items
+                .Select(ent => _dataAccessProvider.DeleteEntryAsync(Indicies.Content, ent.Id, Type.GetType(ent.Source.Type)));
         }
 
         public async Task UpdateNodeAliasAsync(Guid id, string alias)
