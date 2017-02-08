@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.6</TargetFramework>
+    <DebugType>portable</DebugType>
+    <AssemblyName>Kasbah.Web.ContentDelivery</AssemblyName>
+    <PackageId>Kasbah.Web.ContentDelivery</PackageId>
+    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\**\*" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Kasbah/Kasbah.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Routing" Version="1.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
+    <PackageReference Include="Quartz" Version="3.0.0-alpha2" />
+    <PackageReference Include="ImageSharp" Version="1.0.0-*" />
+    <PackageReference Include="ImageSharp.Processing" Version="1.0.0-*" />
+    <PackageReference Include="ImageSharp.Formats.Jpeg" Version="1.0.0-*" />
+    <PackageReference Include="ImageSharp.Formats.Png" Version="1.0.0-*" />
+  </ItemGroup>
+
+</Project>

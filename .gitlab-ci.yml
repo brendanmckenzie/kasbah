@@ -5,9 +5,8 @@ stages:
 
 build:admin_ui:
     stage: build_ui
-    image: node:6
+    image: kkarczmarczyk/node-yarn:6.9
     script:
-        - npm install -g yarn
         - sh build-admin-ui.sh
     artifacts:
         paths:
@@ -15,7 +14,7 @@ build:admin_ui:
 
 build:dotnet:
     stage: build
-    image: microsoft/dotnet
+    image: microsoft/dotnet:1.1.0-sdk-msbuild-rc4
     dependencies:
     - build:admin_ui
     script:
