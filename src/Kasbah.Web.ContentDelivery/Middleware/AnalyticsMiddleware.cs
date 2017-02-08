@@ -53,7 +53,7 @@ namespace Kasbah.Web.ContentDelivery.Middleware
         void EnsureTrackingCookie(HttpContext context)
         {
             context.Items["user:profile"] = GetTrackingCookieId(context);
-            context.Response.Cookies.Append(TrackingCookie, GetTrackingCookieId(context));
+            context.Response.Cookies.Append(TrackingCookie, GetTrackingCookieId(context), new CookieOptions { Expires = DateTimeOffset.Now.AddYears(5) });
         }
 
         async Task CheckAndMergeProfilesAsync(HttpContext context)
