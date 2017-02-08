@@ -1,13 +1,17 @@
 import React from 'react'
 
-export const Loading = () => (
+export const Loading = ({ message }) => (
   <div>
     <div className='message'>
       <div className='message-body'>
-        Loading...
+        {message || 'Loading...'}
       </div>
     </div>
   </div>
 )
+
+Loading.propTypes = {
+  message: React.PropTypes.any
+}
 
 export default Loading

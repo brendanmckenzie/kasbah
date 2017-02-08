@@ -4,6 +4,8 @@ export const UPLOAD_MEDIA = 'UPLOAD_MEDIA'
 export const UPLOAD_MEDIA_SUCCESS = 'UPLOAD_MEDIA_SUCCESS'
 export const UPLOAD_MEDIA_FAILURE = 'UPLOAD_MEDIA_FAILURE'
 
+const types = [UPLOAD_MEDIA, UPLOAD_MEDIA_SUCCESS, UPLOAD_MEDIA_FAILURE]
+
 export const action = (files) => {
   const data = new FormData()
 
@@ -12,7 +14,7 @@ export const action = (files) => {
   }
 
   return {
-    types: [UPLOAD_MEDIA, UPLOAD_MEDIA_SUCCESS, UPLOAD_MEDIA_FAILURE],
+    types,
     request: {
       url: '/media/upload',
       rawBody: data,
@@ -23,4 +25,4 @@ export const action = (files) => {
   }
 }
 
-export const reducer = createReducer([UPLOAD_MEDIA, UPLOAD_MEDIA_SUCCESS, UPLOAD_MEDIA_FAILURE], { loading: false })
+export const reducer = createReducer(types, { loading: false })

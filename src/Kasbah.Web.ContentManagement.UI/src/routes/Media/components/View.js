@@ -80,29 +80,33 @@ class View extends React.Component {
     )
   }
 
+  get upload() {
+    if (this.props.uploadMedia.loading) {
+      return <Loading message='An upload is in progress. Please wait...' />
+    }
+
+    return (
+      <div className='control'>
+        <div className='message'>
+          <Dropzone
+            onDrop={this.props.uploadMediaRequest}
+            accept='image/*'
+            className='message-body media--upload__dropzone'
+            style={{ cursor: 'pointer' }}>
+            <p><i className='fa fa-upload' /> Drag and drop files here, or click to select files to upload.</p>
+          </Dropzone>
+        </div>
+      </div>
+    )
+  }
+
   render() {
     return (
       <div className='section'>
         <div className='container'>
           <h1 className='title'>Media</h1>
-          <div className='control'>
-            <Dropzone
-              onDrop={this.props.uploadMediaRequest}
-              accept='image/*'
-              style={{
-                width: 'auto',
-                height: 100,
-                border: '2px dashed #ccc',
-                backgroundColor: '#fafafa',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                cursor: 'pointer',
-                textAlign: 'center'
-              }}>
-              <div>Drag and drop files here, or click to select files to upload.</div>
-            </Dropzone>
-          </div>
+          {this.upload}
+          <hr />
           {this.list}
         </div>
       </div>
