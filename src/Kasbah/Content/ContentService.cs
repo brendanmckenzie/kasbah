@@ -272,7 +272,7 @@ namespace Kasbah.Content
 
             await _dataAccessProvider.DeleteEntriesAsync<Node>(Indicies.Nodes, query);
             await Task.WhenAll(items
-                .Select(ent => _dataAccessProvider.DeleteEntryAsync(Indicies.Content, ent.Id, Type.GetType(ent.Source.Type)));
+                .Select(ent => _dataAccessProvider.DeleteEntryAsync(Indicies.Content, ent.Id, Type.GetType(ent.Source.Type))));
         }
 
         public async Task UpdateNodeAliasAsync(Guid id, string alias)
