@@ -1,4 +1,5 @@
 import React from 'react'
+import _ from 'lodash'
 import moment from 'moment'
 import { Link } from 'react-router'
 import Loading from 'components/Loading'
@@ -32,12 +33,12 @@ class View extends React.Component {
           </tr>
         </thead>
         <tbody>
-          {this.props.listProfiles.payload.map(ent => (
+          {_(this.props.listProfiles.payload).sortBy('created').reverse().map(ent => (
             <tr key={ent.id}>
               <td className='is-link'><Link to={`/analytics/profile/${ent.id}`}>{ent.id}</Link></td>
               <td>{moment(ent.created).fromNow()}</td>
             </tr>
-          ))}
+          )).value()}
         </tbody>
       </table>
     )

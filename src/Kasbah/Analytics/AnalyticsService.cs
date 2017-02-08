@@ -89,16 +89,16 @@ namespace Kasbah.Analytics
                 await _dataAccessProvider.PutEntryAsync<Profile>(Indicies.Profiles, profile.Id, profile);
             }
 
-            profile.Attributes = (await _dataAccessProvider.QueryEntriesAsync<ProfileAttribute>(Indicies.Attributes, new { match = new { Profile = id } })).Select(ent => ent.Source);
-            profile.Traits = (await _dataAccessProvider.QueryEntriesAsync<ProfileTrait>(Indicies.Traits, new { match = new { Profile = id } })).Select(ent => ent.Source);
-            profile.Events = (await _dataAccessProvider.QueryEntriesAsync<AnalyticsEvent>(Indicies.Events, new { match = new { Profile = id } })).Select(ent => ent.Source);
+            profile.Attributes = (await _dataAccessProvider.QueryEntriesAsync<ProfileAttribute>(Indicies.Attributes, new { match = new { Profile = id } }, take: 1024)).Select(ent => ent.Source);
+            profile.Traits = (await _dataAccessProvider.QueryEntriesAsync<ProfileTrait>(Indicies.Traits, new { match = new { Profile = id } }, take: 1024)).Select(ent => ent.Source);
+            profile.Events = (await _dataAccessProvider.QueryEntriesAsync<AnalyticsEvent>(Indicies.Events, new { match = new { Profile = id } }, take: 1024)).Select(ent => ent.Source);
 
             return profile;
         }
 
         public async Task<IEnumerable<ProfileSummary>> ListProfilesAsync()
         {
-            var entries = await _dataAccessProvider.QueryEntriesAsync<Profile>(Indicies.Profiles);
+            var entries = await _dataAccessProvider.QueryEntriesAsync<Profile>(Indicies.Profiles, take: 1024);
 
             return entries.Select(ent => ent.Source);
         }
