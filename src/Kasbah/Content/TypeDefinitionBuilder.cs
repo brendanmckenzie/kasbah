@@ -134,12 +134,12 @@ namespace Kasbah.Content
                 Editor = editor
             };
 
-            if (typeof(Item).IsAssignableFrom(property.PropertyType))
+            if (typeof(Item).GetTypeInfo().IsAssignableFrom(property.PropertyType))
             {
                 ret.Editor = "nodePicker";
                 ret.Type = property.PropertyType.AssemblyQualifiedName;
             }
-            else if (typeof(IEnumerable<Item>).IsAssignableFrom(property.PropertyType))
+            else if (typeof(IEnumerable<Item>).GetTypeInfo().IsAssignableFrom(property.PropertyType))
             {
                 ret.Editor = "nodePickerMulti";
                 ret.Type = property.PropertyType.GenericTypeArguments.First().AssemblyQualifiedName;

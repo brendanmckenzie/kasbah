@@ -111,7 +111,7 @@ namespace Kasbah.Content
             }
 
             // Linked media
-            if (typeof(MediaItem).IsAssignableFrom(property.PropertyType))
+            if (typeof(MediaItem).GetTypeInfo().IsAssignableFrom(property.PropertyType))
             {
                 return await MapLinkedMediaAsync(source);
             }
