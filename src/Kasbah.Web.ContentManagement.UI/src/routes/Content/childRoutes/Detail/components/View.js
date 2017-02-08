@@ -11,7 +11,13 @@ class View extends React.Component {
     getDetailRequest: React.PropTypes.func.isRequired,
     getDetail: React.PropTypes.object.isRequired,
     putDetailRequest: React.PropTypes.func.isRequired,
-    putDetail: React.PropTypes.object.isRequired
+    putDetail: React.PropTypes.object.isRequired,
+    deleteNodeRequest: React.PropTypes.func.isRequired,
+    deleteNode: React.PropTypes.object.isRequired
+  }
+
+  static contextTypes = {
+    router: React.PropTypes.object.isRequired
   }
 
   constructor() {
@@ -24,6 +30,7 @@ class View extends React.Component {
 
     this.handleSaveAndPublish = this.handleSaveAndPublish.bind(this)
     this.handleSave = this.handleSave.bind(this)
+    this.handleDelete = this.handleDelete.bind(this)
   }
 
   componentWillMount() {
@@ -47,6 +54,14 @@ class View extends React.Component {
         payload: nextProps.putDetail.payload
       })
     }
+
+    if (nextProps.deleteNode.success && nextProps.deleteNode.success !== this.props.deleteNode.success) {
+      if (this.state.payload.node.parent) {
+        this.context.router.push(`/content/${this.state.payload.node.parent}`)
+      } else {
+        this.context.router.push('/content')
+      }
+    }
   }
 
   handleLoad(id) {
@@ -59,6 +74,14 @@ class View extends React.Component {
 
   handleSave(data) {
     this.props.putDetailRequest({ id: this.props.id, data, publish: false })
+  }
+
+  handleDelete() {
+    if (confirm('Are you sure?')) {
+      if (confirm('Are you really sure?  This is a pretty destructive operation, all child nodes will be deleted.')) {
+        this.props.deleteNodeRequest({ id: this.props.id })
+      }
+    }
   }
 
   get breadcrumb() {
@@ -99,7 +122,7 @@ class View extends React.Component {
                 onSave={this.handleSave} />}
           </div>
           <div className='column is-3'>
-            <SideBar {...this.state.payload} />
+            <SideBar {...this.state.payload} onDelete={this.handleDelete} />
           </div>
         </div>
       </div>

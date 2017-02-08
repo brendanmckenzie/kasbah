@@ -273,6 +273,10 @@ namespace Kasbah.Content
             await _dataAccessProvider.DeleteEntriesAsync<Node>(Indicies.Nodes, query);
             await Task.WhenAll(items
                 .Select(ent => _dataAccessProvider.DeleteEntryAsync(Indicies.Content, ent.Id, Type.GetType(ent.Source.Type))));
+            
+            await _cache.RemoveAsync(nameof(DescribeTreeAsync));
+            await _cache.RemoveAsync($"{nameof(GetNodeAsync)}_{id}");
+            await _cache.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", node.Taxonomy.Aliases)}");
         }
 
         public async Task UpdateNodeAliasAsync(Guid id, string alias)

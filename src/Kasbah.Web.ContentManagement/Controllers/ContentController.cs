@@ -66,6 +66,10 @@ namespace Kasbah.Web.ContentManagement.Controllers
         [Route("nodes/recent"), HttpGet]
         public async Task<IEnumerable<Node>> GetRecentlyModified([FromQuery] int take)
             => await _contentService.GetRecentlyModified(take);
+
+        [Route("node/{id}"), HttpDelete]
+        public async Task DeleteNodeAsync(Guid id)
+            => await _contentService.DeleteNodeAsync(id);
     }
 
     public class CreateNodeRequest

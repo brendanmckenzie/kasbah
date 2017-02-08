@@ -1,7 +1,7 @@
 import React from 'react'
 import moment from 'moment'
 
-export const Information = ({ node, type, data }) => (
+export const Information = ({ node, type, data, onDelete }) => (
   <div className='content'>
     <p>
       <span className='heading'>Type</span>
@@ -25,13 +25,16 @@ export const Information = ({ node, type, data }) => (
       <span className='heading'>Status</span>
       <span>{node.publishedVersion ? `Published (v${node.publishedVersion})` : 'Draft'}</span>
     </p>
+
+    <button className='button is-danger is-fullwidth is-small' type='button' onClick={onDelete}>Delete</button>
   </div>
 )
 
 Information.propTypes = {
   node: React.PropTypes.object.isRequired,
   type: React.PropTypes.object.isRequired,
-  data: React.PropTypes.object
+  data: React.PropTypes.object,
+  onDelete: React.PropTypes.func.isRequired
 }
 
 export default Information
