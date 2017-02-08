@@ -28,6 +28,7 @@ class NodePicker extends React.Component {
     this.handleShowModal = this.handleShowModal.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
     this.handleCommit = this.handleCommit.bind(this)
+    this.handleClear = this.handleClear.bind(this)
   }
 
   componentWillMount() {
@@ -95,6 +96,15 @@ class NodePicker extends React.Component {
           nodeDetail: detail
         })
       })
+  }
+
+  handleClear() {
+    const { input: { onChange } } = this.props
+
+    onChange([])
+    this.setState({
+      selection: []
+    })
   }
 
   renderNode(id) {
@@ -175,9 +185,8 @@ class NodePicker extends React.Component {
     return (<div className='node-picker'>
       {this.display}
       <div className='has-text-right'>
-        <button type='button' className='button is-small' onClick={this.handleShowModal}>
-          Select nodes
-        </button>
+        <button type='button' className='button is-small' onClick={this.handleClear}>Clear</button>
+        <button type='button' className='button is-small' onClick={this.handleShowModal}>Select nodes</button>
       </div>
       {this.modal}
     </div>)

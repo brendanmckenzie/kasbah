@@ -25,6 +25,7 @@ class MediaPicker extends React.Component {
     this.handleShowModal = this.handleShowModal.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
     this.handleCommit = this.handleCommit.bind(this)
+    this.handleClear = this.handleClear.bind(this)
   }
 
   componentWillMount() {
@@ -63,10 +64,19 @@ class MediaPicker extends React.Component {
     this.handleHideModal()
   }
 
+  handleClear() {
+    const { input: { onChange } } = this.props
+
+    onChange(null)
+    this.setState({
+      selection: null
+    })
+  }
+
   get display() {
     const { input: { value } } = this.props
 
-    if (!value) { return null }
+    if (!value) { return <p>No media selected.</p> }
 
     return (<div>
       <img src={`${API_BASE}/media/${value}?width=600&height=450`} />
@@ -118,9 +128,8 @@ class MediaPicker extends React.Component {
     return (<div className='media-picker'>
       {this.display}
       <div className='has-text-right'>
-        <button type='button' className='button is-small' onClick={this.handleShowModal}>
-          Select media
-        </button>
+        <button type='button' className='button is-small' onClick={this.handleClear}>Clear</button>
+        <button type='button' className='button is-primary is-small' onClick={this.handleShowModal}>Select media</button>
       </div>
       {this.state.showModal && this.modal}
     </div>)
