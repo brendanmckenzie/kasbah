@@ -120,12 +120,6 @@ namespace Kasbah.Content
             var typeInfo = property.PropertyType.GetTypeInfo();
 
             var editor = _knownTypeEditors.ContainsKey(property.PropertyType) ? _knownTypeEditors[property.PropertyType] : DefaultEditor;
-            var editorAttribute = property.GetCustomAttribute<FieldEditorAttribute>();
-            if (editorAttribute != null)
-            {
-                editor = editorAttribute.Editor;
-            }
-
             var ret = new TypeDefinition.Field
             {
                 DisplayName = property.Name,
@@ -148,6 +142,12 @@ namespace Kasbah.Content
             {
                 ret.Editor = "nested";
                 ret.Options["fields"] = typeInfo.GetProperties().Select(MapProperty).ToList(); // TODO: guard against recurrsion
+            }
+
+            var editorAttribute = property.GetCustomAttribute<FieldEditorAttribute>();
+            if (editorAttribute != null)
+            {
+                ret.Editor = editorAttribute.Editor;
             }
 
             return ret;
