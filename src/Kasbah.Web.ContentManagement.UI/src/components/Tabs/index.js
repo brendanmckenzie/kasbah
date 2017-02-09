@@ -56,23 +56,37 @@ export class Tabs extends React.Component {
     })
   }
 
+  get tabs() {
+    if (this.props.children instanceof Array) {
+      if (this.props.children.length === 1) {
+        return null
+      } else {
+        return (
+          <div className='tabs'>
+            <ul>
+              {this.props.children.map((ent, index) => {
+                const attrs = {
+                  key: index,
+                  title: ent.props.title,
+                  index: index,
+                  currentIndex: this.state.currentIndex,
+                  onClick: this.setCurrentIndex
+                }
+                return <TabHeader {...attrs} />
+              })}
+            </ul>
+          </div>
+        )
+      }
+    }
+
+    return null
+  }
+
   render() {
     return (
       <div className='tabs__container'>
-        <div className='tabs'>
-          <ul>
-            {this.props.children.map((ent, index) => {
-              const attrs = {
-                key: index,
-                title: ent.props.title,
-                index: index,
-                currentIndex: this.state.currentIndex,
-                onClick: this.setCurrentIndex
-              }
-              return <TabHeader {...attrs} />
-            })}
-          </ul>
-        </div>
+        {this.tabs}
         {this.props.children[this.state.currentIndex]}
       </div>)
   }

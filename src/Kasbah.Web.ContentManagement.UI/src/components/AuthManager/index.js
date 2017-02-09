@@ -7,7 +7,8 @@ import { makeApiRequest } from 'store/util'
 
 export class AuthManager extends React.Component {
   static propTypes = {
-    children: React.PropTypes.any
+    children: React.PropTypes.any,
+    auth: React.PropTypes.object.isRequired
   }
 
   static contextTypes = {
@@ -31,6 +32,12 @@ export class AuthManager extends React.Component {
   componentWillDismount() {
     if (this.state.timeout) {
       clearTimeout(this.state.timeout)
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.auth.authError && nextProps.auth.authError !== this.props.auth.authError) {
+      this.context.router.push('/login')
     }
   }
 
@@ -80,6 +87,8 @@ export class AuthManager extends React.Component {
 const mapDispatchToProps = {
 }
 
-const mapStateToProps = (state) => ({})
+const mapStateToProps = (state) => ({
+  auth: state.auth
+})
 
 export default connect(mapStateToProps, mapDispatchToProps)(AuthManager)

@@ -1,5 +1,8 @@
 import React from 'react'
-import NestedForm from './NestedForm'
+import { Field } from 'redux-form'
+import _ from 'lodash'
+import { Tabs, Tab } from 'components/Tabs'
+import kasbah from 'kasbah'
 
 class Nested extends React.Component {
   static propTypes = {
@@ -13,76 +16,44 @@ class Nested extends React.Component {
     this.state = {
       showModal: false
     }
-
-    this.handleHideModal = this.handleHideModal.bind(this)
-    this.handleShowModal = this.handleShowModal.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
   }
 
   static alias = 'nested'
 
-  handleShowModal() {
-    this.setState({
-      showModal: true
-    })
-  }
-
-  handleHideModal() {
-    this.setState({
-      showModal: false
-    })
-  }
-
-  handleSubmit(values) {
-    this.props.input.onChange(values)
-    this.handleHideModal()
-  }
-
-  get modal() {
-    const value = typeof this.props.input.value === 'object' ? this.props.input.value : {}
-    const type = {
-      displayName: this.props.input.name,
-      fields: this.props.options.fields
-    }
-
-    return (
-      <NestedForm
-        type={type}
-        initialValues={value}
-        onSubmit={this.handleSubmit}
-        onClose={this.handleHideModal} />
-    )
-  }
-
   get display() {
-    const value = typeof this.props.input.value === 'object' ? this.props.input.value : {}
+    const { input: { name } } = this.props
+    const type = this.props.options
 
     return (
       <blockquote>
-        {this.props.options.fields.map(fld => (
-          <div key={fld.alias} className='control'>
-            <label className='label'>{fld.displayName}</label>
-            <div className='field-value'>{value[fld.alias]}</div>
-          </div>
-        ))}
-      </blockquote >
+        <Tabs>
+          {_(type.fields).map(ent => ent.category).uniq().value().map((ent, index) => (
+            <Tab key={index} title={ent}>
+              <div>
+                {type.fields.filter(fld => fld.category === ent).map((fld, fldIndex) => (
+                  <div key={fldIndex} className='control'>
+                    <label className='label' htmlFor={`${name}_${fld.alias}`}>{fld.displayName}</label>
+                    <Field
+                      name={`${name}.${fld.alias}`}
+                      id={`${name}_${fld.alias}`}
+                      component={kasbah.getEditor(fld.editor)}
+                      options={fld.options}
+                      type={fld.type}
+                      className='input' />
+                    {fld.helpText && <span className='help'>{fld.helpText}</span>}
+                  </div>
+                ))}
+              </div>
+            </Tab>
+          ))}
+        </Tabs>
+      </blockquote>
     )
   }
 
   render() {
     return (<div className='field-editor__nested'>
-      <div className='has-text-right'>
-        <button type='button' className='button is-small' onClick={this.handleShowModal}>
-          Edit {this.props.input.name}
-        </button>
-      </div>
       {this.display}
-      <div className='has-text-right'>
-        <button type='button' className='button is-small' onClick={this.handleShowModal}>
-          Edit {this.props.input.name}
-        </button>
-      </div>
-      {this.state.showModal && this.modal}
     </div>)
   }
 }

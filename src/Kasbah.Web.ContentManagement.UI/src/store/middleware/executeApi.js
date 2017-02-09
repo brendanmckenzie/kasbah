@@ -1,7 +1,7 @@
 // import 'whatwg-fetch'
 import { makeApiRequest } from 'store/util'
 
-const API_FAILURE = 'API_FAILURE'
+export const API_FAILURE = 'API_FAILURE'
 
 export const middleware = ({ dispatch, getState }) => {
   return next => action => {
