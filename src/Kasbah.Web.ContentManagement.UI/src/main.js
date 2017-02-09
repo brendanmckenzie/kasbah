@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import createStore from './store/createStore'
 import AppContainer from './containers/AppContainer'
+import kasbah from 'kasbah'
 
 // ========================================================
 // Store Instantiation
@@ -53,6 +54,8 @@ if (__DEV__) {
     )
   }
 }
+
+window.kasbah = kasbah
 
 // ========================================================
 // Go!
