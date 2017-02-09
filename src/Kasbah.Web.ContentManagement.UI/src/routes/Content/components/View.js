@@ -3,19 +3,21 @@ import ContentTree from './ContentTree/index.js'
 
 export const View = (props) => (
   <div className='section'>
-    <h1 className='title'>Content</h1>
-    <div className='columns'>
-      <div className='column is-2'>
-        <ContentTree
-          describeTree={props.describeTree}
-          describeTreeRequest={props.describeTreeRequest}
-          createNode={props.createNode}
-          createNodeRequest={props.createNodeRequest}
-          listTypes={props.listTypes}
-          listTypesRequest={props.listTypesRequest} />
-      </div>
-      <div className='column'>
-        {props.children}
+    <div className='container'>
+      <h1 className='title'>Content</h1>
+      <div className='columns'>
+        <div className='column is-2'>
+          <ContentTree
+            describeTree={props.describeTree}
+            describeTreeRequest={props.describeTreeRequest}
+            createNode={props.createNode}
+            createNodeRequest={props.createNodeRequest}
+            listTypes={props.listTypes}
+            listTypesRequest={props.listTypesRequest} />
+        </div>
+        <div className='column'>
+          {props.children}
+        </div>
       </div>
     </div>
   </div>

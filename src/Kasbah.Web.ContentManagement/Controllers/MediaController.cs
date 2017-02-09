@@ -70,6 +70,10 @@ namespace Kasbah.Web.ContentManagement.Controllers
             return new FileStreamResult(stream, item.ContentType);
         }
 
+        [Route("{id}/meta"), HttpGet]
+        public async Task<MediaItem> GetMediaMeta(Guid id)
+            =>  await _mediaService.GetMediaItemAsync(id);
+
         Size CalculateSize(int sourceWidth, int sourceHeight, int? destWidth, int? destHeight)
         {
             if (destWidth.HasValue && destHeight.HasValue)

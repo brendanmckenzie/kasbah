@@ -19,11 +19,11 @@ class Node extends React.Component {
   }
 
   get tree() {
-    const { node: { id } } = this.props
+    const { node: { id, alias } } = this.props
 
     if (!this.expanded) { return null }
 
-    return <NodeTree parent={id} />
+    return <NodeTree parent={id} parentAlias={alias} />
   }
 
   handleToggleExpand() {
@@ -51,7 +51,7 @@ class Node extends React.Component {
           </div>
           <div className='level-right'>
             <button
-              className='button is-small add-node'
+              className='button is-small expand'
               onClick={this.handleToggleExpand}>
               <span className='icon is-small'>
                 <i className={this.expanded ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'} />
