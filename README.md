@@ -2,26 +2,40 @@
 
 Version 20 (incarnation 5).
 
-## Process
+# Getting started
 
-The process to developing the system for the ultimate outcome.
+Docker is the easiest way to run the services required to power Kasbah.
 
-1. How will it look?  What will the user interface be?
-2. How will it act? What will the underlying system do to achieve what was defined above?
-3. How will it extend? How will developers be able to extend it to make what was defined above more user friendly?
+## Requirements
 
-## Functionality
+ * Kasbah uses ElasticSearch as its datastore, index and store behind the analytic/personalisation engine.
+    * Run a local development instance using docker by executing: `docker run -d -p '9200:9200' elasticsearch`
+ * Kasbah uses Redis for its caching layer.
+    * Run a local development instance using docker by executing: `docker run -d -p '6379:6379' redis`
 
-1. Content authoring
-    a. Publishing workflow
-2. Media
-3. Security
-4. Analytics
-5. Personalisation
+The fastest way to get started with Kasbah is to use the Yeoman generator.
 
-## Analytics vs. Logging
+    npm install -g yeoman generator-kasbah
+    yo kasbah
 
-The system will hold the concept of Analytics and Logging, from an outside perspective it could be easy to confuse the two.  However an easy way to describe the function of each is simply like so.
+Follow the prompts and you'll have the code ready to build a Kasbah based web application.
 
-* Analytics track events going on with the public website, pages being viewed, user interactions, etc...
-* Logging track events going on with the administrative site and any informative messages useful for debugging issues with the public site.
+This generator assumes that you have ElasticSearch and Redis running on the local host.  If this isn't the case then simple modify the generatored `.vscode/launch.json` file to point to the correct instances.
+
+Run the administration site by executing `dotnet run` in the src/*.ContentManagement folder.  The site will be available at http://localhost:5000/
+
+## Development
+
+To debug the Kasbah framework simply clone the Kasbah repository to the same location your generated website is located and your project will use the local version of Kasbah instead of the NuGet packages.  For example, if your website is located in the folder `/projects/my-website`, clone the Kasbah source code to `/projects/kasbah`.
+
+See the generated .csproj files for how this reference is hooked up, or to customise the location of the Kasbah source code.
+
+Then using Visual Studio Code (or Visual Studio 2017+) you will be able to debug your website and the underlying Kasbah framework at the same time.
+
+# Authors
+
+ * Brendan McKenzie - *Lead Developer* - [https://www.brendanmckenzie.com/](https://www.brendanmckenzie.com/)
+
+# License
+
+The licensing status of this project is still under consideration.  I (Brendan) am not ready to open source the project as I do see some commercial viability in it.
