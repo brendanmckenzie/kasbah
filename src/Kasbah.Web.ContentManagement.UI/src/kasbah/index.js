@@ -37,17 +37,11 @@ class Kasbah {
       .then(res => {
         res.forEach(ent => {
           console.log(`Loading external modules: '${ent.name}'`)
-          fetch(`${API_BASE}${ent.entryPoint}`)
-            .then(ent2 => ent2.text())
-            .then(ent2 => {
-              eval(ent2)
-              // console.log(ent2)
-            })
 
-          // const el = document.createElement('script')
-          // el.src = `${API_BASE}${ent.entryPoint}`
-          // el.async = true
-          // document.body.appendChild(el)
+          const el = document.createElement('script')
+          el.src = `${API_BASE}${ent.entryPoint}`
+          el.async = true
+          document.body.appendChild(el)
         })
       })
   }
