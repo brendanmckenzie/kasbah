@@ -28,7 +28,6 @@ header.nav {
     textarea {
         height: 200px;
         resize: none;
-        font-family: 'Hack', 'Source Code Pro', 'Consolas', 'Courier New', monospace;
     }
 }
 
@@ -74,15 +73,35 @@ blockquote {
     margin-bottom: 10px;
 }
 
-.media-picker .media, .node-picker .card {
+.media-picker .card, .node-picker .card {
     cursor: pointer;
 
+    .card-content {
+      padding: .5rem;
+
+      .filename {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+
     &.is-selected {
-        background-color: $turquoise;
-        color: white;
-        strong {
-            color: white;
-        }
+      .card-image::before {
+          color: white;
+          content: '\f00c';
+          font: normal normal normal 14px/1 FontAwesome;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 32px;
+          height: 32px;
+          background-color: $turquoise;
+          z-index: 99;
+      }
     }
 }
 
@@ -119,13 +138,18 @@ ul.content-tree {
             }
         }
 
-        .button.add-node {
+        .button.expand {
             border: 0;
 
             &:focus {
                 box-shadow: none;
             }
         }
+    }
+
+    .button.add-node {
+        white-space: normal;
+        height: auto;
     }
 }
 

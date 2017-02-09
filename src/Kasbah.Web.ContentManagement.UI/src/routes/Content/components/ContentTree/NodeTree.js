@@ -3,7 +3,8 @@ import Node from './Node'
 
 class NodeTree extends React.Component {
   static propTypes = {
-    parent: React.PropTypes.string
+    parent: React.PropTypes.string,
+    parentAlias: React.PropTypes.string
   }
 
   static contextTypes = {
@@ -22,7 +23,7 @@ class NodeTree extends React.Component {
   }
 
   render() {
-    const { parent } = this.props
+    const { parent, parentAlias } = this.props
     const { tree } = this.context
 
     return (
@@ -32,8 +33,8 @@ class NodeTree extends React.Component {
         ))}
         <li>
           <button
-            className='button is-small is-fullwidth'
-            onClick={this.handleCreateNode}>Create node</button>
+            className='button is-small add-node'
+            onClick={this.handleCreateNode}>{parentAlias ? (<span>New node under <strong>{parentAlias}</strong></span>) : 'New node'}</button>
         </li>
       </ul>
     )

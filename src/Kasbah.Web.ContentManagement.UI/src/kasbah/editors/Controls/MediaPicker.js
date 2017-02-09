@@ -1,4 +1,5 @@
 import React from 'react'
+import _ from 'lodash'
 import moment from 'moment'
 import Loading from 'components/Loading'
 import { API_BASE, makeApiRequest } from 'store/util'
@@ -29,6 +30,16 @@ class MediaPicker extends React.Component {
   }
 
   componentWillMount() {
+    this.handleReloadMediaDetail(this.props.input.value)
+  }
+
+  handleShowModal() {
+    this.setState({
+      showModal: true,
+      loading: true,
+      selection: this.props.input.value
+    })
+
     makeApiRequest({ url: '/media/list', method: 'GET' })
       .then(media => {
         this.setState({
@@ -36,12 +47,6 @@ class MediaPicker extends React.Component {
           media
         })
       })
-  }
-
-  handleShowModal() {
-    this.setState({
-      showModal: true
-    })
   }
 
   handleHideModal() {
@@ -61,6 +66,8 @@ class MediaPicker extends React.Component {
 
     onChange(this.state.selection)
 
+    this.handleReloadMediaDetail(this.state.selection)
+
     this.handleHideModal()
   }
 
@@ -73,13 +80,35 @@ class MediaPicker extends React.Component {
     })
   }
 
+  handleReloadMediaDetail(value) {
+    if (!value) { return }
+
+    makeApiRequest({ url: `/media/${value}/meta`, method: 'GET' })
+      .then(mediaDetail => {
+        this.setState({
+          mediaDetail
+        })
+      })
+  }
+
   get display() {
     const { input: { value } } = this.props
 
     if (!value) { return <p>No media selected.</p> }
 
-    return (<div>
-      <img src={`${API_BASE}/media/${value}?width=600&height=450`} />
+    return (<div className='media'>
+      <div className='media-left'>
+        <figure className='image is-128x128'>
+          <img src={`${API_BASE}/media/${value}?width=256&height=256`} />
+        </figure>
+      </div>
+      {this.state.mediaDetail && (
+        <div className='media-content'>
+          <p><strong>{this.state.mediaDetail.fileName}</strong></p>
+          <p><small>{this.state.mediaDetail.contentType}</small></p>
+          <p><small>{moment(this.state.mediaDetail.created).fromNow()}</small></p>
+        </div>
+      )}
     </div>)
   }
 
@@ -91,30 +120,31 @@ class MediaPicker extends React.Component {
           <span className='modal-card-title'>
             Media picker
           </span>
+          <button type='button' className='delete' onClick={this.handleHideModal} />
         </header>
         <section className='modal-card-body'>
-          <div className='columns is-multiline'>
-            {this.state.loading ? <Loading /> : (
-              this.state.media.map(ent => (
+          {this.state.loading ? <Loading /> : (
+            <div className='columns is-multiline'>
+              {_(this.state.media).sortBy('created').reverse().map(ent => (
                 <div key={ent.id} className='column is-4'>
                   <div
-                    className={'media ' + (this.state.selection === ent.id ? 'is-selected' : '')}
+                    className={'card ' + (this.state.selection === ent.id ? 'is-selected' : '')}
                     onClick={() => this.handleSelect(ent.id)}>
-                    <figure className='media-left'>
-                      <span className='image is-64x64'>
-                        <img src={`${API_BASE}/media/${ent.id}?width=128&height=128`} />
+                    <figure className='card-image'>
+                      <span className='image is-4by3'>
+                        <img src={`${API_BASE}/media/${ent.id}?width=256&height=192`} />
                       </span>
                     </figure>
-                    <div className='media-content'>
-                      <p><strong>{ent.fileName}</strong></p>
-                      <p>{ent.contentType}</p>
+                    <div className='card-content'>
+                      <p className='filename' title={ent.fileName}><strong>{ent.fileName}</strong></p>
+                      <p><small>{ent.contentType}</small></p>
                       <p><small>{moment(ent.created).fromNow()}</small></p>
                     </div>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
+              )).value()}
+            </div>
+          )}
         </section>
         <footer className='modal-card-foot'>
           <button type='button' className='button is-primary' onClick={this.handleCommit}>Select</button>
