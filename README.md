@@ -13,6 +13,8 @@ Docker is the easiest way to run the services required to power Kasbah.
  * Kasbah uses Redis for its caching layer.
     * Run a local development instance using docker by executing: `docker run -d -p '6379:6379' redis`
 
+## Installation
+
 The fastest way to get started with Kasbah is to use the Yeoman generator.
 
     npm install -g yeoman generator-kasbah
@@ -31,6 +33,11 @@ To debug the Kasbah framework simply clone the Kasbah repository to the same loc
 See the generated .csproj files for how this reference is hooked up, or to customise the location of the Kasbah source code.
 
 Then using Visual Studio Code (or Visual Studio 2017+) you will be able to debug your website and the underlying Kasbah framework at the same time.
+
+To work on the Kasbah content management UI, run the following command from the `kasbah/src/Kasbah.ContentManagement.UI/` folder
+
+    npm install
+    npm run
 
 # Authors
 
