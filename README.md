@@ -39,6 +39,12 @@ To work on the Kasbah content management UI, run the following command from the 
     npm install
     npm run
 
+# Design decisions
+
+ * Modeling data in the user interface is counter-intuitive
+ * Storing data in an indexed data store _and_ a database is unnecessarily complex
+ * Simplify
+
 # Authors
 
  * Brendan McKenzie - *Lead Developer* - [https://www.brendanmckenzie.com/](https://www.brendanmckenzie.com/)

@@ -147,10 +147,10 @@ namespace Kasbah.Content
                 ret.Editor = "nodePickerMulti";
                 ret.Type = property.PropertyType.GenericTypeArguments.First().AssemblyQualifiedName;
             }
-            else if (typeof(IBiasedContent).GetTypeInfo().IsAssignableFrom(property.PropertyType)
+            else if (typeof(IBiasedContent).GetTypeInfo().IsAssignableFrom(property.DeclaringType)
                 && property.Name == nameof(IBiasedContent.Bias))
             {
-                ret.Editor = "biasEditor";
+                ret.Editor = "bias";
                 ret.Category = "Analytics";
             }
             else if (!_basicEditors.Contains(property.PropertyType))
