@@ -39,6 +39,8 @@ namespace Kasbah.Content
         readonly IEnumerable<TypeDefinition.Field> _fields;
         readonly IDictionary<string, object> _options;
         string _displayName;
+        string _icon;
+        string _iconColour;
 
         public TypeDefinitionBuilder(Type type)
         {
@@ -50,6 +52,10 @@ namespace Kasbah.Content
                 .ToList();
             _options = new Dictionary<string, object>();
 
+            var iconAttribute = _typeInfo.GetCustomAttribute<IconAttribute>();
+            _icon = iconAttribute?.Icon;
+            _iconColour = iconAttribute?.Colour;
+
             _displayName = type.Name;
         }
 
@@ -60,7 +66,9 @@ namespace Kasbah.Content
                 DisplayName = _displayName,
                 Alias = _type.AssemblyQualifiedName,
                 Options = _options,
-                Fields = _fields
+                Fields = _fields,
+                Icon = _icon,
+                IconColour = _iconColour
             };
         }
 

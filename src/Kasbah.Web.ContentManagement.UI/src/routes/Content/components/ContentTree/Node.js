@@ -45,18 +45,19 @@ class Node extends React.Component {
       <li>
         <div className='level'>
           <div className='level-left'>
-            <Link to={`/content/${id}`}
-              className='level-item level-shrink'
-              activeClassName='is-active'>{displayName}</Link>
-          </div>
-          <div className='level-right'>
             <button
-              className='button is-small expand'
+              className='button is-small expand level-item'
               onClick={this.handleToggleExpand}>
               <span className='icon is-small'>
                 <i className={this.expanded ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'} />
               </span>
             </button>
+            <span className='level-item icon is-small'>
+              <i className='fa fa-file-o' />
+            </span>
+            <Link to={`/content/${id}`}
+              className='level-item level-shrink'
+              activeClassName='is-active'>{displayName}</Link>
           </div>
         </div>
         {this.tree}

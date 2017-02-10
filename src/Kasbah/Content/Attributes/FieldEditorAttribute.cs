@@ -2,14 +2,16 @@ using System;
 
 namespace Kasbah.Content.Attributes
 {
-    [AttributeUsage(AttributeTargets.Property, Inherited = true)]
-    public class FieldEditorAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class, Inherited = true)]
+    public class IconAttribute : Attribute
     {
-        public FieldEditorAttribute(string editor)
+        public IconAttribute(string icon, string colour = null)
         {
-            this.Editor = editor;
+            this.Icon = icon;
+            this.Colour = colour;
 
         }
-        public string Editor { get; set; }
+        public string Icon { get; private set; }
+        public string Colour { get; private set; }
     }
 }

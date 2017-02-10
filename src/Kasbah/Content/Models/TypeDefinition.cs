@@ -6,6 +6,8 @@ namespace Kasbah.Content.Models
     {
         public string DisplayName { get; set; }
         public string Alias { get; set; }
+        public string Icon { get; set; }
+        public string IconColour { get; set; }
         public IEnumerable<Field> Fields { get; set; }
         public IDictionary<string, object> Options { get; set; } = new Dictionary<string, object>();
 
