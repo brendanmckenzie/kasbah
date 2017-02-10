@@ -96,20 +96,32 @@ class MediaPicker extends React.Component {
 
     if (!value) { return <p>No media selected.</p> }
 
-    return (<div className='media'>
-      <div className='media-left'>
-        <figure className='image is-128x128'>
-          <img src={`${API_BASE}/media/${value}?width=256&height=256`} />
-        </figure>
-      </div>
-      {this.state.mediaDetail && (
-        <div className='media-content'>
-          <p><strong>{this.state.mediaDetail.fileName}</strong></p>
-          <p><small>{this.state.mediaDetail.contentType}</small></p>
-          <p><small>{moment(this.state.mediaDetail.created).fromNow()}</small></p>
+    if (this.state.mediaDetail) {
+      return (
+        <div className='media'>
+          {this.state.mediaDetail.contentType.startsWith('image/') && (
+            <div className='media-left'>
+              <figure className='image is-128x128'>
+                <img src={`${API_BASE}/media/${value}?width=256&height=256`} />
+              </figure>
+            </div>
+          )}
+          <div className='media-content'>
+            <p><strong>{this.state.mediaDetail.fileName}</strong></p>
+            <p><small>{this.state.mediaDetail.contentType}</small></p>
+            <p><small>{moment(this.state.mediaDetail.created).fromNow()}</small></p>
+          </div>
         </div>
-      )}
-    </div>)
+      )
+    } else {
+      return (
+        <div className='media'>
+          <div className='media-content'>
+            <p>{value}</p>
+          </div>
+        </div>
+      )
+    }
   }
 
   get modal() {
