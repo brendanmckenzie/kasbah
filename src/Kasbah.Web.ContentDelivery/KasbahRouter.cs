@@ -101,7 +101,10 @@ namespace Kasbah.Web.ContentDelivery
                     {
                         var biasedContent = content as IBiasedContent;
 
-                        await Task.WhenAll(biasedContent.Bias.Select(async ent => await _analyticsService.TriggerBiasAsync(kasbahWebContext.Profile, ent.Key, ent.Value)));
+                        if (biasedContent.Bias != null)
+                        {
+                            await Task.WhenAll(biasedContent.Bias.Select(async ent => await _analyticsService.TriggerBiasAsync(kasbahWebContext.Profile, ent.Key, ent.Value)));
+                        }
                     }
 
                     if (content is IPatchedContent)
