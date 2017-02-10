@@ -18,6 +18,6 @@ namespace Kasbah.DataAccess
         Task EnsureIndexExistsAsync(string index);
         Task PutTypeMappingAsync(string index, Type type);
         Task PutTypeMappingAsync(string index, Type type, object mapping);
-        Task DeleteEntriesAsync<T>(string index, object query = null);
+        Task<long> DeleteEntriesAsync<T>(string index, object query = null);
     }
 }

@@ -9,7 +9,8 @@ class Node extends React.Component {
 
   static contextTypes = {
     onToggleNode: React.PropTypes.func.isRequired,
-    expandedNodes: React.PropTypes.object.isRequired
+    expandedNodes: React.PropTypes.object.isRequired,
+    types: React.PropTypes.array
   }
 
   constructor() {
@@ -38,6 +39,25 @@ class Node extends React.Component {
     return this.context.expandedNodes[id]
   }
 
+  get icon() {
+    const { types } = this.context
+    const type = types.filter(ent => ent.alias === this.props.node.type)[0]
+
+    if (type) {
+      if (type.icon) {
+        const attrs = {
+          className: `fa fa-${type.icon}`,
+          style: {
+            color: type.iconColour
+          }
+        }
+        return <i {...attrs} />
+      }
+    }
+
+    return <i className='fa fa-file-o' />
+  }
+
   render() {
     const { node: { id, displayName } } = this.props
 
@@ -53,7 +73,7 @@ class Node extends React.Component {
               </span>
             </button>
             <span className='level-item icon is-small'>
-              <i className='fa fa-file-o' />
+              {this.icon}
             </span>
             <Link to={`/content/${id}`}
               className='level-item level-shrink'

@@ -13,7 +13,8 @@ export const View = (props) => (
             createNode={props.createNode}
             createNodeRequest={props.createNodeRequest}
             listTypes={props.listTypes}
-            listTypesRequest={props.listTypesRequest} />
+            listTypesRequest={props.listTypesRequest}
+            deleteNode={props.deleteNode} />
         </div>
         <div className='column'>
           {props.children}
@@ -30,7 +31,8 @@ View.propTypes = {
   createNode: React.PropTypes.object.isRequired,
   createNodeRequest: React.PropTypes.func.isRequired,
   listTypes: React.PropTypes.object.isRequired,
-  listTypesRequest: React.PropTypes.func.isRequired
+  listTypesRequest: React.PropTypes.func.isRequired,
+  deleteNode: React.PropTypes.object.isRequired
 }
 
 export default View

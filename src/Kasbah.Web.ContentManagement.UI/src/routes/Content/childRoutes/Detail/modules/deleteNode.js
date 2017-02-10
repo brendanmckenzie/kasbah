@@ -10,7 +10,7 @@ export const action = (request) => ({
   types,
   request: {
     method: 'DELETE',
-    url: `/content/${request.id}`
+    url: `/content/node/${request.id}`
   }
 })
 

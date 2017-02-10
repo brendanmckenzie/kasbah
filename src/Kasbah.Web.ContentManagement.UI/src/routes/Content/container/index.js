@@ -14,7 +14,8 @@ const mapDispatchToProps = {
 const mapStateToProps = (state) => ({
   describeTree: state.describeTree,
   createNode: state.createNode,
-  listTypes: state.listTypes
+  listTypes: state.listTypes,
+  deleteNode: state.deleteNode
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(View)

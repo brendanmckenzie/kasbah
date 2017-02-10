@@ -68,7 +68,7 @@ namespace Kasbah.Web.ContentManagement.Controllers
             => await _contentService.GetRecentlyModified(take);
 
         [Route("node/{id}"), HttpDelete]
-        public async Task DeleteNodeAsync(Guid id)
+        public async Task<long> DeleteNodeAsync(Guid id)
             => await _contentService.DeleteNodeAsync(id);
     }
 

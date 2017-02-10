@@ -253,7 +253,7 @@ namespace Kasbah.Content
             return items.Select(ent => ent.Source);
         }
 
-        public async Task DeleteNodeAsync(Guid id)
+        public async Task<long> DeleteNodeAsync(Guid id)
         {
             var node = await GetNodeAsync(id);
 
@@ -271,13 +271,21 @@ namespace Kasbah.Content
             };
             var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
 
-            await _dataAccessProvider.DeleteEntriesAsync<Node>(Indicies.Nodes, query);
+            var deleted = await _dataAccessProvider.DeleteEntriesAsync<Node>(Indicies.Nodes, new { query });
+
             await Task.WhenAll(items
                 .Select(ent => _dataAccessProvider.DeleteEntryAsync(Indicies.Content, ent.Id, Type.GetType(ent.Source.Type))));
 
             await _cache?.RemoveAsync(nameof(DescribeTreeAsync));
             await _cache?.RemoveAsync($"{nameof(GetNodeAsync)}_{id}");
             await _cache?.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", node.Taxonomy.Aliases)}");
+            foreach (var item in items)
+            {
+                await _cache?.RemoveAsync($"{nameof(GetNodeAsync)}_{item.Id}");
+                await _cache?.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", item.Source.Taxonomy.Aliases)}");
+            }
+
+            return deleted;
         }
 
         public async Task UpdateNodeAliasAsync(Guid id, string alias)

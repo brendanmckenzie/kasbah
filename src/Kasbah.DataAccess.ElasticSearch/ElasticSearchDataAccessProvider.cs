@@ -62,7 +62,7 @@ namespace Kasbah.DataAccess.ElasticSearch
         public async Task DeleteEntryAsync(string index, Guid id, Type type)
         {
             _log.LogDebug($"{nameof(DeleteEntryAsync)}");
-            var response = await _webClient.DeleteAsync(ItemUri(type, index, id));
+            var response = await _webClient.DeleteAsync(ItemUri(type, index, id, waitForRefresh: true));
             _log.LogDebug($"{nameof(DeleteEntryAsync)}: {await response.Content.ReadAsStringAsync()}");
         }
 
@@ -164,9 +164,9 @@ namespace Kasbah.DataAccess.ElasticSearch
             }
         }
 
-        public async Task DeleteEntriesAsync<T>(string index, object query = null)
+        public async Task<long> DeleteEntriesAsync<T>(string index, object query = null)
         {
-            var uri = new Uri($"{IndexName(index)}/{typeof(T).FullName}/_delete_by_query", UriKind.Relative);
+            var uri = new Uri($"{IndexName(index)}/{typeof(T).FullName}/_delete_by_query?refresh=wait_for", UriKind.Relative);
 
             _log.LogDebug($"{nameof(DeleteEntriesAsync)} ({index}): {typeof(T).FullName}");
 
@@ -175,6 +175,10 @@ namespace Kasbah.DataAccess.ElasticSearch
             var resJson = await res.Content.ReadAsStringAsync();
 
             _log.LogDebug(resJson);
+
+            var resObj = JsonConvert.DeserializeObject<DeleteEntriesResult>(resJson);
+
+            return resObj.Deleted;
         }
 
         object MapType(Type type, bool nested)
@@ -320,6 +324,16 @@ namespace Kasbah.DataAccess.ElasticSearch
         class PutTypeMappingResult
         {
             public bool Acknowledged { get; set; }
+        }
+
+        class DeleteEntriesResult
+        {
+            [JsonProperty("took")]
+            public long Took { get; set; }
+            [JsonProperty("timed_out")]
+            public bool TimedOut { get; set; }
+            [JsonProperty("deleted")]
+            public long Deleted { get; set; }
         }
     }
 

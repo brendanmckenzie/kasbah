@@ -92,8 +92,9 @@ namespace Kasbah.Analytics
                 _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Profiles),
                 _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Events),
                 _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Attributes),
-                _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Bias),
-                UpdateMappingsAsync());
+                _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Bias));
+
+            await UpdateMappingsAsync();
         }
 
         public async Task<Profile> GetProfileAsync(Guid id)

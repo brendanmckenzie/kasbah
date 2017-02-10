@@ -11,7 +11,8 @@ class ContentTree extends React.Component {
     createNodeRequest: React.PropTypes.func.isRequired,
     createNode: React.PropTypes.object.isRequired,
     listTypesRequest: React.PropTypes.func.isRequired,
-    listTypes: React.PropTypes.object.isRequired
+    listTypes: React.PropTypes.object.isRequired,
+    deleteNode: React.PropTypes.object.isRequired
   }
 
   static contextTypes = {
@@ -21,6 +22,7 @@ class ContentTree extends React.Component {
   static childContextTypes = {
     expandedNodes: React.PropTypes.object,
     tree: React.PropTypes.array,
+    types: React.PropTypes.array,
     onToggleNode: React.PropTypes.func,
     onCreateNode: React.PropTypes.func
   }
@@ -47,6 +49,9 @@ class ContentTree extends React.Component {
     if (nextProps.createNode.success && nextProps.createNode.success !== this.props.createNode.success) {
       this.handleRefresh()
     }
+    if (nextProps.deleteNode.success && nextProps.deleteNode.success !== this.props.deleteNode.success) {
+      this.handleRefresh()
+    }
     if (nextProps.describeTree.success && nextProps.describeTree.success !== this.props.describeTree.success) {
       if (this.context.router.params.id) {
         const getNode = id => nextProps.describeTree.payload.filter(ent => ent.id === id)[0]
@@ -67,6 +72,7 @@ class ContentTree extends React.Component {
     return {
       expandedNodes: this.state.expandedNodes,
       tree: this.props.describeTree.payload || [],
+      types: this.props.listTypes.payload || [],
       onToggleNode: this.handleToggleNode,
       onCreateNode: this.handleCreateNode
     }

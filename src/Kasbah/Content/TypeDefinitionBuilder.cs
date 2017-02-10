@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Kasbah.Analytics.Models;
 using Kasbah.Content.Attributes;
 using Kasbah.Content.Models;
 
@@ -145,6 +146,12 @@ namespace Kasbah.Content
             {
                 ret.Editor = "nodePickerMulti";
                 ret.Type = property.PropertyType.GenericTypeArguments.First().AssemblyQualifiedName;
+            }
+            else if (typeof(IBiasedContent).GetTypeInfo().IsAssignableFrom(property.PropertyType)
+                && property.Name == nameof(IBiasedContent.Bias))
+            {
+                ret.Editor = "biasEditor";
+                ret.Category = "Analytics";
             }
             else if (!_basicEditors.Contains(property.PropertyType))
             {

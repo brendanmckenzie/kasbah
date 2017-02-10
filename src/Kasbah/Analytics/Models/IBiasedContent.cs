@@ -2,8 +2,8 @@ using System.Collections.Generic;
 
 namespace Kasbah.Analytics.Models
 {
-    public class IBiasedContent
+    public interface IBiasedContent
     {
-        public IDictionary<string, long> Bias { get; set; }
+        IDictionary<string, long> Bias { get; set; }
     }
 }
