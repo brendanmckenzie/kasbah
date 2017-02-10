@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Kasbah.Analytics;
 using Kasbah.Analytics.Models;
 using Kasbah.Content;
+using Kasbah.Web.ContentDelivery.Extensions;
 using Kasbah.Web.ContentDelivery.Models;
 using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Routing;
@@ -49,28 +50,17 @@ namespace Kasbah.Web.ContentDelivery
                 ContentService = _contentService,
                 TypeRegistry = _typeRegistry,
                 TypeMapper = _typeMapper,
-                SiteRegistry = _siteRegistry
+                SiteRegistry = _siteRegistry,
+                Profile = context.HttpContext.GetCurrentProfileId()
             };
 
-            var profile = context.HttpContext.Items["user:profile"] as string;
-            if (!string.IsNullOrEmpty(profile))
-            {
-                kasbahWebContext.Profile = new Guid(Convert.FromBase64String(profile));
-            }
-
-            await _analyticsService.TrackEventAsync(new AnalyticsEvent
-            {
-                Profile = kasbahWebContext.Profile ?? Guid.Empty,
-                Type = "web:request",
-                Source = "router",
-                Data = new Dictionary<string, string>
+            await _analyticsService.TrackEventAsync(kasbahWebContext.Profile, "web:request", "router", new Dictionary<string, string>
                 {
                     { "host", context.HttpContext.Request.Host.ToString() },
                     { "method", context.HttpContext.Request.Method },
                     { "path", context.HttpContext.Request.Path },
                     { "request", kasbahWebContext.RequestId.ToString() }
-                }
-            });
+                });
 
             var routeData = new RouteData(context.RouteData);
 
@@ -93,17 +83,11 @@ namespace Kasbah.Web.ContentDelivery
                 kasbahWebContext.Node = node;
                 if (node != null && node.PublishedVersion.HasValue)
                 {
-                    await _analyticsService.TrackEventAsync(new AnalyticsEvent
+                    await _analyticsService.TrackEventAsync(kasbahWebContext.Profile, "content:request", "router", new Dictionary<string, string>
                     {
-                        Profile = kasbahWebContext.Profile ?? Guid.Empty,
-                        Type = "content:request",
-                        Source = "router",
-                        Data = new Dictionary<string, string>
-                        {
-                            { "node", node.Id.ToString() },
-                            { "site", site.Alias },
-                            { "version", node.PublishedVersion.Value.ToString() }
-                        }
+                        { "node", node.Id.ToString() },
+                        { "site", site.Alias },
+                        { "version", node.PublishedVersion.Value.ToString() }
                     });
 
                     var type = _typeRegistry.GetType(node.Type);
@@ -113,9 +97,21 @@ namespace Kasbah.Web.ContentDelivery
                     var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
                     var content = await _typeMapper.MapTypeAsync(data, node.Type, node);
 
-                    // TODO: apply patches
+                    if (content is IBiasedContent)
+                    {
+                        var biasedContent = content as IBiasedContent;
 
-                    routeData.Values["content"] = content;
+                        await Task.WhenAll(biasedContent.Bias.Select(async ent => await _analyticsService.TriggerBiasAsync(kasbahWebContext.Profile, ent.Key, ent.Value)));
+                    }
+
+                    if (content is IPatchedContent)
+                    {
+                        routeData.Values["content"] = await _analyticsService.PatchContentAsync(kasbahWebContext.Profile, node, content, type);
+                    }
+                    else
+                    {
+                        routeData.Values["content"] = content;
+                    }
 
                     routeData.Values["controller"] = "DefaultContent";
                     routeData.Values["action"] = "RenderContent";

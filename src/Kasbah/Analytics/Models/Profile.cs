@@ -12,7 +12,7 @@ namespace Kasbah.Analytics.Models
     public class Profile : ProfileSummary
     {
         public IEnumerable<ProfileAttribute> Attributes { get; set; }
-        public IEnumerable<ProfileTrait> Traits { get; set; }
+        public IEnumerable<ProfileBias> Bias { get; set; }
         public IEnumerable<AnalyticsEvent> Events { get; set; }
     }
 
@@ -24,7 +24,7 @@ namespace Kasbah.Analytics.Models
         public DateTime Created { get; set; } = DateTime.UtcNow;
     }
 
-    public class ProfileTrait
+    public class ProfileBias
     {
         public Guid Profile { get; set; }
         public string Key { get; set; }

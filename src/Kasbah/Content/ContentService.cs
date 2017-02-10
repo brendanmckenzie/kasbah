@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Kasbah.DataAccess;
 using Kasbah.Content.Models;
+using Kasbah.Extensions;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
@@ -55,14 +56,14 @@ namespace Kasbah.Content
 
             await _dataAccessProvider.PutEntryAsync(Indicies.Nodes, id, node);
 
-            await _cache.RemoveAsync(nameof(DescribeTreeAsync));
+            await _cache?.RemoveAsync(nameof(DescribeTreeAsync));
 
             return id;
         }
 
         public async Task<IEnumerable<Node>> DescribeTreeAsync()
         {
-            return await CacheGetOrSet(nameof(DescribeTreeAsync), async () =>
+            return await _cache.GetOrSetAsync(nameof(DescribeTreeAsync), async () =>
             {
                 var entries = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, take: 1024);
 
@@ -74,7 +75,7 @@ namespace Kasbah.Content
         {
             try
             {
-                return await CacheGetOrSet($"{nameof(GetRawDataAsync)}_{id}_{version}", async () =>
+                return await _cache.GetOrSetAsync($"{nameof(GetRawDataAsync)}_{id}_{version}", async () =>
                 {
                     var node = await GetNodeAsync(id);
                     var type = Type.GetType(node.Type);
@@ -100,7 +101,7 @@ namespace Kasbah.Content
 
             var version = await _dataAccessProvider.PutEntryAsync(Indicies.Content, id, type, data);
 
-            await _cache.RemoveAsync($"{nameof(GetRawDataAsync)}_{id}_{null}");
+            await _cache?.RemoveAsync($"{nameof(GetRawDataAsync)}_{id}_{null}");
 
             node.Modified = DateTime.UtcNow;
             if (publish)
@@ -129,7 +130,7 @@ namespace Kasbah.Content
         public async Task<Node> GetNodeByTaxonomy(IEnumerable<string> aliases)
         {
             var key = $"{nameof(GetNodeByTaxonomy)}_{string.Join("_", aliases)}";
-            return await CacheGetOrSet(key, async () =>
+            return await _cache.GetOrSetAsync(key, async () =>
             {
                 var query = new
                 {
@@ -156,7 +157,7 @@ namespace Kasbah.Content
         public async Task<Node> GetNodeByTaxonomy(IEnumerable<Guid> ids)
         {
             var key = $"{nameof(GetNodeByTaxonomy)}_{string.Join("_", ids)}";
-            return await CacheGetOrSet(key, async () =>
+            return await _cache.GetOrSetAsync(key, async () =>
             {
                 var query = new
                 {
@@ -203,7 +204,7 @@ namespace Kasbah.Content
 
         public async Task<Node> GetNodeAsync(Guid id)
         {
-            return await CacheGetOrSet($"{nameof(GetNodeAsync)}_{id}", async () =>
+            return await _cache.GetOrSetAsync($"{nameof(GetNodeAsync)}_{id}", async () =>
             {
                 return (await _dataAccessProvider.GetEntryAsync<Node>(Indicies.Nodes, id)).Source;
             });
@@ -273,10 +274,10 @@ namespace Kasbah.Content
             await _dataAccessProvider.DeleteEntriesAsync<Node>(Indicies.Nodes, query);
             await Task.WhenAll(items
                 .Select(ent => _dataAccessProvider.DeleteEntryAsync(Indicies.Content, ent.Id, Type.GetType(ent.Source.Type))));
-            
-            await _cache.RemoveAsync(nameof(DescribeTreeAsync));
-            await _cache.RemoveAsync($"{nameof(GetNodeAsync)}_{id}");
-            await _cache.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", node.Taxonomy.Aliases)}");
+
+            await _cache?.RemoveAsync(nameof(DescribeTreeAsync));
+            await _cache?.RemoveAsync($"{nameof(GetNodeAsync)}_{id}");
+            await _cache?.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", node.Taxonomy.Aliases)}");
         }
 
         public async Task UpdateNodeAliasAsync(Guid id, string alias)
@@ -292,8 +293,8 @@ namespace Kasbah.Content
         {
             await _dataAccessProvider.PutEntryAsync(Indicies.Nodes, id, node);
 
-            await _cache.RemoveAsync($"{nameof(GetNodeAsync)}_{id}");
-            await _cache.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", node.Taxonomy.Aliases)}");
+            await _cache?.RemoveAsync($"{nameof(GetNodeAsync)}_{id}");
+            await _cache?.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", node.Taxonomy.Aliases)}");
         }
 
         async Task<NodeTaxonomy> CalculateTaxonomyAsync(Guid? parent, Guid id, string alias)
@@ -371,25 +372,6 @@ namespace Kasbah.Content
             };
 
             await _dataAccessProvider.PutTypeMappingAsync(Indicies.Nodes, typeof(Node), new { properties });
-        }
-
-        async Task<T> CacheGetOrSet<T>(string key, Func<Task<T>> generator)
-        {
-            // TODO: find out why GetStringAsync/SetStringAsync don't work
-            var cacheValue = _cache.GetString(key);
-            if (cacheValue == null)
-            {
-                _log.LogDebug($"Cache miss: {key}");
-                var generatedValue = await generator();
-
-                _cache.SetString(key, JsonConvert.SerializeObject(generatedValue));
-
-                return generatedValue;
-            }
-            else
-            {
-                return JsonConvert.DeserializeObject<T>(cacheValue);
-            }
         }
 
         #endregion

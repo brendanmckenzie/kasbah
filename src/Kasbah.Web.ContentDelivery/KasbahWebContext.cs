@@ -17,6 +17,6 @@ namespace Kasbah.Web.ContentDelivery
         public Guid RequestId { get; set; } = Guid.NewGuid();
         public Site Site { get; set; }
         public Node Node { get; set; }
-        public Guid? Profile { get; set; }
+        public Guid Profile { get; set; }
     }
 }

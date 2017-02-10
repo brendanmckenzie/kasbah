@@ -20,7 +20,6 @@ namespace Kasbah
             services.AddSingleton<SiteRegistry>();
 
             services.AddTransient<AnalyticsService>();
-            services.AddTransient<AnalyticsBus>();
             services.AddTransient<SecurityService>();
             services.AddTransient<ContentService>();
             services.AddTransient<MediaService>();
