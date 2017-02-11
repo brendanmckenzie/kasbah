@@ -9,6 +9,7 @@ using Kasbah.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Net.Http;
+using Kasbah.Content;
 
 namespace Kasbah.Analytics
 {
@@ -22,14 +23,16 @@ namespace Kasbah.Analytics
             public const string Events = "analytics_events";
         }
 
-        readonly IDataAccessProvider _dataAccessProvider;
-        readonly IDistributedCache _cache;
         readonly ILogger _log;
+        readonly IDataAccessProvider _dataAccessProvider;
+        readonly ContentService _contentService;
+        readonly IDistributedCache _cache;
 
-        public AnalyticsService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, IDistributedCache cache = null)
+        public AnalyticsService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, ContentService contentService, IDistributedCache cache = null)
         {
             _log = loggerFactory.CreateLogger<AnalyticsService>();
             _dataAccessProvider = dataAccessProvider;
+            _contentService = contentService;
             _cache = cache;
         }
 
@@ -139,6 +142,9 @@ namespace Kasbah.Analytics
 
         public async Task<object> PatchContentAsync(Guid profile, Node node, object content, TypeDefinition type)
         {
+            var profileObj = await GetProfileAsync(profile);
+            var patches = await _contentService.GetContentPatchesAsync(node.Id);
+
             // TODO: get a list of content patches and calculate which suit the profile
 
             return await Task.FromResult(content);

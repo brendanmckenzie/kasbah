@@ -59,7 +59,9 @@ namespace Kasbah.Web.ContentDelivery
                     { "host", context.HttpContext.Request.Host.ToString() },
                     { "method", context.HttpContext.Request.Method },
                     { "path", context.HttpContext.Request.Path },
-                    { "request", kasbahWebContext.RequestId.ToString() }
+                    { "remote_ip", context.HttpContext.Connection.RemoteIpAddress.ToString() },
+                    { "request", kasbahWebContext.RequestId.ToString() },
+                    { "instance", kasbahWebContext.WebApplication.Id.ToString() }
                 });
 
             var routeData = new RouteData(context.RouteData);

@@ -293,6 +293,11 @@ namespace Kasbah.Content
             throw await Task.FromResult(new NotImplementedException());
         }
 
+        public async Task<IDictionary<string, object>> GetContentPatchesAsync(Guid id)
+        {
+            return await Task.FromResult(default(IDictionary<string, object>));
+        }
+
         #endregion
 
         #region Private methods
