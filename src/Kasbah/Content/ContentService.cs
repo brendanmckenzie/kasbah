@@ -6,10 +6,10 @@ using Kasbah.Content.Models;
 using Kasbah.Extensions;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
-using System.Net.Http;
 using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System.Reflection;
+using Kasbah.Exceptions;
 
 namespace Kasbah.Content
 {
@@ -88,7 +88,7 @@ namespace Kasbah.Content
                     return res;
                 });
             }
-            catch (HttpRequestException)
+            catch (EntryNotFoundException)
             {
                 return null;
             }
@@ -293,9 +293,18 @@ namespace Kasbah.Content
             throw await Task.FromResult(new NotImplementedException());
         }
 
-        public async Task<IDictionary<string, object>> GetContentPatchesAsync(Guid id)
+        public async Task<IEnumerable<ContentPatch>> ListContentPatchesAsync(Guid id)
         {
-            return await Task.FromResult(default(IDictionary<string, object>));
+            var query = new
+            {
+                term = new
+                {
+                    Id = id
+                }
+            };
+            var entries = await _dataAccessProvider.QueryEntriesAsync<ContentPatch>(Indicies.PatchedContent, query);
+
+            return entries.Select(ent => ent.Source);
         }
 
         #endregion
@@ -357,6 +366,7 @@ namespace Kasbah.Content
         async Task UpdateMappingsAsync()
         {
             await UpdateNodeMappingAsync();
+            await UpdateContentPatchMappingAsync();
 
             await Task.WhenAll(
                 _typeRegistry.ListTypes()
@@ -385,6 +395,19 @@ namespace Kasbah.Content
             };
 
             await _dataAccessProvider.PutTypeMappingAsync(Indicies.Nodes, typeof(Node), new { properties });
+        }
+
+        async Task UpdateContentPatchMappingAsync()
+        {
+            var properties = new Dictionary<string, object> {
+                { nameof(ContentPatch.Id), new { type = "keyword" } },
+                { nameof(ContentPatch.Values), new { dynamic = true, properties = new object() } },
+                { nameof(ContentPatch.Attributes), new { dynamic = true, properties = new object() } },
+                { nameof(ContentPatch.Bias), new { dynamic = true, properties = new object() } },
+                { nameof(ContentPatch.Weight), new { type = "long" } }
+            };
+
+            await _dataAccessProvider.PutTypeMappingAsync(Indicies.PatchedContent, typeof(ContentPatch), new { properties });
         }
 
         #endregion

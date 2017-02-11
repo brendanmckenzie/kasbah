@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Kasbah.Content.Models;
+using Kasbah.Exceptions;
 using Kasbah.Media.Models;
 using Kasbah.Models;
 using Microsoft.Extensions.Logging;
@@ -102,28 +103,42 @@ namespace Kasbah.DataAccess.ElasticSearch
 
         public async Task<EntryWrapper<T>> GetEntryAsync<T>(string index, Guid id, long? version = null)
         {
-            var res = await _webClient.GetStringAsync(ItemUri<T>(index, id, version: version));
-            var ent = JsonConvert.DeserializeObject<SearchResultHitsHit<T>>(res);
-
-            return new EntryWrapper<T>
+            try
             {
-                Id = Guid.Parse(ent.Id),
-                Source = ent.Source,
-                Version = ent.Version
-            };
+                var res = await _webClient.GetStringAsync(ItemUri<T>(index, id, version: version));
+                var ent = JsonConvert.DeserializeObject<SearchResultHitsHit<T>>(res);
+
+                return new EntryWrapper<T>
+                {
+                    Id = Guid.Parse(ent.Id),
+                    Source = ent.Source,
+                    Version = ent.Version
+                };
+            }
+            catch (HttpRequestException)
+            {
+                throw new EntryNotFoundException(index, typeof(T), id, version);
+            }
         }
 
         public async Task<EntryWrapper<T>> GetEntryAsync<T>(string index, Guid id, Type type, long? version = null)
         {
-            var res = await _webClient.GetStringAsync(ItemUri(type, index, id, version: version));
-            var ent = JsonConvert.DeserializeObject<SearchResultHitsHit<T>>(res);
-
-            return new EntryWrapper<T>
+            try
             {
-                Id = Guid.Parse(ent.Id),
-                Source = ent.Source,
-                Version = ent.Version
-            };
+                var res = await _webClient.GetStringAsync(ItemUri(type, index, id, version: version));
+                var ent = JsonConvert.DeserializeObject<SearchResultHitsHit<T>>(res);
+
+                return new EntryWrapper<T>
+                {
+                    Id = Guid.Parse(ent.Id),
+                    Source = ent.Source,
+                    Version = ent.Version
+                };
+            }
+            catch (HttpRequestException)
+            {
+                throw new EntryNotFoundException(index, typeof(T), id, version);
+            }
         }
 
         public async Task EnsureIndexExistsAsync(string index)

@@ -8,8 +8,9 @@ using Kasbah.DataAccess;
 using Kasbah.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
-using System.Net.Http;
 using Kasbah.Content;
+using System.Reflection;
+using Kasbah.Exceptions;
 
 namespace Kasbah.Analytics
 {
@@ -26,13 +27,15 @@ namespace Kasbah.Analytics
         readonly ILogger _log;
         readonly IDataAccessProvider _dataAccessProvider;
         readonly ContentService _contentService;
+        readonly TypeMapper _typeMapper;
         readonly IDistributedCache _cache;
 
-        public AnalyticsService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, ContentService contentService, IDistributedCache cache = null)
+        public AnalyticsService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, ContentService contentService, TypeMapper typeMapper, IDistributedCache cache = null)
         {
             _log = loggerFactory.CreateLogger<AnalyticsService>();
             _dataAccessProvider = dataAccessProvider;
             _contentService = contentService;
+            _typeMapper = typeMapper;
             _cache = cache;
         }
 
@@ -143,9 +146,47 @@ namespace Kasbah.Analytics
         public async Task<object> PatchContentAsync(Guid profile, Node node, object content, TypeDefinition type)
         {
             var profileObj = await GetProfileAsync(profile);
-            var patches = await _contentService.GetContentPatchesAsync(node.Id);
+            var patches = await _contentService.ListContentPatchesAsync(node.Id);
 
-            // TODO: get a list of content patches and calculate which suit the profile
+            // TODO: calculate order of precedence on matching patches
+            var applicablePatches = patches.Where(patch =>
+                patch.Attributes.Any(patchAttr =>
+                {
+                    var profileAttr = profileObj.GetAttributeValue(patchAttr.Key);
+                    if (!string.IsNullOrEmpty(profileAttr))
+                    {
+                        return profileAttr == patchAttr.Value;
+                    }
+
+                    return false;
+                })
+                ||
+                patch.Bias.Any(patchBias =>
+                {
+                    var profileBias = profileObj.Bias.Where(bias => bias.Key == patchBias.Key).Sum(bias => bias.Value);
+
+                    return profileBias > patchBias.Value;
+                })
+            );
+
+            if (applicablePatches.Any())
+            {
+                var contentType = content.GetType().GetTypeInfo();
+
+                foreach (var patch in applicablePatches)
+                {
+                    foreach (var kvp in patch.Values)
+                    {
+                        var prop = contentType.GetProperty(kvp.Key);
+                        if (prop != null)
+                        {
+                            var value = await _typeMapper.MapPropertyAsync(kvp.Value, prop);
+
+                            prop.SetValue(content, value);
+                        }
+                    }
+                }
+            }
 
             return await Task.FromResult(content);
         }
@@ -217,7 +258,7 @@ namespace Kasbah.Analytics
 
                 profile = entry.Source;
             }
-            catch (HttpRequestException)
+            catch (EntryNotFoundException)
             {
                 profile = new Profile
                 {

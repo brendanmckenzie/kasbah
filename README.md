@@ -44,6 +44,8 @@ To work on the Kasbah content management UI, run the following command from the 
  * Modeling data in the user interface is counter-intuitive
  * Storing data in an indexed data store _and_ a database is unnecessarily complex
  * Simplify
+ * Running the content management system in the same application as the content delivery
+   introduces unnecessary risk and load to the distribution servers.
 
 # Authors
 
