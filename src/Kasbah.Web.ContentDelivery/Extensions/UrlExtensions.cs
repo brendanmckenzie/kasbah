@@ -10,6 +10,8 @@ namespace Kasbah.Web.ContentDelivery.Extensions
     {
         public static PathString ItemUrl(this IUrlHelper urlHelper, Item item, bool absolute = false)
         {
+            if (item == null) { return null; }
+
             var kasbahWebContext = urlHelper.ActionContext.RouteData.Values["kasbahWebContext"] as KasbahWebContext;
             var site = kasbahWebContext.SiteRegistry.GetSiteByNode(item.Node);
 
@@ -25,6 +27,8 @@ namespace Kasbah.Web.ContentDelivery.Extensions
 
         public static PathString MediaUrlAsync(this IUrlHelper urlHelper, MediaItem mediaItem, bool absolute = false)
         {
+            if (mediaItem == null) { return null; }
+
             var kasbahWebContext = urlHelper.ActionContext.RouteData.Values["kasbahWebContext"] as KasbahWebContext;
             // var site = kasbahWebContext.SiteRegistry.GetSiteByNode(item.Node);
 

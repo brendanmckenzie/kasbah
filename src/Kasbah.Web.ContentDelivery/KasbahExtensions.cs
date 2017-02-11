@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Kasbah.Analytics;
@@ -29,9 +31,15 @@ namespace Kasbah.Web.ContentDelivery
             return services;
         }
 
-        public static IApplicationBuilder UseKasbahPublic(this IApplicationBuilder app)
+        public static IApplicationBuilder UseKasbahPublic(this IApplicationBuilder app, IEnumerable<Type> middleware = null)
         {
             app.UseMiddleware<Middleware.AnalyticsMiddleware>();
+
+            foreach (var ent in middleware ?? Enumerable.Empty<Type>())
+            {
+                app.UseMiddleware(ent);
+            }
+
             app.UseMvc(routes =>
             {
                 var kasbahRouter = app.ApplicationServices.GetService<KasbahRouter>();

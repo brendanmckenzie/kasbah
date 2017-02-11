@@ -8,6 +8,7 @@ using Kasbah.DataAccess;
 using Kasbah.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
+using System.Net.Http;
 
 namespace Kasbah.Analytics
 {
@@ -43,6 +44,8 @@ namespace Kasbah.Analytics
             };
             await _dataAccessProvider.PutEntryAsync(Indicies.Events, Guid.NewGuid(), ev, waitForCommit: false);
 
+            await UpdateProfileLastActivityAsync(profile);
+
             await _cache.RemoveAsync(ProfileCacheKey(profile));
         }
 
@@ -56,6 +59,8 @@ namespace Kasbah.Analytics
             };
 
             await _dataAccessProvider.PutEntryAsync(Indicies.Bias, Guid.NewGuid(), attr, waitForCommit: false);
+
+            await UpdateProfileLastActivityAsync(profile);
 
             await _cache.RemoveAsync(ProfileCacheKey(profile));
         }
@@ -73,6 +78,8 @@ namespace Kasbah.Analytics
 
             if (clearCache)
             {
+                await UpdateProfileLastActivityAsync(profile);
+
                 await _cache.RemoveAsync(ProfileCacheKey(profile));
             }
         }
@@ -80,6 +87,8 @@ namespace Kasbah.Analytics
         public async Task SetAttributesAsync(Guid profile, IDictionary<string, string> values)
         {
             await Task.WhenAll(values.Select(async ent => await SetAttributeAsync(profile, ent.Key, ent.Value, false)));
+
+            await UpdateProfileLastActivityAsync(profile);
 
             await _cache.RemoveAsync(ProfileCacheKey(profile));
         }
@@ -148,7 +157,8 @@ namespace Kasbah.Analytics
         {
             var properties = new Dictionary<string, object> {
                 { nameof(Profile.Id), new { type = "keyword" } },
-                { nameof(Profile.Created), new { type = "date" } }
+                { nameof(Profile.Created), new { type = "date" } },
+                { nameof(Profile.LastActivity), new { type = "date" } }
             };
 
             await _dataAccessProvider.PutTypeMappingAsync(Indicies.Profiles, typeof(Profile), new { properties });
@@ -189,6 +199,30 @@ namespace Kasbah.Analytics
             };
 
             await _dataAccessProvider.PutTypeMappingAsync(Indicies.Bias, typeof(ProfileBias), new { properties });
+        }
+
+        async Task UpdateProfileLastActivityAsync(Guid id)
+        {
+            var profile = default(Profile);
+
+            try
+            {
+                var entry = await _dataAccessProvider.GetEntryAsync<Profile>(Indicies.Profiles, id);
+
+                profile = entry.Source;
+            }
+            catch (HttpRequestException)
+            {
+                profile = new Profile
+                {
+                    Id = id,
+                    Created = DateTime.UtcNow
+                };
+            }
+
+            profile.LastActivity = DateTime.UtcNow;
+
+            await _dataAccessProvider.PutEntryAsync(Indicies.Profiles, id, profile);
         }
 
         string ProfileCacheKey(Guid profile) => $"{nameof(Profile)}_{profile}";

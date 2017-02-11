@@ -53,8 +53,28 @@ class View extends React.Component {
             </tbody>
           </table>
         </Tab>
-        <Tab title='Traits'>
+        <Tab title='Bias'>
           <p>Work in progress...</p>
+        </Tab>
+        <Tab title='Attributes'>
+          <table className='table is-hover'>
+            <thead>
+              <tr>
+                <th>Attribute</th>
+                <th>Value</th>
+                <th style={{ width: 200 }}>Created</th>
+              </tr>
+            </thead>
+            <tbody>
+              {_(this.props.getProfile.payload.attributes).sortBy('created').reverse().map((ent, index) => (
+                <tr key={index}>
+                  <td>{ent.key}</td>
+                  <td><pre>{ent.value}</pre></td>
+                  <td>{moment(ent.lastActivity).fromNow()}</td>
+                </tr>
+              )).value()}
+            </tbody>
+          </table>
         </Tab>
       </Tabs>
     )

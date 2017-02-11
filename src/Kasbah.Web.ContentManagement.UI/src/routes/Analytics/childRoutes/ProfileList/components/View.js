@@ -29,14 +29,14 @@ class View extends React.Component {
         <thead>
           <tr>
             <th>Id</th>
-            <th style={{ width: 200 }}>Created</th>
+            <th style={{ width: 200 }}>Last activity</th>
           </tr>
         </thead>
         <tbody>
-          {_(this.props.listProfiles.payload).sortBy('created').reverse().map(ent => (
+          {_(this.props.listProfiles.payload).sortBy('lastActivity').reverse().map(ent => (
             <tr key={ent.id}>
               <td className='is-link'><Link to={`/analytics/profile/${ent.id}`}>{ent.id}</Link></td>
-              <td>{moment(ent.created).fromNow()}</td>
+              <td>{moment(ent.lastActivity).fromNow()}</td>
             </tr>
           )).value()}
         </tbody>
