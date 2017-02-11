@@ -16,12 +16,10 @@
   }
 
   AnalyticsTracker.prototype.push = function (ev) {
-    this.makeRequest('/analytics/track', {
+    this.makeRequest('/analytics/event', {
       type: ev.type,
       source: ev.source,
-      data: ev.data || {},
-      persona: typeof localStorage['kasbah:persona'] === 'undefined' ? null : localStorage['kasbah:persona'],
-      session: typeof sessionStorage['kasbah:session'] === 'undefined' ? null : sessionStorage['kasbah:session']
+      data: ev.data || {}
     })
   }
 
