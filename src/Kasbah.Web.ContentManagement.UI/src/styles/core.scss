@@ -73,7 +73,7 @@ blockquote {
     margin-bottom: 10px;
 }
 
-.media-picker .card, .node-picker .card {
+.media-picker .card {
     cursor: pointer;
 
     .card-content {
@@ -101,6 +101,24 @@ blockquote {
           height: 32px;
           background-color: $turquoise;
           z-index: 99;
+      }
+    }
+}
+
+.node-picker .card {
+    cursor: pointer;
+
+    .card-content {
+      padding: .5rem;
+    }
+
+    &.is-selected {
+      .card-content {
+        background-color: $turquoise;
+
+        strong, span {
+          color: white;
+        }
       }
     }
 }
