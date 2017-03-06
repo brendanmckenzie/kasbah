@@ -34,6 +34,9 @@ namespace Kasbah.Web.ContentDelivery
         public static IApplicationBuilder UseKasbahPublic(this IApplicationBuilder app, IEnumerable<Type> middleware = null)
         {
             app.UseMiddleware<Middleware.AnalyticsMiddleware>();
+            app.UseMiddleware<Middleware.KasbahWebContextInitialisationMiddleware>();
+            app.UseMiddleware<Middleware.SiteResolverMiddleware>();
+            app.UseMiddleware<Middleware.NodeResolverMiddleware>();
 
             foreach (var ent in middleware ?? Enumerable.Empty<Type>())
             {
