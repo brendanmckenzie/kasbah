@@ -10,6 +10,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
 using System.Reflection;
 using Kasbah.Exceptions;
+using Kasbah.Content.Events;
 
 namespace Kasbah.Content
 {
@@ -26,13 +27,15 @@ namespace Kasbah.Content
         readonly IDataAccessProvider _dataAccessProvider;
         readonly IDistributedCache _cache;
         readonly TypeRegistry _typeRegistry;
+        readonly IEnumerable<IOnContentPublished> _contentPublishedHandlers;
 
-        public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, TypeRegistry typeRegistry, IDistributedCache cache = null)
+        public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, TypeRegistry typeRegistry, IEnumerable<IOnContentPublished> contentPublishedHandlers, IDistributedCache cache = null)
         {
             _log = loggerFactory.CreateLogger<ContentService>();
             _dataAccessProvider = dataAccessProvider;
-            _cache = cache;
             _typeRegistry = typeRegistry;
+            _contentPublishedHandlers = contentPublishedHandlers;
+            _cache = cache;
         }
 
         #region Public methods
@@ -107,6 +110,8 @@ namespace Kasbah.Content
             if (publish)
             {
                 node.PublishedVersion = version;
+
+                await Task.WhenAll(_contentPublishedHandlers?.Select(ent => ent.ContentPublishedAsync(node)));
             }
 
             await UpdateNodeAsync(id, node);
