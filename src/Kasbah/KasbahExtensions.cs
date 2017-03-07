@@ -19,6 +19,8 @@ namespace Kasbah
             services.AddSingleton<TypeRegistry>();
             services.AddSingleton<SiteRegistry>();
 
+            services.AddTransient<Content.Events.EventBus>();
+
             services.AddTransient<AnalyticsService>();
             services.AddTransient<SecurityService>();
             services.AddTransient<ContentService>();
