@@ -232,7 +232,7 @@ namespace Kasbah.Content
                 }
             };
 
-            var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
+            var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query, take: 1024);
 
             return items.Select(ent => ent.Source);
         }
