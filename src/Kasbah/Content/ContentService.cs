@@ -27,14 +27,14 @@ namespace Kasbah.Content
         readonly IDataAccessProvider _dataAccessProvider;
         readonly IDistributedCache _cache;
         readonly TypeRegistry _typeRegistry;
-        readonly IEnumerable<IOnContentPublished> _contentPublishedHandlers;
+        readonly EventBus _eventBus;
 
-        public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, TypeRegistry typeRegistry, IEnumerable<IOnContentPublished> contentPublishedHandlers, IDistributedCache cache = null)
+        public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, TypeRegistry typeRegistry, EventBus eventBus, IDistributedCache cache = null)
         {
             _log = loggerFactory.CreateLogger<ContentService>();
             _dataAccessProvider = dataAccessProvider;
             _typeRegistry = typeRegistry;
-            _contentPublishedHandlers = contentPublishedHandlers;
+            _eventBus = eventBus;
             _cache = cache;
         }
 
@@ -111,7 +111,7 @@ namespace Kasbah.Content
             {
                 node.PublishedVersion = version;
 
-                await Task.WhenAll(_contentPublishedHandlers?.Select(ent => ent.ContentPublishedAsync(node)));
+                await _eventBus.TriggerContentPublished(node);
             }
 
             await UpdateNodeAsync(id, node);
