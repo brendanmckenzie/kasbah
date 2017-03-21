@@ -21,10 +21,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
     <PackageReference Include="Quartz" Version="3.0.0-alpha2" />
-    <PackageReference Include="ImageSharp" Version="1.0.0-alpha2-00154" />
-    <PackageReference Include="ImageSharp.Processing" Version="1.0.0-alpha2-00146" />
-    <PackageReference Include="ImageSharp.Formats.Jpeg" Version="1.0.0-alpha2-00154" />
-    <PackageReference Include="ImageSharp.Formats.Png" Version="1.0.0-alpha2-00154" />
+    <PackageReference Include="ImageSharp" Version="1.0.0-*" />
+    <PackageReference Include="ImageSharp.Processing" Version="1.0.0-*" />
+    <PackageReference Include="ImageSharp.Formats.Jpeg" Version="1.0.0-*" />
+    <PackageReference Include="ImageSharp.Formats.Png" Version="1.0.0-*" />
   </ItemGroup>
 
 </Project>
