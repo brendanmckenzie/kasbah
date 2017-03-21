@@ -14,7 +14,7 @@ build:admin_ui:
 
 build:dotnet:
     stage: build
-    image: microsoft/dotnet:1.1.0-sdk-msbuild-rc4
+    image: microsoft/dotnet:1.1.1-sdk-1.0.0
     dependencies:
     - build:admin_ui
     script:
