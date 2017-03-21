@@ -24,9 +24,6 @@
     <PackageReference Include="AspNet.Security.OpenIdConnect.Server" Version="1.0.0-beta7-final" />
     <PackageReference Include="AspNet.Security.OAuth.Validation" Version="1.0.0-alpha2-final" />
     <PackageReference Include="ImageSharp" Version="1.0.0-*" />
-    <PackageReference Include="ImageSharp.Processing" Version="1.0.0-*" />
-    <PackageReference Include="ImageSharp.Formats.Jpeg" Version="1.0.0-*" />
-    <PackageReference Include="ImageSharp.Formats.Png" Version="1.0.0-*" />
   </ItemGroup>
 
 </Project>
