@@ -28,7 +28,7 @@ class Content extends React.Component {
         <div key={ent.id} className='level'>
           <div className='level-left level-shrink'>
             <div className='level-item level-shrink'>
-              <p><Link to={`/content/${ent.id}`}>{ent.displayName}</Link></p>
+              <p><Link to={`/content/${ent.id}`}>{ent.displayName || ent.alias}</Link></p>
             </div>
           </div>
           <div className='level-right'>

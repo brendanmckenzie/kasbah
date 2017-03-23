@@ -1,13 +1,11 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Kasbah.DataAccess;
 using Kasbah.Content.Models;
 using Kasbah.Extensions;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
 using System.Reflection;
 using Kasbah.Exceptions;
 using Kasbah.Content.Events;
@@ -16,23 +14,16 @@ namespace Kasbah.Content
 {
     public class ContentService
     {
-        static class Indicies
-        {
-            public const string Nodes = "nodes";
-            public const string Content = "content";
-            public const string PatchedContent = "content_patched";
-        }
-
         readonly ILogger _log;
-        readonly IDataAccessProvider _dataAccessProvider;
+        readonly IContentProvider _contentProvider;
         readonly IDistributedCache _cache;
         readonly TypeRegistry _typeRegistry;
         readonly EventBus _eventBus;
 
-        public ContentService(ILoggerFactory loggerFactory, IDataAccessProvider dataAccessProvider, TypeRegistry typeRegistry, EventBus eventBus, IDistributedCache cache = null)
+        public ContentService(ILoggerFactory loggerFactory, IContentProvider contentProvider, TypeRegistry typeRegistry, EventBus eventBus, IDistributedCache cache = null)
         {
             _log = loggerFactory.CreateLogger<ContentService>();
-            _dataAccessProvider = dataAccessProvider;
+            _contentProvider = contentProvider;
             _typeRegistry = typeRegistry;
             _eventBus = eventBus;
             _cache = cache;
@@ -44,20 +35,7 @@ namespace Kasbah.Content
         {
             await CheckCanCreateNodeAsync(parent, alias, type);
 
-            var id = Guid.NewGuid();
-            var node = new Node
-            {
-                Id = id,
-                Parent = parent,
-                Alias = alias,
-                DisplayName = displayName ?? alias,
-                Type = type,
-                Taxonomy = await CalculateTaxonomyAsync(parent, id, alias),
-                Created = DateTime.UtcNow,
-                Modified = DateTime.UtcNow
-            };
-
-            await _dataAccessProvider.PutEntryAsync(Indicies.Nodes, id, node);
+            var id = await _contentProvider.CreateNodeAsync(parent, alias, type, displayName);
 
             await _cache?.RemoveAsync(nameof(DescribeTreeAsync));
 
@@ -65,14 +43,7 @@ namespace Kasbah.Content
         }
 
         public async Task<IEnumerable<Node>> DescribeTreeAsync()
-        {
-            return await _cache.GetOrSetAsync(nameof(DescribeTreeAsync), async () =>
-            {
-                var entries = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, take: 1024);
-
-                return entries.Select(ent => ent.Source);
-            });
-        }
+            => await _contentProvider.DescribeTreeAsync();
 
         public async Task<IDictionary<string, object>> GetRawDataAsync(Guid id, long? version = null)
         {
@@ -80,15 +51,7 @@ namespace Kasbah.Content
             {
                 return await _cache.GetOrSetAsync($"{nameof(GetRawDataAsync)}_{id}_{version}", async () =>
                 {
-                    var node = await GetNodeAsync(id);
-                    var type = Type.GetType(node.Type);
-
-                    var data = await _dataAccessProvider.GetEntryAsync<IDictionary<string, object>>(Indicies.Content, id, type, version);
-
-                    var res = data.Source;
-                    res["_version"] = data.Version;
-
-                    return res;
+                    return await _contentProvider.GetRawDataAsync(id, version);
                 });
             }
             catch (EntryNotFoundException)
@@ -100,21 +63,17 @@ namespace Kasbah.Content
         public async Task UpdateDataAsync(Guid id, IDictionary<string, object> data, bool publish)
         {
             var node = await GetNodeAsync(id);
-            var type = Type.GetType(node.Type);
 
-            var version = await _dataAccessProvider.PutEntryAsync(Indicies.Content, id, type, data);
+            await _contentProvider.UpdateDataAsync(id, data, publish);
 
             await _cache?.RemoveAsync($"{nameof(GetRawDataAsync)}_{id}_{null}");
-
-            node.Modified = DateTime.UtcNow;
             if (publish)
             {
-                node.PublishedVersion = version;
-
                 await _eventBus.TriggerContentPublished(node);
             }
 
-            await UpdateNodeAsync(id, node);
+            await _cache?.RemoveAsync($"{nameof(GetNodeAsync)}_{id}");
+            await _cache?.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", node.Taxonomy.Aliases)}");
         }
 
         // TODO: could probably use better naming conventions
@@ -133,58 +92,10 @@ namespace Kasbah.Content
         }
 
         public async Task<Node> GetNodeByTaxonomy(IEnumerable<string> aliases)
-        {
-            var key = $"{nameof(GetNodeByTaxonomy)}_{string.Join("_", aliases)}";
-            return await _cache.GetOrSetAsync(key, async () =>
-            {
-                var query = new
-                {
-                    @bool = new
-                    {
-                        must = aliases.Select(ent => new QueryMatch
-                        {
-                            Match = new Dictionary<string, string> {
-                                { "Taxonomy.Aliases", ent }
-                            }
-                        }).Concat(new[] { new QueryMatch {
-                            Match = new Dictionary<string, int> {
-                                { "Taxonomy.Length", aliases.Count() }
-                            }
-                        }})
-                    }
-                };
-                var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
-
-                return items.Select(ent => ent.Source).FirstOrDefault();
-            });
-        }
+            => await _contentProvider.GetNodeByTaxonomy(aliases);
 
         public async Task<Node> GetNodeByTaxonomy(IEnumerable<Guid> ids)
-        {
-            var key = $"{nameof(GetNodeByTaxonomy)}_{string.Join("_", ids)}";
-            return await _cache.GetOrSetAsync(key, async () =>
-            {
-                var query = new
-                {
-                    @bool = new
-                    {
-                        must = ids.Select(ent => new QueryMatch
-                        {
-                            Match = new Dictionary<string, Guid> {
-                            { "Taxonomy.Ids", ent }
-                        }
-                        }).Concat(new[] { new QueryMatch {
-                            Match = new Dictionary<string, int> {
-                                { "Taxonomy.Length", ids.Count() }
-                            }
-                        }})
-                    }
-                };
-                var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
-
-                return items.Select(ent => ent.Source).FirstOrDefault();
-            });
-        }
+            => await _contentProvider.GetNodeByTaxonomy(ids);
 
         public async Task<Node> GetChildByAliasAsync(Guid? parent, string alias)
         {
@@ -200,20 +111,11 @@ namespace Kasbah.Content
         {
             _log.LogDebug($"Initialising {nameof(ContentService)}");
 
-            await Task.WhenAll(
-                _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Nodes),
-                _dataAccessProvider.EnsureIndexExistsAsync(Indicies.Content),
-                _dataAccessProvider.EnsureIndexExistsAsync(Indicies.PatchedContent),
-                UpdateMappingsAsync());
+            await Task.Delay(0);
         }
 
         public async Task<Node> GetNodeAsync(Guid id)
-        {
-            return await _cache.GetOrSetAsync($"{nameof(GetNodeAsync)}_{id}", async () =>
-            {
-                return (await _dataAccessProvider.GetEntryAsync<Node>(Indicies.Nodes, id)).Source;
-            });
-        }
+            => await _contentProvider.GetNodeAsync(id);
 
         public async Task<IEnumerable<Node>> GetNodesByType(string type, bool inherit = false)
         {
@@ -229,68 +131,20 @@ namespace Kasbah.Content
 
             }
 
-            var query = new
-            {
-                terms = new
-                {
-                    Type = typesToQuery
-                }
-            };
-
-            var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query, take: 1024);
-
-            return items.Select(ent => ent.Source);
+            return await _contentProvider.GetNodesByType(typesToQuery);
         }
 
         public async Task<IEnumerable<Node>> GetRecentlyModified(int take)
         {
-            var sort = new object[] {
-                new {
-                    Modified = new {
-                        order = "desc"
-                    }
-                },
-                "_score"
-            };
+            // TODO: optimise
+            var tree = await DescribeTreeAsync();
 
-            var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, take: take, sort: sort);
-
-            return items.Select(ent => ent.Source);
+            return tree.OrderByDescending(ent => ent.Modified).Take(take);
         }
 
         public async Task<long> DeleteNodeAsync(Guid id)
         {
-            var node = await GetNodeAsync(id);
-
-            var query = new
-            {
-                @bool = new
-                {
-                    must = node.Taxonomy.Aliases.Select(ent => new QueryMatch
-                    {
-                        Match = new Dictionary<string, string> {
-                                { "Taxonomy.Aliases", ent }
-                            }
-                    })
-                }
-            };
-            var items = await _dataAccessProvider.QueryEntriesAsync<Node>(Indicies.Nodes, query);
-
-            var deleted = await _dataAccessProvider.DeleteEntriesAsync<Node>(Indicies.Nodes, new { query });
-
-            await Task.WhenAll(items
-                .Select(ent => _dataAccessProvider.DeleteEntryAsync(Indicies.Content, ent.Id, Type.GetType(ent.Source.Type))));
-
-            await _cache?.RemoveAsync(nameof(DescribeTreeAsync));
-            await _cache?.RemoveAsync($"{nameof(GetNodeAsync)}_{id}");
-            await _cache?.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", node.Taxonomy.Aliases)}");
-            foreach (var item in items)
-            {
-                await _cache?.RemoveAsync($"{nameof(GetNodeAsync)}_{item.Id}");
-                await _cache?.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", item.Source.Taxonomy.Aliases)}");
-            }
-
-            return deleted;
+            throw await Task.FromResult(new NotImplementedException());
         }
 
         public async Task UpdateNodeAliasAsync(Guid id, string alias)
@@ -300,53 +154,12 @@ namespace Kasbah.Content
 
         public async Task<IEnumerable<ContentPatch>> ListContentPatchesAsync(Guid id)
         {
-            var query = new
-            {
-                term = new
-                {
-                    Id = id
-                }
-            };
-            var entries = await _dataAccessProvider.QueryEntriesAsync<ContentPatch>(Indicies.PatchedContent, query);
-
-            return entries.Select(ent => ent.Source);
+            throw await Task.FromResult(new NotImplementedException());
         }
 
         #endregion
 
         #region Private methods
-
-        async Task UpdateNodeAsync(Guid id, Node node)
-        {
-            await _dataAccessProvider.PutEntryAsync(Indicies.Nodes, id, node);
-
-            await _cache?.RemoveAsync($"{nameof(GetNodeAsync)}_{id}");
-            await _cache?.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", node.Taxonomy.Aliases)}");
-        }
-
-        async Task<NodeTaxonomy> CalculateTaxonomyAsync(Guid? parent, Guid id, string alias)
-        {
-            if (!parent.HasValue)
-            {
-                return new NodeTaxonomy
-                {
-                    Ids = new[] { id },
-                    Aliases = new[] { alias },
-                    Length = 1
-                };
-            }
-            else
-            {
-                var node = await GetNodeAsync(parent.Value);
-
-                return new NodeTaxonomy
-                {
-                    Ids = node.Taxonomy.Ids.Concat(new[] { id }),
-                    Aliases = node.Taxonomy.Aliases.Concat(new[] { alias }),
-                    Length = node.Taxonomy.Aliases.Count() + 1
-                };
-            }
-        }
 
         async Task CheckCanCreateNodeAsync(Guid? parent, string alias, string type)
         {
@@ -368,59 +181,6 @@ namespace Kasbah.Content
             if (tree.Any(ent => ent.Alias == alias && ent.Parent == parent)) { throw new InvalidOperationException($"Node with alias {alias} already exists under {parent}"); }
         }
 
-        async Task UpdateMappingsAsync()
-        {
-            await UpdateNodeMappingAsync();
-            await UpdateContentPatchMappingAsync();
-
-            await Task.WhenAll(
-                _typeRegistry.ListTypes()
-                    .Select(ent => _dataAccessProvider.PutTypeMappingAsync(Indicies.Content, Type.GetType(ent.Alias)))
-            );
-        }
-
-        async Task UpdateNodeMappingAsync()
-        {
-            var properties = new Dictionary<string, object> {
-                { nameof(Node.Id), new { type = "keyword" } },
-                { nameof(Node.Parent), new { type = "keyword" } },
-                { nameof(Node.Taxonomy), new {
-                    properties = new Dictionary<string, object> {
-                        { nameof(NodeTaxonomy.Ids), new { type = "keyword" } },
-                        { nameof(NodeTaxonomy.Aliases), new { type = "keyword" } },
-                        { nameof(NodeTaxonomy.Length), new { type = "integer" } }
-                    }
-                 } },
-                { nameof(Node.Alias), new { type = "keyword" } },
-                { nameof(Node.Type), new { type = "keyword" } },
-                { nameof(Node.DisplayName), new { type = "text" } },
-                { nameof(Node.PublishedVersion), new { type = "integer" } },
-                { nameof(Node.Created), new { type = "date" } },
-                { nameof(Node.Modified), new { type = "date" } }
-            };
-
-            await _dataAccessProvider.PutTypeMappingAsync(Indicies.Nodes, typeof(Node), new { properties });
-        }
-
-        async Task UpdateContentPatchMappingAsync()
-        {
-            var properties = new Dictionary<string, object> {
-                { nameof(ContentPatch.Id), new { type = "keyword" } },
-                { nameof(ContentPatch.Values), new { dynamic = true, properties = new object() } },
-                { nameof(ContentPatch.Attributes), new { dynamic = true, properties = new object() } },
-                { nameof(ContentPatch.Bias), new { dynamic = true, properties = new object() } },
-                { nameof(ContentPatch.Weight), new { type = "long" } }
-            };
-
-            await _dataAccessProvider.PutTypeMappingAsync(Indicies.PatchedContent, typeof(ContentPatch), new { properties });
-        }
-
         #endregion
-
-        class QueryMatch
-        {
-            [JsonProperty("match")]
-            public object Match { get; set; }
-        }
     }
 }

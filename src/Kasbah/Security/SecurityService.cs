@@ -13,16 +13,15 @@ namespace Kasbah.Security
 {
     public class SecurityService
     {
-        const string IndexName = "security";
-        readonly IDataAccessProvider _dataAccessProvider;
+        readonly IUserProvider _userProvider;
         readonly ILogger _log;
         readonly int _iterCount = 4;
         readonly RandomNumberGenerator _rng;
 
-        public SecurityService(IDataAccessProvider dataAccessProvider, ILoggerFactory loggerFactory)
+        public SecurityService(IUserProvider userProvider, ILoggerFactory loggerFactory)
         {
             _log = loggerFactory.CreateLogger<SecurityService>();
-            _dataAccessProvider = dataAccessProvider;
+            _userProvider = userProvider;
 
             _rng = RandomNumberGenerator.Create();
         }
@@ -38,7 +37,7 @@ namespace Kasbah.Security
                 {
                     user.LastLogin = DateTime.UtcNow;
 
-                    await _dataAccessProvider.PutEntryAsync(IndexName, user.Id, user);
+                    await _userProvider.UpdateLastLoginAsync(user.Id);
 
                     return user;
                 }
@@ -59,39 +58,12 @@ namespace Kasbah.Security
                 throw new UserAlreadyExistsException();
             }
 
-            var id = Guid.NewGuid();
-            var user = new User
-            {
-                Id = id,
-                Username = username,
-                Password = EncryptPassword(password),
-                Name = name,
-                Email = email,
-                Created = DateTime.UtcNow,
-                Modified = DateTime.UtcNow
-            };
-
-            await _dataAccessProvider.PutEntryAsync(IndexName, id, user);
-
-            return id;
-        }
-
-        public async Task<IEnumerable<User>> ListUsersAsync()
-        {
-            var entries = await _dataAccessProvider.QueryEntriesAsync<User>(IndexName, null);
-
-            foreach (var entry in entries)
-            {
-                entry.Source.Password = null;
-            }
-
-            return entries.Select(ent => ent.Source);
+            return await _userProvider.CreateUserAsync(username, EncryptPassword(password), name, email);
         }
 
         public async Task InitialiseAsync()
         {
             _log.LogDebug($"Initialising {nameof(SecurityService)}");
-            await _dataAccessProvider.EnsureIndexExistsAsync(IndexName);
 
             // This isn't ideal, but we need to seed the data somehow/somewhere
             var adminUser = await GetUserAsync("admin");
@@ -107,11 +79,7 @@ namespace Kasbah.Security
         #region Private methods
 
         async Task<User> GetUserAsync(string username)
-        {
-            var entries = await _dataAccessProvider.QueryEntriesAsync<User>(IndexName, new { term = new { Username = username } });
-
-            return entries.FirstOrDefault()?.Source;
-        }
+            => await _userProvider.GetUserByUsernameAsync(username);
 
         string EncryptPassword(string input)
         {

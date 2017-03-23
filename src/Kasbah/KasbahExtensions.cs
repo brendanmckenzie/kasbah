@@ -21,11 +21,11 @@ namespace Kasbah
 
             services.AddTransient<Content.Events.EventBus>();
 
-            services.AddTransient<AnalyticsService>();
+            // services.AddTransient<AnalyticsService>();
             services.AddTransient<SecurityService>();
             services.AddTransient<ContentService>();
             services.AddTransient<MediaService>();
-            services.AddTransient<LoggingService>();
+            // services.AddTransient<LoggingService>();
 
             return services;
         }
@@ -43,11 +43,11 @@ namespace Kasbah
             registration.RegisterSites(siteRegistry);
 
             await Task.WhenAll(
-                services.GetService<AnalyticsService>().InitialiseAsync(),
+                // services.GetService<AnalyticsService>().InitialiseAsync(),
+                // services.GetService<LoggingService>().InitialiseAsync(),
                 services.GetService<ContentService>().InitialiseAsync(),
                 services.GetService<MediaService>().InitialiseAsync(),
-                services.GetService<SecurityService>().InitialiseAsync(),
-                services.GetService<LoggingService>().InitialiseAsync());
+                services.GetService<SecurityService>().InitialiseAsync());
         }
     }
 }

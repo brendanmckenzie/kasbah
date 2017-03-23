@@ -1,17 +1,19 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kasbah", "src\Kasbah\Kasbah.csproj", "{6DEAD1AB-91CE-4F3E-8318-54B309FA3A4F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kasbah.DataAccess.ElasticSearch", "src\Kasbah.DataAccess.ElasticSearch\Kasbah.DataAccess.ElasticSearch.csproj", "{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kasbah.Media.S3", "src\Kasbah.Media.S3\Kasbah.Media.S3.csproj", "{12B556FF-378C-4E46-BEF1-5291D0E5E1EE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kasbah.Web.ContentDelivery", "src\Kasbah.Web.ContentDelivery\Kasbah.Web.ContentDelivery.csproj", "{C7BA1AE7-A251-4AD2-8DC2-49E4935F9D43}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kasbah.Web.ContentManagement", "src\Kasbah.Web.ContentManagement\Kasbah.Web.ContentManagement.csproj", "{7A55A986-A8A2-4B15-8557-BE857088C264}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{76C2BD1C-B34B-4FDB-9B51-0586438938AB}"
+EndProject
+Project("{13B669BE-BB05-4DDF-9536-439F39A36129}") = "Kasbah.DataAccess.Npgsql", "src\Kasbah.DataAccess.Npgsql\Kasbah.DataAccess.Npgsql.csproj", "{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,18 +37,6 @@ Global
 		{6DEAD1AB-91CE-4F3E-8318-54B309FA3A4F}.Release|x64.Build.0 = Release|x64
 		{6DEAD1AB-91CE-4F3E-8318-54B309FA3A4F}.Release|x86.ActiveCfg = Release|x86
 		{6DEAD1AB-91CE-4F3E-8318-54B309FA3A4F}.Release|x86.Build.0 = Release|x86
-		{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}.Debug|x64.ActiveCfg = Debug|x64
-		{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}.Debug|x64.Build.0 = Debug|x64
-		{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}.Debug|x86.ActiveCfg = Debug|x86
-		{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}.Debug|x86.Build.0 = Debug|x86
-		{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}.Release|x64.ActiveCfg = Release|x64
-		{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}.Release|x64.Build.0 = Release|x64
-		{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}.Release|x86.ActiveCfg = Release|x86
-		{0B8C734A-9B17-4A5D-B50B-1E0634A5D51E}.Release|x86.Build.0 = Release|x86
 		{12B556FF-378C-4E46-BEF1-5291D0E5E1EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{12B556FF-378C-4E46-BEF1-5291D0E5E1EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{12B556FF-378C-4E46-BEF1-5291D0E5E1EE}.Debug|x64.ActiveCfg = Debug|x64
@@ -83,8 +73,23 @@ Global
 		{7A55A986-A8A2-4B15-8557-BE857088C264}.Release|x64.Build.0 = Release|x64
 		{7A55A986-A8A2-4B15-8557-BE857088C264}.Release|x86.ActiveCfg = Release|x86
 		{7A55A986-A8A2-4B15-8557-BE857088C264}.Release|x86.Build.0 = Release|x86
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Debug|x64.ActiveCfg = Debug|x64
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Debug|x64.Build.0 = Debug|x64
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Debug|x86.ActiveCfg = Debug|x86
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Debug|x86.Build.0 = Debug|x86
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Release|x64.ActiveCfg = Release|x64
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Release|x64.Build.0 = Release|x64
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Release|x86.ActiveCfg = Release|x86
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D} = {76C2BD1C-B34B-4FDB-9B51-0586438938AB}
 	EndGlobalSection
 EndGlobal

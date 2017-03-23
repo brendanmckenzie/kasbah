@@ -61,13 +61,12 @@ namespace Kasbah.Web.ContentDelivery
         static async Task InitialiseAsync(IServiceProvider services)
         {
             var application = services.GetService<KasbahWebApplication>();
-            var loggingService = services.GetService<LoggingService>();
+            // var loggingService = services.GetService<LoggingService>();
 
             await Task.WhenAll(
                 services.GetService<ContentService>().InitialiseAsync(),
-                services.GetService<AnalyticsService>().InitialiseAsync(),
-                loggingService.InitialiseAsync(),
-                loggingService.RegisterInstanceAsync(application.Id, application.Started),
+                // loggingService.InitialiseAsync(),
+                // loggingService.RegisterInstanceAsync(application.Id, application.Started),
                 Jobs.Configure.ConfigureJobsAsync(services));
 
             var typeRegistry = services.GetService<TypeRegistry>();

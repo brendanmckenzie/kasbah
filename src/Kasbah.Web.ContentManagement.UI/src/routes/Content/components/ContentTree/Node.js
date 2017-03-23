@@ -59,7 +59,7 @@ class Node extends React.Component {
   }
 
   render() {
-    const { node: { id, displayName } } = this.props
+    const { node: { id, displayName, alias } } = this.props
 
     return (
       <li>
@@ -77,7 +77,7 @@ class Node extends React.Component {
             </span>
             <Link to={`/content/${id}`}
               className='level-item level-shrink'
-              activeClassName='is-active'>{displayName}</Link>
+              activeClassName='is-active'>{displayName || alias}</Link>
           </div>
         </div>
         {this.tree}
