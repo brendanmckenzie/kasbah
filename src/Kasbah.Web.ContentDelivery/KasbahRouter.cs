@@ -16,17 +16,15 @@ namespace Kasbah.Web.ContentDelivery
         readonly ContentService _contentService;
         readonly TypeRegistry _typeRegistry;
         readonly KasbahWebApplication _kasbahWebApplication;
-        readonly AnalyticsService _analyticsService;
         readonly TypeMapper _typeMapper;
 
 
-        public KasbahRouter(ILoggerFactory loggerFactory, ContentService contentService, TypeRegistry typeRegistry, KasbahWebApplication kasbahWebApplication, AnalyticsService analyticsService, TypeMapper typeMapper)
+        public KasbahRouter(ILoggerFactory loggerFactory, ContentService contentService, TypeRegistry typeRegistry, KasbahWebApplication kasbahWebApplication, TypeMapper typeMapper)
         {
             _log = loggerFactory.CreateLogger<KasbahRouter>();
             _contentService = contentService;
             _typeRegistry = typeRegistry;
             _kasbahWebApplication = kasbahWebApplication;
-            _analyticsService = analyticsService;
             _typeMapper = typeMapper;
         }
 
@@ -57,27 +55,9 @@ namespace Kasbah.Web.ContentDelivery
                     var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
                     var content = await _typeMapper.MapTypeAsync(data, node.Type, node);
 
-                    if (content is IBiasedContent)
-                    {
-                        var biasedContent = content as IBiasedContent;
-
-                        if (biasedContent.Bias != null)
-                        {
-                            await Task.WhenAll(biasedContent.Bias.Select(async ent => await _analyticsService.TriggerBiasAsync(kasbahWebContext.Profile, ent.Key, ent.Value)));
-                        }
-                    }
-
-                    if (content is IPatchedContent)
-                    {
-                        routeData.Values["content"] = await _analyticsService.PatchContentAsync(kasbahWebContext.Profile, node, content, type);
-                    }
-                    else
-                    {
-                        routeData.Values["content"] = content;
-                    }
-
                     routeData.Values["controller"] = "DefaultContent";
                     routeData.Values["action"] = "RenderContent";
+                    routeData.Values["content"] = content;
 
                     foreach (var key in type.Options.Keys)
                     {

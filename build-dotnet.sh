@@ -10,7 +10,7 @@ DOTNET_PACK_OPTS="-c Release -o $(pwd)/artifacts --version-suffix=build$COMMIT_C
 dotnet restore
 
 dotnet pack src/Kasbah $DOTNET_PACK_OPTS
-dotnet pack src/Kasbah.DataAccess.ElasticSearch $DOTNET_PACK_OPTS
+dotnet pack src/Kasbah.DataAccess.Npgsql $DOTNET_PACK_OPTS
 dotnet pack src/Kasbah.Media.S3 $DOTNET_PACK_OPTS
 dotnet pack src/Kasbah.Web.ContentDelivery $DOTNET_PACK_OPTS
 dotnet pack src/Kasbah.Web.ContentManagement $DOTNET_PACK_OPTS
