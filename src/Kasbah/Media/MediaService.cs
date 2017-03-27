@@ -65,7 +65,7 @@ namespace Kasbah.Media
             {
                 try
                 {
-                    var image = new Image(stream);
+                    var image = Image.Load(stream);
                     var resized = image.Resize(new ResizeOptions
                     {
                         Size = CalculateSize(image.Width, image.Height, request.Width, request.Height)
