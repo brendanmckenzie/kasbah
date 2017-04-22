@@ -1,14 +1,14 @@
 using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Kasbah.Content.Models;
-using Kasbah.Extensions;
 using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Caching.Distributed;
+using System.Linq;
 using System.Reflection;
-using Kasbah.Exceptions;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 using Kasbah.Content.Events;
+using Kasbah.Content.Models;
+using Kasbah.Exceptions;
+using Kasbah.Extensions;
 
 namespace Kasbah.Content
 {
@@ -135,22 +135,16 @@ namespace Kasbah.Content
         }
 
         public async Task<IEnumerable<Node>> GetRecentlyModified(int take)
-        {
-            // TODO: optimise
-            var tree = await DescribeTreeAsync();
+            => await _contentProvider.GetRecentlyModified(take);
 
-            return tree.OrderByDescending(ent => ent.Modified).Take(take);
-        }
-
-        public async Task<long> DeleteNodeAsync(Guid id)
-        {
-            throw await Task.FromResult(new NotImplementedException());
-        }
+        public async Task DeleteNodeAsync(Guid id)
+            => await _contentProvider.DeleteNodeAsync(id);
 
         public async Task UpdateNodeAliasAsync(Guid id, string alias)
-        {
-            throw await Task.FromResult(new NotImplementedException());
-        }
+            => await _contentProvider.UpdateNodeAliasAsync(id, alias);
+
+        public async Task ChangeNodeTypeAsync(Guid id, string type)
+            => await _contentProvider.ChangeNodeTypeAsync(id, type);
 
         public async Task<IEnumerable<ContentPatch>> ListContentPatchesAsync(Guid id)
         {

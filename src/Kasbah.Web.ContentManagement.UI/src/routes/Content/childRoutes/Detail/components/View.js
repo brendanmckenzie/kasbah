@@ -13,7 +13,11 @@ class View extends React.Component {
     putDetailRequest: React.PropTypes.func.isRequired,
     putDetail: React.PropTypes.object.isRequired,
     deleteNodeRequest: React.PropTypes.func.isRequired,
-    deleteNode: React.PropTypes.object.isRequired
+    deleteNode: React.PropTypes.object.isRequired,
+    updateNodeAliasRequest: React.PropTypes.func.isRequired,
+    updateNodeAlias: React.PropTypes.object.isRequired,
+    changeTypeRequest: React.PropTypes.func.isRequired,
+    changeType: React.PropTypes.object.isRequired
   }
 
   static contextTypes = {
@@ -25,12 +29,15 @@ class View extends React.Component {
 
     this.state = {
       payload: null,
-      initialLoad: true
+      initialLoad: true,
+      showChangeTypeModal: false
     }
 
     this.handleSaveAndPublish = this.handleSaveAndPublish.bind(this)
     this.handleSave = this.handleSave.bind(this)
     this.handleDelete = this.handleDelete.bind(this)
+    this.handleRename = this.handleRename.bind(this)
+    this.handleChangeType = this.handleChangeType.bind(this)
   }
 
   componentWillMount() {
@@ -40,6 +47,14 @@ class View extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (nextProps.id !== this.props.id) {
       this.handleLoad(nextProps.id)
+    }
+
+    if (nextProps.updateNodeAlias.success && nextProps.updateNodeAlias.success !== this.props.updateNodeAlias.success) {
+      this.handleLoad(this.props.id)
+    }
+
+    if (nextProps.changeType.success && nextProps.changeType.success !== this.props.changeType.success) {
+      this.handleLoad(this.props.id)
     }
 
     if (nextProps.getDetail.success && nextProps.getDetail.success !== this.props.getDetail.success) {
@@ -84,6 +99,53 @@ class View extends React.Component {
     }
   }
 
+  handleRename() {
+    const { node } = this.state.payload
+
+    const alias = prompt('What should we rename this to?', node.alias)
+    if (!alias || alias === node.alias) {
+      // no change
+      return
+    }
+
+    // update.
+    this.props.updateNodeAliasRequest({
+      id: this.props.id,
+      alias
+    })
+  }
+
+  handleChangeType() {
+    this.setState({
+      showChangeTypeModal: true
+    })
+
+    const { node } = this.state.payload
+
+    const newType = prompt('What type should we give this node?', node.type)
+    if (!newType || newType === node.type) {
+      // no change
+      return
+    }
+
+    // update.
+    this.props.changeTypeRequest({
+      id: this.props.id,
+      type: newType
+    })
+  }
+
+  handleSubmitChangeType(data) {
+    console.log(data)
+  }
+
+  get changeTypeModal() {
+    if (!this.state.showChangeTypeModal) {
+      return null
+    }
+    return null
+  }
+
   get breadcrumb() {
     const { taxonomy, id } = this.state.payload.node
 
@@ -122,7 +184,10 @@ class View extends React.Component {
                 onSave={this.handleSave} />}
           </div>
           <div className='column is-3'>
-            <SideBar {...this.state.payload} onDelete={this.handleDelete} />
+            <SideBar {...this.state.payload}
+              onDelete={this.handleDelete}
+              onRename={this.handleRename}
+              onChangeType={this.handleChangeType} />
           </div>
         </div>
       </div>

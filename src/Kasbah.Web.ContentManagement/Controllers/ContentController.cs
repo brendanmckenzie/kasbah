@@ -7,6 +7,7 @@ using Kasbah.Content.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
+using Kasbah.Web.ContentManagement.ViewModels;
 
 namespace Kasbah.Web.ContentManagement.Controllers
 {
@@ -68,8 +69,28 @@ namespace Kasbah.Web.ContentManagement.Controllers
             => await _contentService.GetRecentlyModified(take);
 
         [Route("node/{id}"), HttpDelete]
-        public async Task<long> DeleteNodeAsync(Guid id)
-            => await _contentService.DeleteNodeAsync(id);
+        public async Task<EmptyResponse> DeleteNodeAsync(Guid id)
+        {
+            await _contentService.DeleteNodeAsync(id);
+
+            return new EmptyResponse { };
+        }
+
+        [Route("node/{id}/type"), HttpPut]
+        public async Task<EmptyResponse> ChangeNodeTypeAsync(Guid id, [FromQuery] string type)
+        {
+            await _contentService.ChangeNodeTypeAsync(id, type);
+
+            return new EmptyResponse { };
+        }
+
+        [Route("node/{id}/alias"), HttpPut]
+        public async Task<EmptyResponse> UpdatenOdeAliasAsync(Guid id, [FromQuery] string alias)
+        {
+            await _contentService.UpdateNodeAliasAsync(id, alias);
+
+            return new EmptyResponse { };
+        }
     }
 
     public class CreateNodeRequest

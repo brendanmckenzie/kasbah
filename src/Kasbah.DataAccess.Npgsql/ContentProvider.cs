@@ -22,11 +22,11 @@ namespace Kasbah.DataAccess.Npgsql
         public async Task<Guid> CreateNodeAsync(Guid? parent, string alias, string type, string displayName = null)
         {
             const string Sql = @"
-insert into node 
-( id, parent_id, alias, type, display_name, 
-    id_taxonomy, 
-    alias_taxonomy ) 
-values 
+insert into node
+( id, parent_id, alias, type, display_name,
+    id_taxonomy,
+    alias_taxonomy )
+values
 ( @id, @parent, @alias, @type, @displayName,
     (select id_taxonomy from node where id = @parent) || @id::uuid,
     (select alias_taxonomy from node where id = @parent) || @alias::varchar(512)
@@ -44,8 +44,8 @@ values
         public async Task<IEnumerable<Node>> DescribeTreeAsync()
         {
             const string Sql = @"
-select 
-    id as Id, 
+select
+    id as Id,
     parent_id as Parent,
     alias as Alias,
     display_name as DisplayName,
@@ -73,8 +73,8 @@ from
         public async Task<Node> GetNodeAsync(Guid id)
         {
             const string Sql = @"
-select 
-    id as Id, 
+select
+    id as Id,
     parent_id as Parent,
     alias as Alias,
     display_name as DisplayName,
@@ -106,8 +106,8 @@ where
         public async Task<Node> GetNodeByTaxonomy(IEnumerable<string> aliases)
         {
             const string Sql = @"
-select 
-    id as Id, 
+select
+    id as Id,
     parent_id as Parent,
     alias as Alias,
     display_name as DisplayName,
@@ -139,8 +139,8 @@ where
         public async Task<Node> GetNodeByTaxonomy(IEnumerable<Guid> ids)
         {
             const string Sql = @"
-select 
-    id as Id, 
+select
+    id as Id,
     parent_id as Parent,
     alias as Alias,
     display_name as DisplayName,
@@ -172,8 +172,8 @@ where
         public async Task<IEnumerable<Node>> GetNodesByType(IEnumerable<string> types)
         {
             const string Sql = @"
-select 
-    id as Id, 
+select
+    id as Id,
     parent_id as Parent,
     alias as Alias,
     display_name as DisplayName,
@@ -232,7 +232,81 @@ where
 
                     await transaction.CommitAsync();
                 }
+            }
+        }
 
+        public async Task UpdateNodeAliasAsync(Guid id, string alias)
+        {
+            var node = await GetNodeAsync(id);
+            var taxoIndex = node.Taxonomy.Aliases.Count();
+
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    const string UpdateNodeSql = "update node set alias = @alias where id = @id";
+                    var updateTaxonomySql = $"update node set alias_taxonomy[{taxoIndex}] = @alias where id_taxonomy[1:{taxoIndex}] = @taxonomy::uuid[]";
+
+                    await connection.ExecuteAsync(UpdateNodeSql, new { id, alias });
+                    await connection.ExecuteAsync(updateTaxonomySql, new { alias, taxonomy = node.Taxonomy.Ids });
+
+                    await transaction.CommitAsync();
+                }
+            }
+        }
+
+        public async Task ChangeNodeTypeAsync(Guid id, string type)
+        {
+            const string Sql = "update node set type = @type where id = @id";
+            using (var connection = GetConnection())
+            {
+                await connection.ExecuteAsync(Sql, new { id, type });
+            }
+        }
+
+        public async Task DeleteNodeAsync(Guid id)
+        {
+            var node = await GetNodeAsync(id);
+            // TODO: this shouldn't be required
+            var taxoIndex = node.Taxonomy.Aliases.Count();
+
+            using (var connection = GetConnection())
+            {
+                var deleteSql = $"delete from node where id_taxonomy[1:{taxoIndex}] = (select id_taxonomy from node where id = @id)";
+
+                await connection.ExecuteAsync(deleteSql, new { id });
+            }
+        }
+
+        public async Task<IEnumerable<Node>> GetRecentlyModified(int take)
+        {
+            var sql = $@"
+select
+    id as Id,
+    parent_id as Parent,
+    alias as Alias,
+    display_name as DisplayName,
+    type as Type,
+    published_version_id as PublishedVersion,
+    created_at as Created,
+    modified_at as Modified,
+    id_taxonomy as Ids,
+    alias_taxonomy as Aliases
+from
+    node
+order by
+    modified_at desc
+limit {take}";
+
+            using (var connection = GetConnection())
+            {
+                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(sql, (node, taxonomy) =>
+                {
+                    node.Taxonomy = taxonomy;
+
+                    return node;
+                }, splitOn: "Ids");
             }
         }
 

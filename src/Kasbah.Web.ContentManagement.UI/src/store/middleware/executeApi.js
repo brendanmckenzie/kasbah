@@ -31,6 +31,7 @@ export const middleware = ({ dispatch, getState }) => {
         }
       })
       .catch(ex => {
+        console.error(ex)
         dispatch({ type: failureType, payload: { errorMessage: 'An error has occurred', detail: ex } })
         dispatch({ type: API_FAILURE })
       })

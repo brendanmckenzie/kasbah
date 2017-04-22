@@ -4,10 +4,10 @@ export default (store) => ({
   path: 'content',
   getComponent (nextState, cb) {
     require.ensure([], (require) => {
-      injectReducer(store, { key: 'describeTree', reducer: require('./modules/describeTree').reducer })
-      injectReducer(store, { key: 'listTypes', reducer: require('./modules/listTypes').reducer })
-      injectReducer(store, { key: 'createNode', reducer: require('./modules/createNode').reducer })
-      injectReducer(store, { key: 'deleteNode', reducer: require('./childRoutes/Detail/modules/deleteNode').reducer })
+      injectReducer(store, { key: 'describeTree', reducer: require('modules/describeTree').reducer })
+      injectReducer(store, { key: 'listTypes', reducer: require('modules/listTypes').reducer })
+      injectReducer(store, { key: 'createNode', reducer: require('modules/createNode').reducer })
+      injectReducer(store, { key: 'deleteNode', reducer: require('modules/deleteNode').reducer })
 
       cb(null, require('./container').default)
     }, 'contentRoute')

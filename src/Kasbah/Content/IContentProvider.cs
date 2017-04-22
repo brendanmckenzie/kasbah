@@ -15,5 +15,9 @@ namespace Kasbah.Content
          Task<Node> GetNodeByTaxonomy(IEnumerable<Guid> ids);
          Task<Node> GetNodeAsync(Guid id);
          Task<IEnumerable<Node>> GetNodesByType(IEnumerable<string> types);
+         Task UpdateNodeAliasAsync(Guid id, string alias);
+         Task ChangeNodeTypeAsync(Guid id, string type);
+         Task DeleteNodeAsync(Guid id);
+         Task<IEnumerable<Node>> GetRecentlyModified(int take);
     }
 }

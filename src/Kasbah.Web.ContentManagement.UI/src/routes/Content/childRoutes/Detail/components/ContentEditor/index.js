@@ -1,5 +1,5 @@
 import React from 'react'
-import ContentEditorForm from '../../forms/ContentEditorForm'
+import ContentEditorForm from 'forms/ContentEditorForm'
 
 export const ContentEditor = ({ payload, loading, publishing, onSubmit, onSave }) => (
   <ContentEditorForm

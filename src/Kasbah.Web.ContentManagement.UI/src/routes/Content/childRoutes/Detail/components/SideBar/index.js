@@ -3,14 +3,10 @@ import Information from './Information'
 import Analytics from './Analytics'
 import { Tabs, Tab } from 'components/PanelTabs'
 
-export const SideBar = ({ node, type, data, onDelete }) => (
+export const SideBar = (props) => (
   <Tabs>
     <Tab title='Information'>
-      <Information
-        node={node}
-        type={type}
-        data={data}
-        onDelete={onDelete} />
+      <Information {...props} />
     </Tab>
     <Tab title='Analytics'>
       <Analytics />
@@ -22,7 +18,9 @@ SideBar.propTypes = {
   node: React.PropTypes.object.isRequired,
   type: React.PropTypes.object.isRequired,
   data: React.PropTypes.object,
-  onDelete: React.PropTypes.func.isRequired
+  onDelete: React.PropTypes.func.isRequired,
+  onRename: React.PropTypes.func.isRequired,
+  onChangeType: React.PropTypes.func.isRequired
 }
 
 export default SideBar
