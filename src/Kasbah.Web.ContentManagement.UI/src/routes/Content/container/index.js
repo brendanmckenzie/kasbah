@@ -17,7 +17,8 @@ const mapStateToProps = (state) => ({
   listTypes: state.listTypes,
   deleteNode: state.deleteNode,
   updateNodeAlias: state.updateNodeAlias,
-  changeType: state.changeType
+  changeType: state.changeType,
+  moveNode: state.moveNode
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(View)

@@ -20,7 +20,8 @@ SideBar.propTypes = {
   data: React.PropTypes.object,
   onDelete: React.PropTypes.func.isRequired,
   onRename: React.PropTypes.func.isRequired,
-  onChangeType: React.PropTypes.func.isRequired
+  onChangeType: React.PropTypes.func.isRequired,
+  onMove: React.PropTypes.func.isRequired
 }
 
 export default SideBar

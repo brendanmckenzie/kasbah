@@ -146,6 +146,9 @@ namespace Kasbah.Content
         public async Task ChangeNodeTypeAsync(Guid id, string type)
             => await _contentProvider.ChangeNodeTypeAsync(id, type);
 
+        public async Task MoveNodeAsync(Guid id, Guid? parent)
+            => await _contentProvider.MoveNodeAsync(id, parent);
+
         public async Task<IEnumerable<ContentPatch>> ListContentPatchesAsync(Guid id)
         {
             throw await Task.FromResult(new NotImplementedException());

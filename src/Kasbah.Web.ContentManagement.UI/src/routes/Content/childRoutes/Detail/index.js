@@ -9,6 +9,7 @@ export default (store) => ({
       injectReducer(store, { key: 'deleteNode', reducer: require('modules/deleteNode').reducer })
       injectReducer(store, { key: 'updateNodeAlias', reducer: require('modules/updateNodeAlias').reducer })
       injectReducer(store, { key: 'changeType', reducer: require('modules/changeType').reducer })
+      injectReducer(store, { key: 'moveNode', reducer: require('modules/moveNode').reducer })
 
       cb(null, require('./container').default)
     }, 'contentDetailRoute')

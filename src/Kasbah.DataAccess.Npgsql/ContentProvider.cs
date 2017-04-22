@@ -310,6 +310,32 @@ limit {take}";
             }
         }
 
+        public async Task MoveNodeAsync(Guid id, Guid? parent)
+        {
+            var node = await GetNodeAsync(id);
+            var taxoIndex = node.Taxonomy.Aliases.Count();
+
+            using (var connection = GetConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    const string UpdateNodeSql = @"
+                    update node set
+                        parent_id = @parent,
+                        alias_taxonomy = (select alias_taxonomy from node where id = @parent) || alias,
+                        id_taxonomy = (select id_taxonomy from node where id = @parent) || id
+                        where id = @id";
+                    var updateTaxonomySql = $"update node set alias_taxonomy = (select alias_taxonomy from node where id = @id) || alias, id_taxonomy = (select id_taxonomy from node where id = @id) || id where id_taxonomy[1:{taxoIndex}] = @taxonomy::uuid[]";
+
+                    await connection.ExecuteAsync(UpdateNodeSql, new { id, parent, alias = node.Alias });
+                    await connection.ExecuteAsync(updateTaxonomySql, new { id, taxonomy = node.Taxonomy.Ids });
+
+                    await transaction.CommitAsync();
+                }
+            }
+        }
+
         NpgsqlConnection GetConnection()
         {
             return new NpgsqlConnection(_settings.ConnectionString);

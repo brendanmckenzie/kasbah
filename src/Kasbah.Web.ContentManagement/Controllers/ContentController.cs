@@ -85,9 +85,17 @@ namespace Kasbah.Web.ContentManagement.Controllers
         }
 
         [Route("node/{id}/alias"), HttpPut]
-        public async Task<EmptyResponse> UpdatenOdeAliasAsync(Guid id, [FromQuery] string alias)
+        public async Task<EmptyResponse> UpdateNodeAliasAsync(Guid id, [FromQuery] string alias)
         {
             await _contentService.UpdateNodeAliasAsync(id, alias);
+
+            return new EmptyResponse { };
+        }
+
+        [Route("node/{id}/move"), HttpPut]
+        public async Task<EmptyResponse> MoveNodeAsync(Guid id, [FromQuery] Guid? parent)
+        {
+            await _contentService.MoveNodeAsync(id, parent);
 
             return new EmptyResponse { };
         }

@@ -4,6 +4,7 @@ import { action as putDetailRequest } from 'modules/putDetail'
 import { action as deleteNodeRequest } from 'modules/deleteNode'
 import { action as updateNodeAliasRequest } from 'modules/updateNodeAlias'
 import { action as changeTypeRequest } from 'modules/changeType'
+import { action as moveNodeRequest } from 'modules/moveNode'
 
 import View from '../components/View'
 
@@ -12,7 +13,8 @@ const mapDispatchToProps = {
   putDetailRequest,
   deleteNodeRequest,
   updateNodeAliasRequest,
-  changeTypeRequest
+  changeTypeRequest,
+  moveNodeRequest
 }
 
 const mapStateToProps = (state, ownProps) => ({
@@ -21,7 +23,8 @@ const mapStateToProps = (state, ownProps) => ({
   putDetail: state.putDetail,
   deleteNode: state.deleteNode,
   updateNodeAlias: state.updateNodeAlias,
-  changeType: state.changeType
+  changeType: state.changeType,
+  moveNode: state.moveNode
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(View)

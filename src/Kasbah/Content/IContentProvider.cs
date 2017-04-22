@@ -19,5 +19,6 @@ namespace Kasbah.Content
          Task ChangeNodeTypeAsync(Guid id, string type);
          Task DeleteNodeAsync(Guid id);
          Task<IEnumerable<Node>> GetRecentlyModified(int take);
+         Task MoveNodeAsync(Guid id, Guid? parent);
     }
 }

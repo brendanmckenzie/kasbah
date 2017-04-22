@@ -1,7 +1,7 @@
 import React from 'react'
 import moment from 'moment'
 
-export const Information = ({ node, type, data, onDelete, onRename, onChangeType }) => (
+export const Information = ({ node, type, data, onDelete, onRename, onChangeType, onMove }) => (
   <div className='content'>
     <p>
       <span className='heading'>Type</span>
@@ -30,6 +30,7 @@ export const Information = ({ node, type, data, onDelete, onRename, onChangeType
       <button className='button is-danger is-small' type='button' onClick={onDelete}>Delete</button>
       <button className='button is-small' type='button' onClick={onRename}>Rename</button>
       <button className='button is-small' type='button' onClick={onChangeType}>Change type</button>
+      <button className='button is-small' type='button' onClick={onMove}>Move</button>
     </div>
   </div>
 )
@@ -40,7 +41,8 @@ Information.propTypes = {
   data: React.PropTypes.object,
   onDelete: React.PropTypes.func.isRequired,
   onRename: React.PropTypes.func.isRequired,
-  onChangeType: React.PropTypes.func.isRequired
+  onChangeType: React.PropTypes.func.isRequired,
+  onMove: React.PropTypes.func.isRequired
 }
 
 export default Information

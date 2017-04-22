@@ -17,7 +17,9 @@ class View extends React.Component {
     updateNodeAliasRequest: React.PropTypes.func.isRequired,
     updateNodeAlias: React.PropTypes.object.isRequired,
     changeTypeRequest: React.PropTypes.func.isRequired,
-    changeType: React.PropTypes.object.isRequired
+    changeType: React.PropTypes.object.isRequired,
+    moveNodeRequest: React.PropTypes.func.isRequired,
+    moveNode: React.PropTypes.object.isRequired
   }
 
   static contextTypes = {
@@ -38,6 +40,7 @@ class View extends React.Component {
     this.handleDelete = this.handleDelete.bind(this)
     this.handleRename = this.handleRename.bind(this)
     this.handleChangeType = this.handleChangeType.bind(this)
+    this.handleMoveNode = this.handleMoveNode.bind(this)
   }
 
   componentWillMount() {
@@ -116,14 +119,10 @@ class View extends React.Component {
   }
 
   handleChangeType() {
-    this.setState({
-      showChangeTypeModal: true
-    })
-
     const { node } = this.state.payload
 
-    const newType = prompt('What type should we give this node?', node.type)
-    if (!newType || newType === node.type) {
+    const type = prompt('What type should we give this node?', node.type)
+    if (!type || type === node.type) {
       // no change
       return
     }
@@ -131,12 +130,24 @@ class View extends React.Component {
     // update.
     this.props.changeTypeRequest({
       id: this.props.id,
-      type: newType
+      type
     })
   }
 
-  handleSubmitChangeType(data) {
-    console.log(data)
+  handleMoveNode() {
+    const { node } = this.state.payload
+
+    const parent = prompt('Where should we move this node?', node.parent)
+    if (!parent || parent === node.parent) {
+      // no change
+      return
+    }
+
+    // update.
+    this.props.moveNodeRequest({
+      id: this.props.id,
+      parent: parent === 'null' ? null : parent
+    })
   }
 
   get changeTypeModal() {
@@ -187,7 +198,8 @@ class View extends React.Component {
             <SideBar {...this.state.payload}
               onDelete={this.handleDelete}
               onRename={this.handleRename}
-              onChangeType={this.handleChangeType} />
+              onChangeType={this.handleChangeType}
+              onMove={this.handleMoveNode} />
           </div>
         </div>
       </div>

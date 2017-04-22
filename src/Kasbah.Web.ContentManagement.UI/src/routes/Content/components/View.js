@@ -28,7 +28,8 @@ View.propTypes = {
   listTypesRequest: React.PropTypes.func.isRequired,
   deleteNode: React.PropTypes.object.isRequired,
   updateNodeAlias: React.PropTypes.object.isRequired,
-  changeType: React.PropTypes.object.isRequired
+  changeType: React.PropTypes.object.isRequired,
+  moveNode: React.PropTypes.object.isRequired
 }
 
 export default View

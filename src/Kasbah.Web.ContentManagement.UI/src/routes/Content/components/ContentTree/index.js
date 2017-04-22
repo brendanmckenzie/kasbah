@@ -14,7 +14,8 @@ class ContentTree extends React.Component {
     listTypes: React.PropTypes.object.isRequired,
     deleteNode: React.PropTypes.object.isRequired,
     updateNodeAlias: React.PropTypes.object.isRequired,
-    changeType: React.PropTypes.object.isRequired
+    changeType: React.PropTypes.object.isRequired,
+    moveNode: React.PropTypes.object.isRequired
   }
 
   static contextTypes = {
@@ -58,6 +59,9 @@ class ContentTree extends React.Component {
       this.handleRefresh()
     }
     if (nextProps.changeType.success && nextProps.changeType.success !== this.props.changeType.success) {
+      this.handleRefresh()
+    }
+    if (nextProps.moveNode.success && nextProps.moveNode.success !== this.props.moveNode.success) {
       this.handleRefresh()
     }
     if (nextProps.describeTree.success && nextProps.describeTree.success !== this.props.describeTree.success) {
