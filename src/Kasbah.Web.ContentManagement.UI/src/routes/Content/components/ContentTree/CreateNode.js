@@ -1,5 +1,5 @@
 import React from 'react'
-import CreateNodeForm from '../../forms/CreateNodeForm'
+import CreateNodeForm from 'forms/CreateNodeForm'
 
 class CreateNode extends React.Component {
   static propTypes = {
