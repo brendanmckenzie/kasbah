@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using ImageSharp;
 using ImageSharp.Processing;
 using Kasbah.DataAccess;
 using Kasbah.Media.Models;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace Kasbah.Media
@@ -15,13 +17,15 @@ namespace Kasbah.Media
     {
         readonly IMediaProvider _mediaProvider;
         readonly IMediaStorageProvider _mediaStorageProvider;
+        readonly IDistributedCache _cache;
         readonly ILogger _log;
 
-        public MediaService(ILoggerFactory loggerFactory, IMediaProvider mediaProvider, IMediaStorageProvider mediaStorageProvider)
+        public MediaService(ILoggerFactory loggerFactory, IMediaProvider mediaProvider, IMediaStorageProvider mediaStorageProvider, IDistributedCache cache = null)
         {
             _log = loggerFactory.CreateLogger<MediaService>();
             _mediaProvider = mediaProvider;
             _mediaStorageProvider = mediaStorageProvider;
+            _cache = cache;
         }
 
         public async Task InitialiseAsync()
@@ -60,35 +64,41 @@ namespace Kasbah.Media
         {
             var item = await GetMediaItemAsync(request.Id);
             var stream = await GetMediaStreamAsync(request.Id);
+            var responseStream = stream;
 
             if (!request.IsEmpty)
             {
-                try
+                var cacheKey = $"media:{request.Hash}";
+                var cached = await _cache?.GetAsync(cacheKey);
+                if (cached == null)
                 {
                     var image = Image.Load(stream);
                     var resized = image.Resize(new ResizeOptions
                     {
                         Size = CalculateSize(image.Width, image.Height, request.Width, request.Height)
                     });
-                    var resizedStream = new MemoryStream();
-                    resized.Save(resizedStream);
-                    resizedStream.Seek(0, SeekOrigin.Begin);
 
-                    return new GetMediaResponse
-                    {
-                        Stream = resizedStream,
-                        Item = item
-                    };
+                    responseStream = new MemoryStream();
+                    resized.Save(responseStream);
+
+                    await _cache?.SetAsync(cacheKey, (responseStream as MemoryStream).ToArray());
+
+                    responseStream.Seek(0, SeekOrigin.Begin);
                 }
-                finally
+                else
                 {
-                    stream.Dispose();
+                    responseStream = new MemoryStream(cached);
                 }
+            }
+
+            if (responseStream != stream)
+            {
+                stream.Dispose();
             }
 
             return new GetMediaResponse
             {
-                Stream = stream,
+                Stream = responseStream,
                 Item = item
             };
         }
@@ -117,6 +127,9 @@ namespace Kasbah.Media
         public Guid Id { get; set; }
         public int? Width { get; set; }
         public int? Height { get; set; }
+
+        internal string Hash
+            => Convert.ToBase64String(Encoding.UTF8.GetBytes($"Id={Id}&Width={Width}&Height={Height}"));
 
         public bool IsEmpty
             => (!Width.HasValue && !Height.HasValue);

@@ -37,7 +37,7 @@ namespace Kasbah.Web.ContentManagement.Controllers
             return true;
         }
 
-        [Route("{id}"), HttpGet, AllowAnonymous, ResponseCache(Duration = 3600)]
+        [Route(""), HttpGet, AllowAnonymous, ResponseCache(Duration = 3600)]
         public async Task<FileResult> GetMedia([FromQuery] GetMediaRequest request)
         {
             var media = await _mediaService.GetMedia(request);
