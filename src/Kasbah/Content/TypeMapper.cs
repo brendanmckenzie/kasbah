@@ -199,7 +199,14 @@ namespace Kasbah.Content
                 {
                     var property = invocation.TargetType.GetProperty(propertyName);
 
-                    _cache[propertyName] = _mapProperty.Invoke(_data[propertyName], property).Result;
+                    if (_data.ContainsKey(propertyName))
+                    {
+                        _cache.Add(propertyName, _mapProperty.Invoke(_data[propertyName], property).Result);
+                    }
+                    else
+                    {
+                        _cache.Add(propertyName, null);
+                    }
                 }
 
                 invocation.ReturnValue = _cache[propertyName];
