@@ -182,21 +182,27 @@ namespace Kasbah.Content
         {
             readonly MapPropertyDelegate _mapProperty;
             readonly IDictionary<string, object> _data;
-            // readonly IDictionary<string, object> _cache; -- TODO
+            readonly IDictionary<string, object> _cache;
 
             public KasbahPropertyInterceptor(MapPropertyDelegate mapProperty, IDictionary<string, object> data)
             {
                 _mapProperty = mapProperty;
                 _data = data;
+                _cache = new Dictionary<string, object>();
             }
 
             public void Intercept(IInvocation invocation)
             {
                 var propertyName = invocation.Method.Name.Substring(4);
 
-                var property = invocation.TargetType.GetProperty(propertyName);
+                if (!_cache.ContainsKey(propertyName))
+                {
+                    var property = invocation.TargetType.GetProperty(propertyName);
 
-                invocation.ReturnValue = _mapProperty.Invoke(_data[propertyName], property).Result;
+                    _cache[propertyName] = _mapProperty.Invoke(_data[propertyName], property).Result;
+                }
+
+                invocation.ReturnValue = _cache[propertyName];
             }
         }
 
