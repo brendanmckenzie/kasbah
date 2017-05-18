@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Castle.DynamicProxy;
 using Kasbah.Content.Models;
 using Kasbah.Media;
 using Kasbah.Media.Models;
@@ -18,6 +19,7 @@ namespace Kasbah.Content
         readonly ContentService _contentService;
         readonly TypeRegistry _typeRegistry;
         readonly MediaService _mediaService;
+        readonly ProxyGenerator _generator;
 
         public TypeMapper(ILoggerFactory loggerFactory, ContentService contentService, MediaService mediaService, TypeRegistry typeRegistry)
         {
@@ -25,6 +27,8 @@ namespace Kasbah.Content
             _contentService = contentService;
             _mediaService = mediaService;
             _typeRegistry = typeRegistry;
+
+            _generator = new ProxyGenerator();
         }
 
         public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Node node = null, int? version = null)
@@ -32,10 +36,13 @@ namespace Kasbah.Content
             var type = Type.GetType(typeName);
             var typeInfo = type.GetTypeInfo();
 
-            var ret = Activator.CreateInstance(type);
+            var options = new ProxyGenerationOptions(new MethodSelectorHook());
+
+            var ret = _generator.CreateClassProxy(type, options, new KasbahPropertyInterceptor(MapPropertyAsync, data));
             if (data != null)
             {
-                var values = await Task.WhenAll(typeInfo.GetProperties().Select(async prop =>
+                var eagerLoadProperties = typeInfo.GetProperties().Where(prop => prop.GetMethod?.IsVirtual == false);
+                var values = await Task.WhenAll(eagerLoadProperties.Select(async prop =>
                 {
                     var key = prop.Name;
                     return new
@@ -167,6 +174,45 @@ namespace Kasbah.Content
             }
 
             return null;
+        }
+
+        delegate Task<object> MapPropertyDelegate(object source, PropertyInfo property);
+
+        class KasbahPropertyInterceptor : IInterceptor
+        {
+            readonly MapPropertyDelegate _mapProperty;
+            readonly IDictionary<string, object> _data;
+            // readonly IDictionary<string, object> _cache; -- TODO
+
+            public KasbahPropertyInterceptor(MapPropertyDelegate mapProperty, IDictionary<string, object> data)
+            {
+                _mapProperty = mapProperty;
+                _data = data;
+            }
+
+            public void Intercept(IInvocation invocation)
+            {
+                var propertyName = invocation.Method.Name.Substring(4);
+
+                var property = invocation.TargetType.GetProperty(propertyName);
+
+                invocation.ReturnValue = _mapProperty.Invoke(_data[propertyName], property).Result;
+            }
+        }
+
+        class MethodSelectorHook : IProxyGenerationHook
+        {
+            public void MethodsInspected()
+            {
+            }
+
+            public void NonProxyableMemberNotification(Type type, MemberInfo memberInfo)
+            {
+            }
+
+            public bool ShouldInterceptMethod(Type type, MethodInfo methodInfo)
+                => methodInfo.Name.StartsWith("get_");
+
         }
     }
 }
