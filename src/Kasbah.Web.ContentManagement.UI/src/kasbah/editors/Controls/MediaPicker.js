@@ -102,7 +102,7 @@ class MediaPicker extends React.Component {
           {this.state.mediaDetail.contentType.startsWith('image/') && (
             <div className='media-left'>
               <figure className='image is-128x128'>
-                <img src={`${API_BASE}/media/${value}?width=256&height=256`} />
+                <img src={`${API_BASE}/media?id=${value}&width=256&height=256`} />
               </figure>
             </div>
           )}
@@ -144,7 +144,7 @@ class MediaPicker extends React.Component {
                     onClick={() => this.handleSelect(ent.id)}>
                     <figure className='card-image'>
                       <span className='image is-4by3'>
-                        <img src={`${API_BASE}/media/${ent.id}?width=256&height=192`} />
+                        <img src={`${API_BASE}/media?id=${ent.id}&width=256&height=192`} />
                       </span>
                     </figure>
                     <div className='card-content'>
