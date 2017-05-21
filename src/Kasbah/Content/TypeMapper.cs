@@ -31,14 +31,16 @@ namespace Kasbah.Content
             _generator = new ProxyGenerator();
         }
 
-        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Node node = null, int? version = null)
+        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Node node = null, int? version = null, TypeMapperContext context = null)
         {
+            context = context ?? new TypeMapperContext();
+
             var type = Type.GetType(typeName);
             var typeInfo = type.GetTypeInfo();
 
             var options = new ProxyGenerationOptions(new MethodSelectorHook());
 
-            var ret = _generator.CreateClassProxy(type, options, new KasbahPropertyInterceptor(MapPropertyAsync, data));
+            var ret = _generator.CreateClassProxy(type, options, new KasbahPropertyInterceptor(MapPropertyAsync, data, context));
             if (data != null)
             {
                 var eagerLoadProperties = typeInfo.GetProperties().Where(prop => prop.GetMethod?.IsVirtual == false);
@@ -49,7 +51,7 @@ namespace Kasbah.Content
                     {
                         Key = key,
                         Property = prop,
-                        Value = data.ContainsKey(key) ? await MapPropertyAsync(data[key], prop) : null
+                        Value = data.ContainsKey(key) ? await MapPropertyAsync(data[key], prop, context) : null
                     };
                 }));
 
@@ -78,7 +80,7 @@ namespace Kasbah.Content
             return ret;
         }
 
-        public async Task<object> MapPropertyAsync(object source, PropertyInfo property)
+        public async Task<object> MapPropertyAsync(object source, PropertyInfo property, TypeMapperContext context)
         {
             if (source == null) { return null; }
 
@@ -89,13 +91,16 @@ namespace Kasbah.Content
             {
                 var dict = (source as JObject).ToObject<IDictionary<string, object>>();
 
-                return await MapTypeAsync(dict, property.PropertyType.AssemblyQualifiedName);
+                return await MapTypeAsync(dict, property.PropertyType.AssemblyQualifiedName, context: context);
             }
 
             // Linked objects
             if (_typeRegistry.GetType(property.PropertyType.AssemblyQualifiedName) != null)
             {
-                return await MapLinkedObjectAsync(source);
+                return await context.GetOrSetAsync($"{source}_linked", async () =>
+                {
+                    return await MapLinkedObjectAsync(source);
+                });
             }
 
             // Linked objects (multiple)
@@ -120,7 +125,10 @@ namespace Kasbah.Content
             // Linked media
             if (typeof(MediaItem).GetTypeInfo().IsAssignableFrom(property.PropertyType))
             {
-                return await MapLinkedMediaAsync(source);
+                return await context.GetOrSetAsync($"{source}_media", async () =>
+                {
+                    return await MapLinkedMediaAsync(source);
+                });
             }
 
             try
@@ -174,58 +182,6 @@ namespace Kasbah.Content
             }
 
             return null;
-        }
-
-        delegate Task<object> MapPropertyDelegate(object source, PropertyInfo property);
-
-        class KasbahPropertyInterceptor : IInterceptor
-        {
-            readonly MapPropertyDelegate _mapProperty;
-            readonly IDictionary<string, object> _data;
-            readonly IDictionary<string, object> _cache;
-
-            public KasbahPropertyInterceptor(MapPropertyDelegate mapProperty, IDictionary<string, object> data)
-            {
-                _mapProperty = mapProperty;
-                _data = data;
-                _cache = new Dictionary<string, object>();
-            }
-
-            public void Intercept(IInvocation invocation)
-            {
-                var propertyName = invocation.Method.Name.Substring(4);
-
-                if (!_cache.ContainsKey(propertyName))
-                {
-                    var property = invocation.TargetType.GetProperty(propertyName);
-
-                    if (_data.ContainsKey(propertyName))
-                    {
-                        _cache.Add(propertyName, _mapProperty.Invoke(_data[propertyName], property).Result);
-                    }
-                    else
-                    {
-                        _cache.Add(propertyName, null);
-                    }
-                }
-
-                invocation.ReturnValue = _cache[propertyName];
-            }
-        }
-
-        class MethodSelectorHook : IProxyGenerationHook
-        {
-            public void MethodsInspected()
-            {
-            }
-
-            public void NonProxyableMemberNotification(Type type, MemberInfo memberInfo)
-            {
-            }
-
-            public bool ShouldInterceptMethod(Type type, MethodInfo methodInfo)
-                => methodInfo.Name.StartsWith("get_");
-
         }
     }
 }

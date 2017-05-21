@@ -143,53 +143,53 @@ namespace Kasbah.Analytics
             return entries.Select(ent => ent.Source);
         }
 
-        public async Task<object> PatchContentAsync(Guid profile, Node node, object content, TypeDefinition type)
-        {
-            var profileObj = await GetProfileAsync(profile);
-            var patches = await _contentService.ListContentPatchesAsync(node.Id);
+        // public async Task<object> PatchContentAsync(Guid profile, Node node, object content, TypeDefinition type)
+        // {
+        //     var profileObj = await GetProfileAsync(profile);
+        //     var patches = await _contentService.ListContentPatchesAsync(node.Id);
 
-            // TODO: calculate order of precedence on matching patches
-            var applicablePatches = patches.Where(patch =>
-                patch.Attributes.Any(patchAttr =>
-                {
-                    var profileAttr = profileObj.GetAttributeValue(patchAttr.Key);
-                    if (!string.IsNullOrEmpty(profileAttr))
-                    {
-                        return profileAttr == patchAttr.Value;
-                    }
+        //     // TODO: calculate order of precedence on matching patches
+        //     var applicablePatches = patches.Where(patch =>
+        //         patch.Attributes.Any(patchAttr =>
+        //         {
+        //             var profileAttr = profileObj.GetAttributeValue(patchAttr.Key);
+        //             if (!string.IsNullOrEmpty(profileAttr))
+        //             {
+        //                 return profileAttr == patchAttr.Value;
+        //             }
 
-                    return false;
-                })
-                ||
-                patch.Bias.Any(patchBias =>
-                {
-                    var profileBias = profileObj.Bias.Where(bias => bias.Key == patchBias.Key).Sum(bias => bias.Value);
+        //             return false;
+        //         })
+        //         ||
+        //         patch.Bias.Any(patchBias =>
+        //         {
+        //             var profileBias = profileObj.Bias.Where(bias => bias.Key == patchBias.Key).Sum(bias => bias.Value);
 
-                    return profileBias > patchBias.Value;
-                })
-            );
+        //             return profileBias > patchBias.Value;
+        //         })
+        //     );
 
-            if (applicablePatches.Any())
-            {
-                var contentType = content.GetType().GetTypeInfo();
+        //     if (applicablePatches.Any())
+        //     {
+        //         var contentType = content.GetType().GetTypeInfo();
 
-                foreach (var patch in applicablePatches)
-                {
-                    foreach (var kvp in patch.Values)
-                    {
-                        var prop = contentType.GetProperty(kvp.Key);
-                        if (prop != null)
-                        {
-                            var value = await _typeMapper.MapPropertyAsync(kvp.Value, prop);
+        //         foreach (var patch in applicablePatches)
+        //         {
+        //             foreach (var kvp in patch.Values)
+        //             {
+        //                 var prop = contentType.GetProperty(kvp.Key);
+        //                 if (prop != null)
+        //                 {
+        //                     var value = await _typeMapper.MapPropertyAsync(kvp.Value, prop);
 
-                            prop.SetValue(content, value);
-                        }
-                    }
-                }
-            }
+        //                     prop.SetValue(content, value);
+        //                 }
+        //             }
+        //         }
+        //     }
 
-            return await Task.FromResult(content);
-        }
+        //     return await Task.FromResult(content);
+        // }
 
         async Task UpdateMappingsAsync()
         {
