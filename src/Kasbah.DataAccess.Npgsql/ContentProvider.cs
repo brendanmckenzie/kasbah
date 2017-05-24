@@ -13,10 +13,12 @@ namespace Kasbah.DataAccess.Npgsql
     public class ContentProvider : IContentProvider
     {
         readonly NpgsqlSettings _settings;
+        readonly TypeRegistry _typeRegistry;
 
-        public ContentProvider(NpgsqlSettings settings)
+        public ContentProvider(NpgsqlSettings settings, TypeRegistry typeRegistry)
         {
             _settings = settings;
+            _typeRegistry = typeRegistry;
         }
 
         public async Task<Guid> CreateNodeAsync(Guid? parent, string alias, string type, string displayName = null)
@@ -334,6 +336,13 @@ limit {take}";
                     await transaction.CommitAsync();
                 }
             }
+        }
+
+        public IQueryable<QueryResultItem<TItem>> Query<TItem>()
+            where TItem : IItem
+        {
+
+            return new KasbahNpgsqlQueryable<QueryResultItem<TItem>>(null);
         }
 
         NpgsqlConnection GetConnection()

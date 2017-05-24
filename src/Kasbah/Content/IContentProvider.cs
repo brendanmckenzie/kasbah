@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Kasbah.Content.Models;
 
@@ -20,5 +22,7 @@ namespace Kasbah.Content
         Task DeleteNodeAsync(Guid id);
         Task<IEnumerable<Node>> GetRecentlyModified(int take);
         Task MoveNodeAsync(Guid id, Guid? parent);
+        IQueryable<QueryResultItem<TItem>> Query<TItem>()
+            where TItem : IItem;
     }
 }
