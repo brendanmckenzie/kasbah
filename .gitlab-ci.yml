@@ -4,6 +4,7 @@ stages:
     - deploy
 
 build:admin_ui:
+    only: master
     stage: build_ui
     image: kkarczmarczyk/node-yarn:6.9
     script:
@@ -13,6 +14,7 @@ build:admin_ui:
         - src/Kasbah.Web.ContentManagement.UI/dist/
 
 build:dotnet:
+    only: master
     stage: build
     image: microsoft/dotnet:1.1.1-sdk-1.0.0
     dependencies:
@@ -24,6 +26,7 @@ build:dotnet:
         - artifacts/
 
 deploy:
+    only: master
     stage: deploy
     script:
         - sh deploy.sh
