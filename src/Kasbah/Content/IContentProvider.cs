@@ -22,7 +22,7 @@ namespace Kasbah.Content
         Task DeleteNodeAsync(Guid id);
         Task<IEnumerable<Node>> GetRecentlyModified(int take);
         Task MoveNodeAsync(Guid id, Guid? parent);
-        IQueryable<QueryResultItem<TItem>> Query<TItem>()
+        IQueryable<TItem> Query<TItem>()
             where TItem : IItem;
     }
 }

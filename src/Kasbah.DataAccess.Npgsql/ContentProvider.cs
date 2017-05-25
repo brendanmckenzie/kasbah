@@ -338,11 +338,12 @@ limit {take}";
             }
         }
 
-        public IQueryable<QueryResultItem<TItem>> Query<TItem>()
+        public IQueryable<TItem> Query<TItem>()
             where TItem : IItem
         {
+            var provider = new KasbahNpgsqlQueryProvider();
 
-            return new KasbahNpgsqlQueryable<QueryResultItem<TItem>>(null);
+            return new KasbahNpgsqlQueryable<TItem>(provider);
         }
 
         NpgsqlConnection GetConnection()

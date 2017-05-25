@@ -27,6 +27,10 @@ namespace Kasbah.DataAccess.Npgsql
 
         public object Execute(Expression expression)
         {
+            var translator = new KasbahQueryTranslator();
+            var sql = translator.Translate(expression);
+            
+            throw new NotImplementedException($"Did it work? {sql}");
             /*var types = _typeRegistry.GetTypesThatImplement<TItem>();
 
             // 1. get list of known types that implement provided TItem
@@ -46,8 +50,6 @@ namespace Kasbah.DataAccess.Npgsql
                     node.type in @types";
                 // await connection.QueryAsync(sql, new  { types });
             }*/
-
-            throw new NotImplementedException();
         }
 
         public TResult Execute<TResult>(Expression expression)
