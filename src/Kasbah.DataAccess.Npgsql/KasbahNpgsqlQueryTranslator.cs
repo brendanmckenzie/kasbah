@@ -15,7 +15,7 @@ namespace Kasbah.DataAccess.Npgsql
         public IDictionary<string, object> Parameters { get; internal set; }
     }
 
-    public class KasbahQueryTranslator : ExpressionVisitor
+    public class KasbahNpgsqlQueryTranslator : ExpressionVisitor
     {
         enum Clause
         {
@@ -32,7 +32,7 @@ namespace Kasbah.DataAccess.Npgsql
         Clause _currentClause = Clause.Unknown;
         long? _skip, _take;
 
-        internal KasbahQueryTranslator() { }
+        internal KasbahNpgsqlQueryTranslator() { }
 
         internal TranslateResponse Translate(Expression expression)
         {
@@ -91,6 +91,19 @@ namespace Kasbah.DataAccess.Npgsql
                             this.Visit(m.Arguments[1]);
 
                             this.Visit(m.Arguments[0]);
+
+                            return m;
+                        }
+                }
+            }
+            else if (m.Method.DeclaringType == typeof(string))
+            {
+                switch (m.Method.Name)
+                {
+                    case "Contains":
+                        {
+                            // TODO: generate a SQL `like` statement from this
+                            Console.WriteLine($"Contains -- {m.Arguments[0]}");
 
                             return m;
                         }

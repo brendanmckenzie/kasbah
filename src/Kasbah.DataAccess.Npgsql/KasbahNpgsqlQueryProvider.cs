@@ -7,6 +7,8 @@ using System.Text;
 using Npgsql;
 using Dapper;
 using Kasbah.Content;
+using Newtonsoft.Json;
+using System.Collections;
 
 namespace Kasbah.DataAccess.Npgsql
 {
@@ -15,11 +17,13 @@ namespace Kasbah.DataAccess.Npgsql
         readonly Type _targetType;
         readonly NpgsqlSettings _settings;
         readonly TypeRegistry _typeRegistry;
-        public KasbahNpgsqlQueryProvider(NpgsqlSettings settings, Type targetType, TypeRegistry typeRegistry)
+        readonly TypeMapper _typeMapper;
+        public KasbahNpgsqlQueryProvider(Type targetType, NpgsqlSettings settings, TypeRegistry typeRegistry, TypeMapper typeMapper)
         {
-            _settings = settings;
             _targetType = targetType;
+            _settings = settings;
             _typeRegistry = typeRegistry;
+            _typeMapper = typeMapper;
         }
 
         public IQueryable CreateQuery(Expression expression)
@@ -28,7 +32,7 @@ namespace Kasbah.DataAccess.Npgsql
 
             try
             {
-                return (IQueryable)Activator.CreateInstance(typeof(KasbahNpgsqlQueryable<>).MakeGenericType(elementType), new object[] { this, expression });
+                return (IQueryable)Activator.CreateInstance(typeof(KasbahQueryable<>).MakeGenericType(elementType), new object[] { this, expression });
             }
             catch (TargetInvocationException ex)
             {
@@ -37,13 +41,15 @@ namespace Kasbah.DataAccess.Npgsql
         }
 
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
-            => new KasbahNpgsqlQueryable<TElement>(this, expression);
+            => new KasbahQueryable<TElement>(this, expression);
 
         public object Execute(Expression expression)
         {
+            // TODO: fix issue specifying types parameter
+
             var types = _typeRegistry.GetTypesThatImplement(_targetType);
 
-            var translator = new KasbahQueryTranslator();
+            var translator = new KasbahNpgsqlQueryTranslator();
             var res = translator.Translate(expression);
 
             var sql = new StringBuilder();
@@ -52,7 +58,7 @@ namespace Kasbah.DataAccess.Npgsql
             {
                 // sql.Append("(n.type in @types) and ");
             }
-            sql.Append(res.WhereClause ?? "1=1");
+            sql.Append(string.IsNullOrEmpty(res.WhereClause) ? "1=1" : res.WhereClause);
             if (res.Take.HasValue)
             {
                 sql.Append(" limit ");
@@ -80,13 +86,19 @@ namespace Kasbah.DataAccess.Npgsql
 
                 Console.WriteLine($"result count: {rawData.Count()}");
 
-                // return rawData.Select(ent => _typeMapper.MapTypeAsync(ent, _targetType.AssemblyQualifiedName));
+                var mappedData = rawData
+                    .Select(json => JsonConvert.DeserializeObject<IDictionary<string, object>>(json))
+                    .Select(ent => _typeMapper.MapTypeAsync(ent, _targetType.AssemblyQualifiedName).Result);
+
+                // TODO: this isn't great
+                var ret = Activator.CreateInstance(typeof(List<>).MakeGenericType(_targetType)) as IList;
+                foreach (var ent in mappedData)
+                {
+                    ret.Add(ent);
+                }
+
+                return ret;
             }
-
-            // TODO: fix issue specifying types
-            // TODO: find a way to map to strongly typed object
-
-            throw new NotImplementedException();
         }
 
         public TResult Execute<TResult>(Expression expression)

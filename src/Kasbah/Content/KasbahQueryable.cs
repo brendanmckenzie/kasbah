@@ -4,20 +4,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Kasbah.DataAccess.Npgsql
+namespace Kasbah.Content
 {
-    class KasbahNpgsqlQueryable<T> : IQueryable<T>, IQueryable, IEnumerable<T>, IEnumerable, IOrderedQueryable<T>, IOrderedQueryable
+    public class KasbahQueryable<T> : IQueryable<T>, IQueryable, IEnumerable<T>, IEnumerable, IOrderedQueryable<T>, IOrderedQueryable
     {
         readonly IQueryProvider _provider;
         readonly Expression _expression;
 
-        public KasbahNpgsqlQueryable(IQueryProvider provider)
+        public KasbahQueryable(IQueryProvider provider)
         {
             _provider = provider;
             _expression = Expression.Constant(this);
         }
 
-        public KasbahNpgsqlQueryable(IQueryProvider provider, Expression expression)
+        public KasbahQueryable(IQueryProvider provider, Expression expression)
         {
             _provider = provider;
             _expression = expression;
@@ -37,9 +37,5 @@ namespace Kasbah.DataAccess.Npgsql
 
         IEnumerator IEnumerable.GetEnumerator()
             => ((IEnumerable)_provider.Execute(_expression)).GetEnumerator();
-
-
-        public override string ToString()
-            => _provider.GetQueryText(_expression);
     }
 }

@@ -19,14 +19,16 @@ namespace Kasbah.Content
         readonly IDistributedCache _cache;
         readonly TypeRegistry _typeRegistry;
         readonly EventBus _eventBus;
+        readonly IKasbahQueryProviderFactory _queryProviderFactory;
 
-        public ContentService(ILoggerFactory loggerFactory, IContentProvider contentProvider, TypeRegistry typeRegistry, EventBus eventBus, IDistributedCache cache = null)
+        public ContentService(ILoggerFactory loggerFactory, IContentProvider contentProvider, TypeRegistry typeRegistry, EventBus eventBus, IKasbahQueryProviderFactory queryProviderFactory, IDistributedCache cache = null)
         {
             _log = loggerFactory.CreateLogger<ContentService>();
             _contentProvider = contentProvider;
             _typeRegistry = typeRegistry;
             _eventBus = eventBus;
             _cache = cache;
+            _queryProviderFactory = queryProviderFactory;
         }
 
         #region Public methods
@@ -153,6 +155,10 @@ namespace Kasbah.Content
         {
             throw await Task.FromResult(new NotImplementedException());
         }
+
+        public IQueryable<TItem> Query<TItem>()
+            where TItem : IItem
+            => new KasbahQueryable<TItem>(_queryProviderFactory.CreateProvider(typeof(TItem)));
 
         #endregion
 

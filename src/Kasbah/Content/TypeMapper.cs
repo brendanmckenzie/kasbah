@@ -16,15 +16,15 @@ namespace Kasbah.Content
     public class TypeMapper
     {
         readonly ILogger _log;
-        readonly ContentService _contentService;
+        readonly IContentProvider _contentProvider;
         readonly TypeRegistry _typeRegistry;
         readonly MediaService _mediaService;
         readonly ProxyGenerator _generator;
 
-        public TypeMapper(ILoggerFactory loggerFactory, ContentService contentService, MediaService mediaService, TypeRegistry typeRegistry)
+        public TypeMapper(ILoggerFactory loggerFactory, IContentProvider contentProvider, MediaService mediaService, TypeRegistry typeRegistry)
         {
             _log = loggerFactory.CreateLogger<TypeMapper>();
-            _contentService = contentService;
+            _contentProvider = contentProvider;
             _mediaService = mediaService;
             _typeRegistry = typeRegistry;
 
@@ -146,12 +146,13 @@ namespace Kasbah.Content
             Guid id;
             if (Guid.TryParse((string)source, out id))
             {
-                var node = await _contentService.GetNodeAsync(id);
+                var node = await _contentProvider.GetNodeAsync(id);
                 if (node.PublishedVersion.HasValue)
                 {
                     try
                     {
-                        var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
+                        var data = await _contentProvider.GetRawDataAsync(node.Id, node.PublishedVersion);
+
                         return await MapTypeAsync(data, node.Type, node);
                     }
                     catch

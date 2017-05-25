@@ -4,6 +4,7 @@ using Kasbah.DataAccess.Npgsql;
 using Kasbah.Content;
 using Kasbah.Content.Models;
 using System.Linq;
+using Kasbah.Content.Events;
 
 namespace Kasbah.DataAccess.Npgsql.Test
 {
@@ -16,10 +17,17 @@ namespace Kasbah.DataAccess.Npgsql.Test
             var typeRegistry = new TypeRegistry();
             typeRegistry.Register<TestType>();
             var contentProvider = new ContentProvider(settings, typeRegistry);
+            var loggerFactory = new Microsoft.Extensions.Logging.LoggerFactory();
+            var eventBus = new EventBus(Enumerable.Empty<IOnContentPublished>());
 
-            contentProvider.Query<TestType>()
-                .Where(ent => ent.TestProp == "hello" && ent.PestTrop != "olleh")
-                // .Where(ent => ent.PestTrop == "bye")
+            var typeMapper = new TypeMapper(loggerFactory, contentProvider, null, typeRegistry);
+            var queryProviderFactory = new KasbahQueryProviderFactory(settings, typeRegistry, typeMapper);
+            var contentService = new ContentService(loggerFactory, contentProvider, typeRegistry, eventBus, queryProviderFactory);
+
+
+            contentService.Query<TestType>()
+                // .Where(ent => ent.TestProp == "hello" && ent.PestTrop != "olleh")
+                .Where(ent => ent.PestTrop.Contains("bye"))
                 .Skip(0)
                 .Take(5)
                 .ToList();
