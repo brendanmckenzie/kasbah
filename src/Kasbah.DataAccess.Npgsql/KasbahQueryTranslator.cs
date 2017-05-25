@@ -1,23 +1,50 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 
 namespace Kasbah.DataAccess.Npgsql
 {
+    public class TranslateResponse
+    {
+        public string WhereClause = "";
+        public string OrderByClause = "";
+        public long? Skip = null;
+        public long? Take = null;
+        public IDictionary<string, object> Parameters { get; internal set; }
+    }
+
     public class KasbahQueryTranslator : ExpressionVisitor
     {
-        StringBuilder sb;
-
-        internal KasbahQueryTranslator()
+        enum Clause
         {
+            Unknown,
+            Where,
+            Skip,
+            Take,
+            OrderBy
         }
 
-        internal string Translate(Expression expression)
+        readonly StringBuilder _whereClause = new StringBuilder();
+        readonly IDictionary<string, object> _parameters = new Dictionary<string, object>();
+
+        Clause _currentClause = Clause.Unknown;
+        long? _skip, _take;
+
+        internal KasbahQueryTranslator() { }
+
+        internal TranslateResponse Translate(Expression expression)
         {
-            this.sb = new StringBuilder();
             this.Visit(expression);
-            return this.sb.ToString();
+
+            return new TranslateResponse
+            {
+                WhereClause = _whereClause.ToString(),
+                Skip = _skip,
+                Take = _take,
+                Parameters = _parameters
+            };
         }
 
         private static Expression StripQuotes(Expression e)
@@ -31,110 +58,175 @@ namespace Kasbah.DataAccess.Npgsql
 
         protected override Expression VisitMethodCall(MethodCallExpression m)
         {
-            if (m.Method.DeclaringType.FullName == "System.Linq.Queryable" && m.Method.Name == "Where")
+            Console.WriteLine($"{_currentClause} {nameof(VisitMethodCall)}");
+
+            if (m.Method.DeclaringType.FullName == "System.Linq.Queryable")
             {
-                sb.Append("SELECT * FROM(");
-                this.Visit(m.Arguments[0]);
-                sb.Append(") AS T WHERE ");
-                LambdaExpression lambda = (LambdaExpression)StripQuotes(m.Arguments[1]);
-                this.Visit(lambda.Body);
-                return m;
+                switch (m.Method.Name)
+                {
+                    case "Where":
+                        {
+                            _currentClause = Clause.Where;
+
+                            LambdaExpression lambda = (LambdaExpression)StripQuotes(m.Arguments[1]);
+
+                            this.Visit(lambda.Body);
+
+                            // TODO: find a way to Visit(m.Arguments[0]) without causing a StakcOverflow
+
+                            return m;
+                        }
+                    case "Skip":
+                        {
+                            _currentClause = Clause.Skip;
+                            this.Visit(m.Arguments[1]);
+
+                            this.Visit(m.Arguments[0]);
+
+                            return m;
+                        }
+                    case "Take":
+                        {
+                            _currentClause = Clause.Take;
+                            this.Visit(m.Arguments[1]);
+
+                            this.Visit(m.Arguments[0]);
+
+                            return m;
+                        }
+                }
             }
             throw new NotSupportedException($"The method '{m.Method.Name}' on '{m.Method.DeclaringType.FullName}' is not supported");
         }
 
         protected override Expression VisitUnary(UnaryExpression u)
         {
-            switch (u.NodeType)
+            switch (_currentClause)
             {
-                case ExpressionType.Not:
-                    sb.Append(" NOT ");
-                    this.Visit(u.Operand);
+                case Clause.Where:
+                    switch (u.NodeType)
+                    {
+                        case ExpressionType.Not:
+                            _whereClause.Append(" not ");
+                            this.Visit(u.Operand);
+                            break;
+                        default:
+                            throw new NotSupportedException($"The unary operator '{u.NodeType}' is not supported");
+                    }
                     break;
-                default:
-                    throw new NotSupportedException($"The unary operator '{u.NodeType}' is not supported");
             }
             return u;
         }
 
         protected override Expression VisitBinary(BinaryExpression b)
         {
-            sb.Append("(");
-            this.Visit(b.Left);
-            switch (b.NodeType)
+            Console.WriteLine($"{_currentClause} {nameof(VisitBinary)} -- {b.NodeType}");
+
+            switch (_currentClause)
             {
-                case ExpressionType.And:
-                    sb.Append(" AND ");
+                case Clause.Where:
+                    _whereClause.Append("(");
+                    this.Visit(b.Left);
+                    switch (b.NodeType)
+                    {
+                        case ExpressionType.And:
+                        case ExpressionType.AndAlso:
+                            _whereClause.Append(" and ");
+                            break;
+                        case ExpressionType.Or:
+                        case ExpressionType.OrElse:
+                            _whereClause.Append(" or ");
+                            break;
+                        case ExpressionType.Equal:
+                            _whereClause.Append(" = ");
+                            break;
+                        case ExpressionType.NotEqual:
+                            _whereClause.Append(" <> ");
+                            break;
+                        case ExpressionType.LessThan:
+                            _whereClause.Append(" < ");
+                            break;
+                        case ExpressionType.LessThanOrEqual:
+                            _whereClause.Append(" <= ");
+                            break;
+                        case ExpressionType.GreaterThan:
+                            _whereClause.Append(" > ");
+                            break;
+                        case ExpressionType.GreaterThanOrEqual:
+                            _whereClause.Append(" >= ");
+                            break;
+                        default:
+                            throw new NotSupportedException($"The binary operator '{b.NodeType}' is not supported");
+                    }
+                    this.Visit(b.Right);
+                    _whereClause.Append(")");
                     break;
-                case ExpressionType.Or:
-                    sb.Append(" OR");
-                    break;
-                case ExpressionType.Equal:
-                    sb.Append(" = ");
-                    break;
-                case ExpressionType.NotEqual:
-                    sb.Append(" <> ");
-                    break;
-                case ExpressionType.LessThan:
-                    sb.Append(" < ");
-                    break;
-                case ExpressionType.LessThanOrEqual:
-                    sb.Append(" <= ");
-                    break;
-                case ExpressionType.GreaterThan:
-                    sb.Append(" > ");
-                    break;
-                case ExpressionType.GreaterThanOrEqual:
-                    sb.Append(" >= ");
-                    break;
-                default:
-                    throw new NotSupportedException($"The binary operator '{b.NodeType}' is not supported");
             }
-            this.Visit(b.Right);
-            sb.Append(")");
             return b;
         }
 
         protected override Expression VisitConstant(ConstantExpression c)
         {
-            var q = c.Value as IQueryable;
-            if (q != null)
+            Console.WriteLine($"{_currentClause} {nameof(VisitConstant)}: {c.Value.GetType()}");
+            if (c.Type == typeof(string))
             {
-                // assume constant nodes w/ IQueryables are table references
-                sb.Append("SELECT * FROM ");
-                sb.Append(q.ElementType.Name);
+                Console.WriteLine($"value: {c.Value}");
             }
-            else if (c.Value == null)
+
+            switch (_currentClause)
             {
-                sb.Append("NULL");
-            }
-            else
-            {
-                switch (Type.GetTypeCode(c.Value.GetType()))
-                {
-                    case TypeCode.Boolean:
-                        sb.Append(((bool)c.Value) ? 1 : 0);
-                        break;
-                    case TypeCode.String:
-                        sb.Append("'");
-                        sb.Append(c.Value);
-                        sb.Append("'");
-                        break;
-                    case TypeCode.Object:
-                        throw new NotSupportedException($"The constant for '{c.Value}' is not supported");
-                    default:
-                        sb.Append(c.Value);
-                        break;
-                }
+                case Clause.Where:
+                    if (c.Value == null)
+                    {
+                        _whereClause.Append("null");
+                    }
+                    else
+                    {
+                        switch (Type.GetTypeCode(c.Value.GetType()))
+                        {
+                            case TypeCode.Object:
+                                throw new NotSupportedException($"The constant for '{c.Value}' is not supported");
+                            case TypeCode.Boolean:
+                            case TypeCode.String:
+                            default:
+                                var parameterName = $"p{_parameters.Count + 1}";
+                                _parameters.Add(parameterName, c.Value);
+                                _whereClause.Append($"@{parameterName}");
+                                break;
+                        }
+                    }
+                    break;
+                case Clause.Skip:
+                    switch (Type.GetTypeCode(c.Value.GetType()))
+                    {
+                        case TypeCode.Int16:
+                        case TypeCode.Int32:
+                        case TypeCode.Int64:
+                            _skip = Convert.ToInt64(c.Value);
+                            break;
+                    }
+                    break;
+                case Clause.Take:
+                    switch (Type.GetTypeCode(c.Value.GetType()))
+                    {
+                        case TypeCode.Int16:
+                        case TypeCode.Int32:
+                        case TypeCode.Int64:
+                            _take = Convert.ToInt64(c.Value);
+                            break;
+                    }
+                    break;
             }
             return c;
         }
 
-        protected override Expression VisitMemberAccess(MemberExpression m)
+
+        protected override Expression VisitMember(MemberExpression m)
         {
+            Console.WriteLine($"{_currentClause} {nameof(VisitMember)}: {m.Member.Name} -- {m.Expression.NodeType}");
             if (m.Expression != null && m.Expression.NodeType == ExpressionType.Parameter)
             {
-                sb.Append(m.Member.Name);
+                _whereClause.Append($"nc.content->>'{m.Member.Name}'");
                 return m;
             }
             throw new NotSupportedException($"The member '{m.Member.Name}' is not supported");

@@ -31,9 +31,12 @@ namespace Kasbah.Content
         public TypeDefinition GetType(string type)
             => _types.SingleOrDefault(ent => ent.Alias == type);
 
+        public IEnumerable<TypeDefinition> GetTypesThatImplement(Type type)
+            => _types.Where(ent => type.IsAssignableFrom(Type.GetType(ent.Alias)));
+
         public IEnumerable<TypeDefinition> GetTypesThatImplement<TType>()
             where TType : IItem
-            => _types.Where(ent => typeof(TType).IsAssignableFrom(Type.GetType(ent.Alias)));
+            => GetTypesThatImplement(typeof(TType));
     }
 
     public static class TypeRegistryExtensions

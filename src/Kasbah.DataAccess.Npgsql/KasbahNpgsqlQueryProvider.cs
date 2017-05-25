@@ -3,11 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Text;
+using Npgsql;
+using Dapper;
+using Kasbah.Content;
 
 namespace Kasbah.DataAccess.Npgsql
 {
     class KasbahNpgsqlQueryProvider : IQueryProvider
     {
+        readonly Type _targetType;
+        readonly NpgsqlSettings _settings;
+        readonly TypeRegistry _typeRegistry;
+        public KasbahNpgsqlQueryProvider(NpgsqlSettings settings, Type targetType, TypeRegistry typeRegistry)
+        {
+            _settings = settings;
+            _targetType = targetType;
+            _typeRegistry = typeRegistry;
+        }
+
         public IQueryable CreateQuery(Expression expression)
         {
             var elementType = TypeSystem.GetElementType(expression.Type);
@@ -27,29 +41,52 @@ namespace Kasbah.DataAccess.Npgsql
 
         public object Execute(Expression expression)
         {
+            var types = _typeRegistry.GetTypesThatImplement(_targetType);
+
             var translator = new KasbahQueryTranslator();
-            var sql = translator.Translate(expression);
-            
-            throw new NotImplementedException($"Did it work? {sql}");
-            /*var types = _typeRegistry.GetTypesThatImplement<TItem>();
+            var res = translator.Translate(expression);
 
-            // 1. get list of known types that implement provided TItem
-            // 2. build SQL query
-            // 3. get results
-
-            using (var connection = GetConnection())
+            var sql = new StringBuilder();
+            sql.Append("select content from node_content nc inner join node n on nc.id = n.id where ");
+            if (types.Any())
             {
-                var sql = @"
-                select 
-                    node.*, 
-                    node_content.* 
-                from 
-                    node
-                    inner join node_content on (node.published_version_id = node_content.id)
-                where
-                    node.type in @types";
-                // await connection.QueryAsync(sql, new  { types });
-            }*/
+                // sql.Append("(n.type in @types) and ");
+            }
+            sql.Append(res.WhereClause ?? "1=1");
+            if (res.Take.HasValue)
+            {
+                sql.Append(" limit ");
+                sql.Append(res.Take);
+            }
+            if (res.Skip.HasValue)
+            {
+                sql.Append(" offset ");
+                sql.Append(res.Skip);
+            }
+            sql.Append(';');
+
+            Console.WriteLine(sql);
+
+            using (var connection = new NpgsqlConnection(_settings.ConnectionString))
+            {
+                var parameters = new Dapper.DynamicParameters(res.Parameters);
+                if (types.Any())
+                {
+                    // parameters.Add("types", types.Select(ent => ent.Alias).ToArray());
+                }
+                Console.WriteLine($"parameters: {string.Join(", ", types.Select(ent => ent.Alias).ToArray())}");
+
+                var rawData = connection.Query<string>(sql.ToString(), param: parameters);
+
+                Console.WriteLine($"result count: {rawData.Count()}");
+
+                // return rawData.Select(ent => _typeMapper.MapTypeAsync(ent, _targetType.AssemblyQualifiedName));
+            }
+
+            // TODO: fix issue specifying types
+            // TODO: find a way to map to strongly typed object
+
+            throw new NotImplementedException();
         }
 
         public TResult Execute<TResult>(Expression expression)
@@ -66,7 +103,6 @@ namespace Kasbah.DataAccess.Npgsql
 
     internal static class TypeSystem
     {
-
         internal static Type GetElementType(Type type)
         {
 

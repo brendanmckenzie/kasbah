@@ -341,7 +341,7 @@ limit {take}";
         public IQueryable<TItem> Query<TItem>()
             where TItem : IItem
         {
-            var provider = new KasbahNpgsqlQueryProvider();
+            var provider = new KasbahNpgsqlQueryProvider(_settings, typeof(TItem), _typeRegistry);
 
             return new KasbahNpgsqlQueryable<TItem>(provider);
         }
