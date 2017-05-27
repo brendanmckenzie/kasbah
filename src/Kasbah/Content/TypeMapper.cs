@@ -31,7 +31,7 @@ namespace Kasbah.Content
             _generator = new ProxyGenerator();
         }
 
-        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Node node = null, int? version = null, TypeMapperContext context = null)
+        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Node node = null, long? version = null, TypeMapperContext context = null)
         {
             context = context ?? new TypeMapperContext();
 
@@ -43,7 +43,8 @@ namespace Kasbah.Content
             var ret = _generator.CreateClassProxy(type, options, new KasbahPropertyInterceptor(MapPropertyAsync, data, context));
             if (data != null)
             {
-                var eagerLoadProperties = typeInfo.GetProperties().Where(prop => prop.GetMethod?.IsVirtual == false);
+                var eagerLoadProperties = typeInfo.GetProperties()
+                    .Where(prop => !typeof(IItem).IsAssignableFrom(prop.PropertyType) || (typeof(IItem).IsAssignableFrom(prop.PropertyType) && prop.GetMethod?.IsVirtual == false));
                 var values = await Task.WhenAll(eagerLoadProperties.Select(async prop =>
                 {
                     var key = prop.Name;

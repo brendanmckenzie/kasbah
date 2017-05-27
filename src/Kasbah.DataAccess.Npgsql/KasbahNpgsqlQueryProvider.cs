@@ -9,6 +9,7 @@ using Dapper;
 using Kasbah.Content;
 using Newtonsoft.Json;
 using System.Collections;
+using Kasbah.Content.Models;
 
 namespace Kasbah.DataAccess.Npgsql
 {
@@ -53,7 +54,23 @@ namespace Kasbah.DataAccess.Npgsql
             var res = translator.Translate(expression);
 
             var sql = new StringBuilder();
-            sql.Append("select content from node_content nc inner join node n on nc.id = n.id where ");
+            sql.Append(@"
+select
+    n.id as Id,
+    n.parent_id as Parent,
+    n.alias as Alias,
+    n.display_name as DisplayName,
+    n.type as Type,
+    n.published_version_id as PublishedVersion,
+    n.created_at as Created,
+    n.modified_at as Modified,
+    n.id_taxonomy as Ids,
+    n.alias_taxonomy as Aliases,
+    nc.content as Content
+from
+    node n
+    inner join node_content nc on nc.id = n.id and n.published_version_id = nc.version
+where ");
             if (types.Any())
             {
                 // sql.Append("(n.type in @types) and ");
@@ -82,13 +99,20 @@ namespace Kasbah.DataAccess.Npgsql
                 }
                 Console.WriteLine($"parameters: {string.Join(", ", types.Select(ent => ent.Alias).ToArray())}");
 
-                var rawData = connection.Query<string>(sql.ToString(), param: parameters);
+                var rawData = connection.Query<Node, string, QueryResult>(
+                    sql: sql.ToString(),
+                    map: (node, json) => new QueryResult { Node = node, Json = json },
+                    param: parameters,
+                    splitOn: "Content");
 
                 Console.WriteLine($"result count: {rawData.Count()}");
 
-                var mappedData = rawData
-                    .Select(json => JsonConvert.DeserializeObject<IDictionary<string, object>>(json))
-                    .Select(ent => _typeMapper.MapTypeAsync(ent, _targetType.AssemblyQualifiedName).Result);
+                var mappedData = rawData.Select(ent =>
+                    {
+                        var dict = JsonConvert.DeserializeObject<IDictionary<string, object>>(ent.Json);
+
+                        return _typeMapper.MapTypeAsync(dict, ent.Node.Type, ent.Node, ent.Node.PublishedVersion).Result;
+                    });
 
                 // TODO: this isn't great
                 var ret = Activator.CreateInstance(typeof(List<>).MakeGenericType(_targetType)) as IList;
@@ -103,6 +127,12 @@ namespace Kasbah.DataAccess.Npgsql
 
         public TResult Execute<TResult>(Expression expression)
             => (TResult)Execute(expression);
+    }
+
+    class QueryResult
+    {
+        public Node Node { get; set; }
+        public string Json { get; set; }
     }
 
     internal static class IQueryableExtensions

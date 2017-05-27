@@ -6,13 +6,13 @@ namespace Kasbah.Content.Models
     {
         Guid Id { get; set; }
         Node Node { get; set; }
-        int Version { get; set; }
+        long Version { get; set; }
     }
 
     public class Item : IItem
     {
         public Guid Id { get; set; }
         public Node Node { get; set; }
-        public int Version { get; set; }
+        public long Version { get; set; }
     }
 }
