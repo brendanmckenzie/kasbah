@@ -148,7 +148,7 @@ where ");
         internal static Type GetElementType(Type type)
         {
 
-            Type ienum = FindIEnumerable(type);
+            var ienum = FindIEnumerable(type);
 
             if (ienum == null) return type;
 

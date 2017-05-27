@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
+using Kasbah.Content.Models;
 
 namespace Kasbah.DataAccess.Npgsql
 {
@@ -198,14 +200,33 @@ namespace Kasbah.DataAccess.Npgsql
                         switch (Type.GetTypeCode(c.Value.GetType()))
                         {
                             case TypeCode.Object:
-                                throw new NotSupportedException($"The constant for '{c.Value}' is not supported");
+                                if (typeof(IItem).IsAssignableFrom(c.Value.GetType()))
+                                {
+                                    var parameterName = $"p{_parameters.Count + 1}";
+                                    _parameters.Add(parameterName, (c.Value as IItem).Id);
+                                    _whereClause.Append($"@{parameterName}");
+                                    break;
+                                }
+                                else
+                                {
+                                    throw new NotSupportedException($"The constant for '{c.Value}' is not supported");
+                                }
                             case TypeCode.Boolean:
                             case TypeCode.String:
+                            case TypeCode.Int16:
+                            case TypeCode.Int32:
+                            case TypeCode.Int64:
+                            case TypeCode.UInt16:
+                            case TypeCode.UInt32:
+                            case TypeCode.UInt64:
+                            case TypeCode.DateTime:
                             default:
-                                var parameterName = $"p{_parameters.Count + 1}";
-                                _parameters.Add(parameterName, c.Value);
-                                _whereClause.Append($"@{parameterName}");
-                                break;
+                                {
+                                    var parameterName = $"p{_parameters.Count + 1}";
+                                    _parameters.Add(parameterName, c.Value);
+                                    _whereClause.Append($"@{parameterName}");
+                                    break;
+                                }
                         }
                     }
                     break;
