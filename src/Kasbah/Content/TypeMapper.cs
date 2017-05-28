@@ -16,22 +16,22 @@ namespace Kasbah.Content
     public class TypeMapper
     {
         readonly ILogger _log;
-        readonly ContentService _contentService;
+        readonly IContentProvider _contentProvider;
         readonly TypeRegistry _typeRegistry;
-        readonly MediaService _mediaService;
+        readonly IMediaProvider _mediaProvider;
         readonly ProxyGenerator _generator;
 
-        public TypeMapper(ILoggerFactory loggerFactory, ContentService contentService, MediaService mediaService, TypeRegistry typeRegistry)
+        public TypeMapper(ILoggerFactory loggerFactory, IContentProvider contentProvider, IMediaProvider mediaProvider, TypeRegistry typeRegistry)
         {
             _log = loggerFactory.CreateLogger<TypeMapper>();
-            _contentService = contentService;
-            _mediaService = mediaService;
+            _contentProvider = contentProvider;
+            _mediaProvider = mediaProvider;
             _typeRegistry = typeRegistry;
 
             _generator = new ProxyGenerator();
         }
 
-        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Node node = null, int? version = null, TypeMapperContext context = null)
+        public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Node node = null, long? version = null, TypeMapperContext context = null)
         {
             context = context ?? new TypeMapperContext();
 
@@ -43,7 +43,8 @@ namespace Kasbah.Content
             var ret = _generator.CreateClassProxy(type, options, new KasbahPropertyInterceptor(MapPropertyAsync, data, context));
             if (data != null)
             {
-                var eagerLoadProperties = typeInfo.GetProperties().Where(prop => prop.GetMethod?.IsVirtual == false);
+                var eagerLoadProperties = typeInfo.GetProperties()
+                    .Where(prop => !typeof(IItem).IsAssignableFrom(prop.PropertyType) || (typeof(IItem).IsAssignableFrom(prop.PropertyType) && prop.GetMethod?.IsVirtual == false));
                 var values = await Task.WhenAll(eagerLoadProperties.Select(async prop =>
                 {
                     var key = prop.Name;
@@ -146,12 +147,13 @@ namespace Kasbah.Content
             Guid id;
             if (Guid.TryParse((string)source, out id))
             {
-                var node = await _contentService.GetNodeAsync(id);
+                var node = await _contentProvider.GetNodeAsync(id);
                 if (node.PublishedVersion.HasValue)
                 {
                     try
                     {
-                        var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
+                        var data = await _contentProvider.GetRawDataAsync(node.Id, node.PublishedVersion);
+
                         return await MapTypeAsync(data, node.Type, node);
                     }
                     catch
@@ -172,7 +174,7 @@ namespace Kasbah.Content
             {
                 try
                 {
-                    return await _mediaService.GetMediaItemAsync(id);
+                    return await _mediaProvider.GetMediaAsync(id);
                 }
                 catch
                 {

@@ -15,6 +15,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{76C2BD1C-B34
 EndProject
 Project("{13B669BE-BB05-4DDF-9536-439F39A36129}") = "Kasbah.DataAccess.Npgsql", "src\Kasbah.DataAccess.Npgsql\Kasbah.DataAccess.Npgsql.csproj", "{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7F35C1F5-589A-4DE5-8604-AF676CF77E6B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kasbah.DataAccess.Npgsql.Test", "test\Kasbah.DataAccess.Npgsql.Test\Kasbah.DataAccess.Npgsql.Test.csproj", "{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,11 +89,24 @@ Global
 		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Release|x64.Build.0 = Release|x64
 		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Release|x86.ActiveCfg = Release|x86
 		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}.Release|x86.Build.0 = Release|x86
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Debug|x64.ActiveCfg = Debug|x64
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Debug|x64.Build.0 = Debug|x64
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Debug|x86.ActiveCfg = Debug|x86
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Debug|x86.Build.0 = Debug|x86
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Release|x64.ActiveCfg = Release|x64
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Release|x64.Build.0 = Release|x64
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Release|x86.ActiveCfg = Release|x86
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D} = {76C2BD1C-B34B-4FDB-9B51-0586438938AB}
+		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD} = {7F35C1F5-589A-4DE5-8604-AF676CF77E6B}
 	EndGlobalSection
 EndGlobal
