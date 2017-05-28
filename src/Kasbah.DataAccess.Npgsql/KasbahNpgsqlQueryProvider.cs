@@ -19,6 +19,7 @@ namespace Kasbah.DataAccess.Npgsql
         readonly NpgsqlSettings _settings;
         readonly TypeRegistry _typeRegistry;
         readonly TypeMapper _typeMapper;
+
         public KasbahNpgsqlQueryProvider(Type targetType, NpgsqlSettings settings, TypeRegistry typeRegistry, TypeMapper typeMapper)
         {
             _targetType = targetType;
@@ -46,10 +47,6 @@ namespace Kasbah.DataAccess.Npgsql
 
         public object Execute(Expression expression)
         {
-            // TODO: fix issue specifying types parameter
-
-            var types = _typeRegistry.GetTypesThatImplement(_targetType);
-
             var translator = new KasbahNpgsqlQueryTranslator();
             var res = translator.Translate(expression);
 
@@ -71,9 +68,27 @@ from
     node n
     inner join node_content nc on nc.id = n.id and n.published_version_id = nc.version
 where ");
+            var parameters = new Dapper.DynamicParameters(res.Parameters);
+
+            var types = _typeRegistry.GetTypesThatImplement(_targetType);
+
             if (types.Any())
             {
-                // sql.Append("(n.type in @types) and ");
+                var typeWhere =
+                    types.Select((ent, index) => new { Alias = ent.Alias, Index = index })
+                    .Select(ent => new
+                    {
+                        Statement = $"n.type = @t{ent.Index}",
+                        Key = $"t{ent.Index}",
+                        Value = ent.Alias
+                    });
+
+                sql.Append($"({string.Join(" or ", typeWhere.Select(ent => ent.Statement))}) and ");
+                // TODO: this still isn't the greatest
+                foreach (var type in typeWhere)
+                {
+                    parameters.Add(type.Key, type.Value);
+                }
             }
             sql.Append(string.IsNullOrEmpty(res.WhereClause) ? "1=1" : res.WhereClause);
             if (res.Take.HasValue)
@@ -92,11 +107,6 @@ where ");
 
             using (var connection = new NpgsqlConnection(_settings.ConnectionString))
             {
-                var parameters = new Dapper.DynamicParameters(res.Parameters);
-                if (types.Any())
-                {
-                    // parameters.Add("types", types.Select(ent => ent.Alias).ToArray());
-                }
                 Console.WriteLine($"parameters: {string.Join(", ", types.Select(ent => ent.Alias).ToArray())}");
 
                 var rawData = connection.Query<Node, string, QueryResult>(
