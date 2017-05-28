@@ -22,7 +22,7 @@ namespace Kasbah.DataAccess.Npgsql
         readonly TypeRegistry _typeRegistry;
         readonly TypeMapper _typeMapper;
 
-        public KasbahNpgsqlQueryProvider(LoggerFactory loggerFactory, Type targetType, NpgsqlSettings settings, TypeRegistry typeRegistry, TypeMapper typeMapper)
+        public KasbahNpgsqlQueryProvider(ILoggerFactory loggerFactory, Type targetType, NpgsqlSettings settings, TypeRegistry typeRegistry, TypeMapper typeMapper)
         {
             _log = loggerFactory.CreateLogger<KasbahNpgsqlQueryProvider>();
             _targetType = targetType;

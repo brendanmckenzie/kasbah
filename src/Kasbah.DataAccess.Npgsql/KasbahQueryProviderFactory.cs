@@ -7,12 +7,12 @@ namespace Kasbah.DataAccess.Npgsql
 {
     public class KasbahQueryProviderFactory : IKasbahQueryProviderFactory
     {
-        readonly LoggerFactory _loggerFactory;
+        readonly ILoggerFactory _loggerFactory;
         readonly NpgsqlSettings _settings;
         readonly TypeRegistry _typeRegistry;
         readonly TypeMapper _typeMapper;
 
-        public KasbahQueryProviderFactory(LoggerFactory loggerFactory, NpgsqlSettings settings, TypeRegistry typeRegistry, TypeMapper typeMapper)
+        public KasbahQueryProviderFactory(ILoggerFactory loggerFactory, NpgsqlSettings settings, TypeRegistry typeRegistry, TypeMapper typeMapper)
         {
             _loggerFactory = loggerFactory;
             _settings = settings;
