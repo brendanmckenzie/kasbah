@@ -10,18 +10,21 @@ using Kasbah.Content;
 using Newtonsoft.Json;
 using System.Collections;
 using Kasbah.Content.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Kasbah.DataAccess.Npgsql
 {
     class KasbahNpgsqlQueryProvider : IQueryProvider
     {
+        readonly ILogger _log;
         readonly Type _targetType;
         readonly NpgsqlSettings _settings;
         readonly TypeRegistry _typeRegistry;
         readonly TypeMapper _typeMapper;
 
-        public KasbahNpgsqlQueryProvider(Type targetType, NpgsqlSettings settings, TypeRegistry typeRegistry, TypeMapper typeMapper)
+        public KasbahNpgsqlQueryProvider(LoggerFactory loggerFactory, Type targetType, NpgsqlSettings settings, TypeRegistry typeRegistry, TypeMapper typeMapper)
         {
+            _log = loggerFactory.CreateLogger<KasbahNpgsqlQueryProvider>();
             _targetType = targetType;
             _settings = settings;
             _typeRegistry = typeRegistry;
@@ -71,7 +74,6 @@ where ");
             var parameters = new Dapper.DynamicParameters(res.Parameters);
 
             var types = _typeRegistry.GetTypesThatImplement(_targetType);
-
             if (types.Any())
             {
                 var typeWhere =
@@ -103,19 +105,15 @@ where ");
             }
             sql.Append(';');
 
-            Console.WriteLine(sql);
+            _log.LogDebug($"{nameof(Execute)}: {sql}");
 
             using (var connection = new NpgsqlConnection(_settings.ConnectionString))
             {
-                Console.WriteLine($"parameters: {string.Join(", ", types.Select(ent => ent.Alias).ToArray())}");
-
                 var rawData = connection.Query<Node, string, QueryResult>(
                     sql: sql.ToString(),
                     map: (node, json) => new QueryResult { Node = node, Json = json },
                     param: parameters,
                     splitOn: "Content");
-
-                Console.WriteLine($"result count: {rawData.Count()}");
 
                 var mappedData = rawData.Select(ent =>
                     {

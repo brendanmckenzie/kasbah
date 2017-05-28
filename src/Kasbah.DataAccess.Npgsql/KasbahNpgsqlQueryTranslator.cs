@@ -60,8 +60,6 @@ namespace Kasbah.DataAccess.Npgsql
 
         protected override Expression VisitMethodCall(MethodCallExpression m)
         {
-            Console.WriteLine($"{_currentClause} {nameof(VisitMethodCall)}");
-
             if (m.Method.DeclaringType.FullName == "System.Linq.Queryable")
             {
                 switch (m.Method.Name)
@@ -105,7 +103,6 @@ namespace Kasbah.DataAccess.Npgsql
                     case "Contains":
                         {
                             // TODO: generate a SQL `like` statement from this
-                            Console.WriteLine($"Contains -- {m.Arguments[0]}");
 
                             return m;
                         }
@@ -135,8 +132,6 @@ namespace Kasbah.DataAccess.Npgsql
 
         protected override Expression VisitBinary(BinaryExpression b)
         {
-            Console.WriteLine($"{_currentClause} {nameof(VisitBinary)} -- {b.NodeType}");
-
             switch (_currentClause)
             {
                 case Clause.Where:
@@ -182,12 +177,6 @@ namespace Kasbah.DataAccess.Npgsql
 
         protected override Expression VisitConstant(ConstantExpression c)
         {
-            Console.WriteLine($"{_currentClause} {nameof(VisitConstant)}: {c.Value.GetType()}");
-            if (c.Type == typeof(string))
-            {
-                Console.WriteLine($"value: {c.Value}");
-            }
-
             switch (_currentClause)
             {
                 case Clause.Where:
@@ -257,7 +246,6 @@ namespace Kasbah.DataAccess.Npgsql
 
         protected override Expression VisitMember(MemberExpression m)
         {
-            Console.WriteLine($"{_currentClause} {nameof(VisitMember)}: {m.Member.Name} -- {m.Expression.NodeType}");
             if (m.Expression != null && m.Expression.NodeType == ExpressionType.Parameter)
             {
                 _whereClause.Append($"nc.content->>'{m.Member.Name}'");
