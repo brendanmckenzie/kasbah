@@ -18,14 +18,14 @@ namespace Kasbah.Content
         readonly ILogger _log;
         readonly IContentProvider _contentProvider;
         readonly TypeRegistry _typeRegistry;
-        readonly MediaService _mediaService;
+        readonly IMediaProvider _mediaProvider;
         readonly ProxyGenerator _generator;
 
-        public TypeMapper(ILoggerFactory loggerFactory, IContentProvider contentProvider, MediaService mediaService, TypeRegistry typeRegistry)
+        public TypeMapper(ILoggerFactory loggerFactory, IContentProvider contentProvider, IMediaProvider mediaProvider, TypeRegistry typeRegistry)
         {
             _log = loggerFactory.CreateLogger<TypeMapper>();
             _contentProvider = contentProvider;
-            _mediaService = mediaService;
+            _mediaProvider = mediaProvider;
             _typeRegistry = typeRegistry;
 
             _generator = new ProxyGenerator();
@@ -174,7 +174,7 @@ namespace Kasbah.Content
             {
                 try
                 {
-                    return await _mediaService.GetMediaItemAsync(id);
+                    return await _mediaProvider.GetMediaAsync(id);
                 }
                 catch
                 {
