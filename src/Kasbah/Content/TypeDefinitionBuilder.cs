@@ -16,7 +16,8 @@ namespace Kasbah.Content
         {
             { typeof(string), "text" },
             { typeof(DateTime), "date" },
-            { typeof(Media.Models.MediaItem), "mediaPicker" }
+            { typeof(Media.Models.MediaItem), "mediaPicker" },
+            { typeof(Enum), "enum" }
         };
 
         static IEnumerable<Type> _basicEditors = _knownTypeEditors.Keys.Concat(new[] {
@@ -26,7 +27,8 @@ namespace Kasbah.Content
             typeof(short),
             typeof(double),
             typeof(decimal),
-            typeof(DateTime)
+            typeof(DateTime),
+            typeof(Enum)
         }).Distinct();
 
         static IEnumerable<string> _reservedFields = new[] {
@@ -141,6 +143,17 @@ namespace Kasbah.Content
             {
                 ret.Editor = "nodePicker";
                 ret.Type = property.PropertyType.AssemblyQualifiedName;
+            }
+            else if (property.PropertyType.GetTypeInfo().IsEnum)
+            {
+                ret.Editor = "enum";
+                ret.Options["enumType"] = property.PropertyType.GetTypeInfo().Name;
+                ret.Options["enum"] = Enum.GetValues(property.PropertyType)
+                                          .OfType<object>()
+                                          .Select(value => new {
+                                              Name = Enum.GetName(property.PropertyType, value),
+                                              Value = value,
+                                          }).ToList();
             }
             else if (typeof(IEnumerable<Item>).GetTypeInfo().IsAssignableFrom(property.PropertyType))
             {

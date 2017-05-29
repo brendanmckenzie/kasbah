@@ -1,4 +1,5 @@
 import Bias from './Bias'
+import Enum from './Enum'
 import Date from './Date'
 import LongText from './LongText'
 import MediaPicker from './MediaPicker'
@@ -9,6 +10,7 @@ import Text from './Text'
 
 export const controls = {
   Bias,
+  Enum,
   Date,
   LongText,
   MediaPicker,
