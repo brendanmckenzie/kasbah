@@ -1,9 +1,7 @@
 using System;
 using System.Threading.Tasks;
-using Kasbah.Analytics;
 using Kasbah.Content;
 using Kasbah.Content.Models;
-using Kasbah.Logging;
 using Kasbah.Media;
 using Kasbah.Security;
 using Kasbah.Web;
@@ -21,11 +19,9 @@ namespace Kasbah
 
             services.AddTransient<Content.Events.EventBus>();
 
-            // services.AddTransient<AnalyticsService>();
             services.AddTransient<SecurityService>();
             services.AddTransient<ContentService>();
             services.AddTransient<MediaService>();
-            // services.AddTransient<LoggingService>();
 
             return services;
         }
@@ -43,8 +39,6 @@ namespace Kasbah
             registration.RegisterSites(siteRegistry);
 
             await Task.WhenAll(
-                // services.GetService<AnalyticsService>().InitialiseAsync(),
-                // services.GetService<LoggingService>().InitialiseAsync(),
                 services.GetService<ContentService>().InitialiseAsync(),
                 services.GetService<MediaService>().InitialiseAsync(),
                 services.GetService<SecurityService>().InitialiseAsync());

@@ -1,7 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Kasbah.Analytics;
-using Kasbah.Analytics.Models;
 using Kasbah.Content;
 using Kasbah.Web.ContentDelivery.Models;
 using Kasbah.Web.Models;
