@@ -95,6 +95,18 @@ namespace Kasbah.Content
                 return await MapTypeAsync(dict, property.PropertyType.AssemblyQualifiedName, context: context);
             }
 
+            if (property.PropertyType.GetTypeInfo().IsEnum)
+            {
+                try
+                {
+                    return Enum.ToObject(property.PropertyType, int.Parse(source.ToString()));
+                }
+                catch (Exception)
+                {
+                    return Enum.ToObject(property.PropertyType, 0);
+                }
+            }
+
             // Linked objects
             if (_typeRegistry.GetType(property.PropertyType.AssemblyQualifiedName) != null)
             {
