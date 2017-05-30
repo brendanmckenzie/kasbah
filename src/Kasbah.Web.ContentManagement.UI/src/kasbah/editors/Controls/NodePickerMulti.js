@@ -5,7 +5,7 @@ import { Link } from 'react-router'
 import Loading from 'components/Loading'
 import { makeApiRequest } from 'store/util'
 
-class NodePicker extends React.Component {
+class NodePickerMulti extends React.Component {
   static propTypes = {
     input: React.PropTypes.object.isRequired,
     type: React.PropTypes.string
@@ -23,19 +23,13 @@ class NodePicker extends React.Component {
       selection: [],
       nodeDetail: {}
     }
-
-    this.handleHideModal = this.handleHideModal.bind(this)
-    this.handleShowModal = this.handleShowModal.bind(this)
-    this.handleSelect = this.handleSelect.bind(this)
-    this.handleCommit = this.handleCommit.bind(this)
-    this.handleClear = this.handleClear.bind(this)
   }
 
   componentWillMount() {
     this.handleReloadNodeDetail(this.props.input.value)
   }
 
-  handleRefresh() {
+  handleRefresh = () => {
     makeApiRequest({
       url: '/content/nodes/by-type',
       method: 'POST',
@@ -52,20 +46,20 @@ class NodePicker extends React.Component {
       })
   }
 
-  handleShowModal() {
+  handleShowModal = () => {
     this.handleRefresh()
     this.setState({
       showModal: true
     })
   }
 
-  handleHideModal() {
+  handleHideModal = () => {
     this.setState({
       showModal: false
     })
   }
 
-  handleSelect(item) {
+  handleSelect = (item) => {
     this.setState({
       selection: this.state.selection.indexOf(item) === -1
         ? [...this.state.selection, item]
@@ -73,7 +67,7 @@ class NodePicker extends React.Component {
     })
   }
 
-  handleCommit() {
+  handleCommit = () => {
     const { input: { onChange } } = this.props
 
     onChange(this.state.selection)
@@ -83,7 +77,7 @@ class NodePicker extends React.Component {
     this.handleHideModal()
   }
 
-  handleReloadNodeDetail(value) {
+  handleReloadNodeDetail = (value) => {
     if (!value) { return }
 
     Promise.all(value.map(ent => makeApiRequest({ url: `/content/node/${ent}`, method: 'GET' })))
@@ -98,7 +92,7 @@ class NodePicker extends React.Component {
       })
   }
 
-  handleClear() {
+  handleClear = () => {
     const { input: { onChange } } = this.props
 
     onChange([])
@@ -184,13 +178,16 @@ class NodePicker extends React.Component {
   render() {
     return (<div className='node-picker'>
       {this.display}
-      <div className='has-text-right'>
-        <button type='button' className='button is-small' onClick={this.handleClear}>Clear</button>
-        <button type='button' className='button is-small' onClick={this.handleShowModal}>Select nodes</button>
+      <div className='level'>
+        <div className='level-left' />
+        <div className='level-right'>
+          <button type='button' className='level-item button is-small' onClick={this.handleClear}>Clear</button>
+          <button type='button' className='level-item button is-small' onClick={this.handleShowModal}>Select nodes</button>
+        </div>
       </div>
       {this.modal}
     </div>)
   }
 }
 
-export default NodePicker
+export default NodePickerMulti
