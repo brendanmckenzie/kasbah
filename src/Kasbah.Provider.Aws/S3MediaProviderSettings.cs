@@ -1,4 +1,4 @@
-namespace Kasbah.Media.S3
+namespace Kasbah.Provider.Aws
 {
     public class S3MediaProviderSettings
     {

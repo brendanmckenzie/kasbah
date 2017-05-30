@@ -1,4 +1,4 @@
-namespace Kasbah.DataAccess.Npgsql
+namespace Kasbah.Provider.Npgsql
 {
     public class NpgsqlSettings
     {

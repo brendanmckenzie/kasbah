@@ -14,6 +14,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Kasbah\Kasbah.csproj" />
+    <ProjectReference Include="../Kasbah/Kasbah.csproj" />
   </ItemGroup>
 </Project>

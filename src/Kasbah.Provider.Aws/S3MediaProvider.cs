@@ -6,8 +6,9 @@ using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
 using Microsoft.Extensions.Caching.Distributed;
+using Kasbah.Media;
 
-namespace Kasbah.Media.S3
+namespace Kasbah.Provider.Aws
 {
     public class S3MediaProvider : IMediaStorageProvider
     {

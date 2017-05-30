@@ -4,7 +4,6 @@ using Kasbah.Content;
 using Kasbah.Content.Models;
 using Kasbah.Media;
 using Kasbah.Security;
-using Kasbah.Web;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kasbah
@@ -15,7 +14,6 @@ namespace Kasbah
         {
             services.AddSingleton<TypeMapper>();
             services.AddSingleton<TypeRegistry>();
-            services.AddSingleton<SiteRegistry>();
 
             services.AddTransient<Content.Events.EventBus>();
 
@@ -30,13 +28,6 @@ namespace Kasbah
         {
             var typeRegistry = services.GetService<TypeRegistry>();
             typeRegistry.Register<Folder>();
-
-            var siteRegistry = services.GetService<SiteRegistry>();
-
-            var registration = services.GetService<IKasbahWebRegistration>();
-
-            registration.RegisterTypes(typeRegistry);
-            registration.RegisterSites(siteRegistry);
 
             await Task.WhenAll(
                 services.GetService<ContentService>().InitialiseAsync(),

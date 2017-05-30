@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Linq;
 
-namespace Kasbah.DataAccess.Npgsql
+namespace Kasbah.Provider.Npgsql
 {
     public class ContentProvider : IContentProvider
     {

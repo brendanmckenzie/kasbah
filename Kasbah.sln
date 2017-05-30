@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.26206.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kasbah", "src\Kasbah\Kasbah.csproj", "{6DEAD1AB-91CE-4F3E-8318-54B309FA3A4F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kasbah.Media.S3", "src\Kasbah.Media.S3\Kasbah.Media.S3.csproj", "{12B556FF-378C-4E46-BEF1-5291D0E5E1EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kasbah.Provider.Aws", "src\Kasbah.Provider.Aws\Kasbah.Provider.Aws.csproj", "{12B556FF-378C-4E46-BEF1-5291D0E5E1EE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kasbah.Web.ContentDelivery", "src\Kasbah.Web.ContentDelivery\Kasbah.Web.ContentDelivery.csproj", "{C7BA1AE7-A251-4AD2-8DC2-49E4935F9D43}"
 EndProject
@@ -13,11 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kasbah.Web.ContentManagemen
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{76C2BD1C-B34B-4FDB-9B51-0586438938AB}"
 EndProject
-Project("{13B669BE-BB05-4DDF-9536-439F39A36129}") = "Kasbah.DataAccess.Npgsql", "src\Kasbah.DataAccess.Npgsql\Kasbah.DataAccess.Npgsql.csproj", "{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}"
+Project("{13B669BE-BB05-4DDF-9536-439F39A36129}") = "Kasbah.Provider.Npgsql", "src\Kasbah.Provider.Npgsql\Kasbah.Provider.Npgsql.csproj", "{E1EF08D2-279B-4D31-AE35-16E84EF6C24D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{7F35C1F5-589A-4DE5-8604-AF676CF77E6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kasbah.DataAccess.Npgsql.Test", "test\Kasbah.DataAccess.Npgsql.Test\Kasbah.DataAccess.Npgsql.Test.csproj", "{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kasbah.Provider.Npgsql.Test", "test\Kasbah.Provider.Npgsql.Test\Kasbah.Provider.Npgsql.Test.csproj", "{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kasbah.Web", "src\Kasbah.Web\Kasbah.Web.csproj", "{B47ECE40-D504-448D-8A71-EE43456B84DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -101,6 +103,18 @@ Global
 		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Release|x64.Build.0 = Release|x64
 		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Release|x86.ActiveCfg = Release|x86
 		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD}.Release|x86.Build.0 = Release|x86
+		{B47ECE40-D504-448D-8A71-EE43456B84DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B47ECE40-D504-448D-8A71-EE43456B84DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B47ECE40-D504-448D-8A71-EE43456B84DB}.Debug|x64.ActiveCfg = Debug|x64
+		{B47ECE40-D504-448D-8A71-EE43456B84DB}.Debug|x64.Build.0 = Debug|x64
+		{B47ECE40-D504-448D-8A71-EE43456B84DB}.Debug|x86.ActiveCfg = Debug|x86
+		{B47ECE40-D504-448D-8A71-EE43456B84DB}.Debug|x86.Build.0 = Debug|x86
+		{B47ECE40-D504-448D-8A71-EE43456B84DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B47ECE40-D504-448D-8A71-EE43456B84DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B47ECE40-D504-448D-8A71-EE43456B84DB}.Release|x64.ActiveCfg = Release|x64
+		{B47ECE40-D504-448D-8A71-EE43456B84DB}.Release|x64.Build.0 = Release|x64
+		{B47ECE40-D504-448D-8A71-EE43456B84DB}.Release|x86.ActiveCfg = Release|x86
+		{B47ECE40-D504-448D-8A71-EE43456B84DB}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,5 +122,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E1EF08D2-279B-4D31-AE35-16E84EF6C24D} = {76C2BD1C-B34B-4FDB-9B51-0586438938AB}
 		{7BD4A56E-7D49-4E7A-AE25-F588D4BC48FD} = {7F35C1F5-589A-4DE5-8604-AF676CF77E6B}
+		{B47ECE40-D504-448D-8A71-EE43456B84DB} = {76C2BD1C-B34B-4FDB-9B51-0586438938AB}
 	EndGlobalSection
 EndGlobal

@@ -1,12 +1,12 @@
 using System;
 using Xunit;
-using Kasbah.DataAccess.Npgsql;
+using Kasbah.Provider.Npgsql;
 using Kasbah.Content;
 using Kasbah.Content.Models;
 using System.Linq;
 using Kasbah.Content.Events;
 
-namespace Kasbah.DataAccess.Npgsql.Test
+namespace Kasbah.Provider.Npgsql.Test
 {
     public class UnitTest1
     {
@@ -16,12 +16,12 @@ namespace Kasbah.DataAccess.Npgsql.Test
             var settings = new NpgsqlSettings { ConnectionString = "Server=localhost;Port=5433;Database=kasbah;User Id=kasbah;Password=kasbah" };
             var typeRegistry = new TypeRegistry();
             typeRegistry.Register<TestType>();
-            var contentProvider = new ContentProvider(settings, typeRegistry);
+            var contentProvider = new ContentProvider(settings);
             var loggerFactory = new Microsoft.Extensions.Logging.LoggerFactory();
             var eventBus = new EventBus(Enumerable.Empty<IOnContentPublished>());
 
             var typeMapper = new TypeMapper(loggerFactory, contentProvider, null, typeRegistry);
-            var queryProviderFactory = new KasbahQueryProviderFactory(settings, typeRegistry, typeMapper);
+            var queryProviderFactory = new KasbahQueryProviderFactory(loggerFactory, settings, typeRegistry, typeMapper);
             var contentService = new ContentService(loggerFactory, contentProvider, typeRegistry, eventBus, queryProviderFactory);
 
 

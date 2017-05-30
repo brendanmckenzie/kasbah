@@ -12,7 +12,7 @@ using System.Collections;
 using Kasbah.Content.Models;
 using Microsoft.Extensions.Logging;
 
-namespace Kasbah.DataAccess.Npgsql
+namespace Kasbah.Provider.Npgsql
 {
     class KasbahNpgsqlQueryProvider : IQueryProvider
     {

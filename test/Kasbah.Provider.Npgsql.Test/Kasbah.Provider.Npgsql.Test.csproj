@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Kasbah.DataAccess.Npgsql\Kasbah.DataAccess.Npgsql.csproj" />
+    <ProjectReference Include="../../src/Kasbah.Provider.Npgsql/Kasbah.Provider.Npgsql.csproj" />
   </ItemGroup>
 
 </Project>

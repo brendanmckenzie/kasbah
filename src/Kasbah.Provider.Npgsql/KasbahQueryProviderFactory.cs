@@ -3,7 +3,7 @@ using System.Linq;
 using Kasbah.Content;
 using Microsoft.Extensions.Logging;
 
-namespace Kasbah.DataAccess.Npgsql
+namespace Kasbah.Provider.Npgsql
 {
     public class KasbahQueryProviderFactory : IKasbahQueryProviderFactory
     {

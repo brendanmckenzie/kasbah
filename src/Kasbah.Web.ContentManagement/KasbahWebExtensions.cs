@@ -1,4 +1,6 @@
+using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using Kasbah.Web.ContentManagement.Providers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,9 +36,15 @@ namespace Kasbah.Web.ContentManagement
 
             app.UseMvc();
 
-            app.ApplicationServices.InitialiseKasbahAsync().Wait();
+            InitialiseAsync(app.ApplicationServices).Wait();
 
             return app;
+        }
+
+        static async Task InitialiseAsync(IServiceProvider services)
+        {
+            await services.InitialiseKasbahAsync();
+            await services.InitialiseKasbahWebAsync();
         }
     }
 }

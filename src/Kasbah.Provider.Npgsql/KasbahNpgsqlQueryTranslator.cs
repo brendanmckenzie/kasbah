@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using Kasbah.Content.Models;
 
-namespace Kasbah.DataAccess.Npgsql
+namespace Kasbah.Provider.Npgsql
 {
     public class TranslateResponse
     {

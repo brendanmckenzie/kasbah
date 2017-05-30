@@ -5,7 +5,7 @@ using Kasbah.Security.Models;
 using Npgsql;
 using Dapper;
 
-namespace Kasbah.DataAccess.Npgsql
+namespace Kasbah.Provider.Npgsql
 {
     public class UserProvider : IUserProvider
     {

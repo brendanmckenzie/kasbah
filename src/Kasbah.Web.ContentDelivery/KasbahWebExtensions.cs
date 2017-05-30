@@ -21,6 +21,7 @@ namespace Kasbah.Web.ContentDelivery
                 .AddApplicationPart(typeof(KasbahExtensions).GetTypeInfo().Assembly);
 
             services.AddKasbah();
+            services.AddKasbahWeb();
 
             services.AddTransient<KasbahRouter>();
 
@@ -55,9 +56,11 @@ namespace Kasbah.Web.ContentDelivery
             return app;
         }
 
-        // Find a better way/place to do this...
         static async Task InitialiseAsync(IServiceProvider services)
         {
+            await services.InitialiseKasbahAsync();
+            await services.InitialiseKasbahWebAsync();
+
             var application = services.GetService<KasbahWebApplication>();
             // var loggingService = services.GetService<LoggingService>();
 
