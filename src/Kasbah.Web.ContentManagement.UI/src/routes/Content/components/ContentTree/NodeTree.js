@@ -9,7 +9,8 @@ class NodeTree extends React.Component {
 
   static contextTypes = {
     tree: React.PropTypes.array.isRequired,
-    onCreateNode: React.PropTypes.func.isRequired
+    onCreateNode: React.PropTypes.func.isRequired,
+    readOnly: React.PropTypes.bool
   }
 
   constructor() {
@@ -24,18 +25,18 @@ class NodeTree extends React.Component {
 
   render() {
     const { parent, parentAlias } = this.props
-    const { tree } = this.context
+    const { tree, readOnly } = this.context
 
     return (
       <ul className='content-tree'>
         {tree.filter(ent => ent.parent === parent).map(ent => (
           <Node key={ent.id} node={ent} />
         ))}
-        <li>
+        {!readOnly && (<li>
           <button
             className='button is-small add-node'
             onClick={this.handleCreateNode}>{parentAlias ? (<span>New node under <strong>{parentAlias}</strong></span>) : 'New node'}</button>
-        </li>
+        </li>)}
       </ul>
     )
   }

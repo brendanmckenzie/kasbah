@@ -186,7 +186,7 @@ select
 from
     node
 where
-    type in @types
+    type = any(@types)
 ";
 
             using (var connection = GetConnection())
@@ -196,7 +196,7 @@ where
                     node.Taxonomy = taxonomy;
 
                     return node;
-                }, new { types }, splitOn: "Ids");
+                }, new { types = types.ToArray() }, splitOn: "Ids");
             }
         }
 
