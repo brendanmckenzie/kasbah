@@ -4,10 +4,13 @@ import Loading from 'components/Loading'
 import Error from 'components/Error'
 import ContentEditor from './ContentEditor'
 import SideBar from './SideBar'
+import ContentTree from 'routes/Content/components/ContentTree'
 
 class View extends React.Component {
   static propTypes = {
     id: React.PropTypes.string.isRequired,
+    describeTreeRequest: React.PropTypes.func.isRequired,
+    describeTree: React.PropTypes.object.isRequired,
     getDetailRequest: React.PropTypes.func.isRequired,
     getDetail: React.PropTypes.object.isRequired,
     putDetailRequest: React.PropTypes.func.isRequired,
@@ -32,15 +35,10 @@ class View extends React.Component {
     this.state = {
       payload: null,
       initialLoad: true,
-      showChangeTypeModal: false
+      showChangeTypeModal: false,
+      showMoveNodeModal: false,
+      moveNodeSelection: null
     }
-
-    this.handleSaveAndPublish = this.handleSaveAndPublish.bind(this)
-    this.handleSave = this.handleSave.bind(this)
-    this.handleDelete = this.handleDelete.bind(this)
-    this.handleRename = this.handleRename.bind(this)
-    this.handleChangeType = this.handleChangeType.bind(this)
-    this.handleMoveNode = this.handleMoveNode.bind(this)
   }
 
   componentWillMount() {
@@ -80,21 +78,28 @@ class View extends React.Component {
         this.context.router.push('/content')
       }
     }
+
+    if (nextProps.moveNode.success && nextProps.moveNode.success !== this.props.moveNode.success) {
+      this.setState({
+        showMoveNodeModal: false,
+        moveNodeSelection: null
+      })
+    }
   }
 
-  handleLoad(id) {
+  handleLoad = (id) => {
     this.props.getDetailRequest({ id })
   }
 
-  handleSaveAndPublish(data) {
+  handleSaveAndPublish = (data) => {
     this.props.putDetailRequest({ id: this.props.id, data, publish: true })
   }
 
-  handleSave(data) {
+  handleSave = (data) => {
     this.props.putDetailRequest({ id: this.props.id, data, publish: false })
   }
 
-  handleDelete() {
+  handleDelete = () => {
     if (confirm('Are you sure?')) {
       if (confirm('Are you really sure?  This is a pretty destructive operation, all child nodes will be deleted.')) {
         this.props.deleteNodeRequest({ id: this.props.id })
@@ -102,7 +107,7 @@ class View extends React.Component {
     }
   }
 
-  handleRename() {
+  handleRename = () => {
     const { node } = this.state.payload
 
     const alias = prompt('What should we rename this to?', node.alias)
@@ -118,7 +123,7 @@ class View extends React.Component {
     })
   }
 
-  handleChangeType() {
+  handleChangeType = () => {
     const { node } = this.state.payload
 
     const type = prompt('What type should we give this node?', node.type)
@@ -134,11 +139,29 @@ class View extends React.Component {
     })
   }
 
-  handleMoveNode() {
+  handleMoveNodeSelection = (item) => {
+    this.setState({
+      moveNodeSelection: item
+    })
+  }
+
+  handleShowMoveNodeModal = () => {
+    this.setState({
+      showMoveNodeModal: true,
+      moveNodeSelection: null
+    })
+  }
+
+  handleHideMoveNodeModal = () => {
+    this.setState({
+      showMoveNodeModal: false
+    })
+  }
+
+  handleMoveNode = () => {
     const { node } = this.state.payload
 
-    const parent = prompt('Where should we move this node?', node.parent)
-    if (!parent || parent === node.parent) {
+    if (this.state.moveNodeSelection && (this.state.moveNodeSelection.id === node.parent)) {
       // no change
       return
     }
@@ -146,7 +169,7 @@ class View extends React.Component {
     // update.
     this.props.moveNodeRequest({
       id: this.props.id,
-      parent: parent === 'null' ? null : parent
+      parent: this.state.moveNodeSelection ? this.state.moveNodeSelection.id : null
     })
   }
 
@@ -155,6 +178,61 @@ class View extends React.Component {
       return null
     }
     return null
+  }
+
+  get moveToPath() {
+    if (!this.state.moveNodeSelection) {
+      return (
+        <ul className='breadcrumb'>
+          <li>root</li>
+        </ul>
+
+      )
+    }
+
+    const { taxonomy } = this.state.moveNodeSelection
+
+    return (
+      <ul className='breadcrumb'>
+        {taxonomy.aliases.map((ent, index) => (
+          <li key={index}>
+            <span>{ent}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  get moveNodeModal() {
+    if (!this.state.showMoveNodeModal) {
+      return null
+    }
+
+    return (
+      <div className='modal is-active'>
+        <div className='modal-background' onClick={this.handleHideMoveNodeModal} />
+        <div className='modal-card'>
+          <header className='modal-card-head'>
+            <span className='modal-card-title'>Move node</span>
+            <button type='button' className='delete' onClick={this.handleHideMoveNodeModal} />
+          </header>
+          <section className='modal-card-body'>
+            <ContentTree {...this.props} readOnly onSelect={this.handleMoveNodeSelection} />
+            <hr />
+            <div className='level'>
+              <div className='level-left'>
+                <strong className='level-item'>Move to:</strong>
+                <div className='level-item'>{this.moveToPath}</div>
+              </div>
+            </div>
+          </section>
+          <footer className='modal-card-foot'>
+            <button type='button' className='button' onClick={this.handleHideMoveNodeModal}>Cancel</button>
+            <button type='button' className={'button is-primary ' + (this.props.moveNode.loading ? 'is-loading' : '')} onClick={this.handleMoveNode}>Save</button>
+          </footer>
+        </div>
+      </div>
+    )
   }
 
   get breadcrumb() {
@@ -199,9 +277,10 @@ class View extends React.Component {
               onDelete={this.handleDelete}
               onRename={this.handleRename}
               onChangeType={this.handleChangeType}
-              onMove={this.handleMoveNode} />
+              onMove={this.handleShowMoveNodeModal} />
           </div>
         </div>
+        {this.moveNodeModal}
       </div>
     )
   }

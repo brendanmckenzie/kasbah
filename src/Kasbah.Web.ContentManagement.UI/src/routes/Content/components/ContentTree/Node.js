@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router'
+import ItemButton from 'components/ItemButton'
 import NodeTree from './NodeTree'
 
 class Node extends React.Component {
@@ -10,7 +11,9 @@ class Node extends React.Component {
   static contextTypes = {
     onToggleNode: React.PropTypes.func.isRequired,
     expandedNodes: React.PropTypes.object.isRequired,
-    types: React.PropTypes.array
+    types: React.PropTypes.array,
+    readOnly: React.PropTypes.bool,
+    onSelect: React.PropTypes.func
   }
 
   constructor() {
@@ -60,6 +63,7 @@ class Node extends React.Component {
 
   render() {
     const { node: { id, displayName, alias } } = this.props
+    const { readOnly, onSelect } = this.context
 
     return (
       <li>
@@ -75,9 +79,14 @@ class Node extends React.Component {
             <span className='level-item icon is-small'>
               {this.icon}
             </span>
-            <Link to={`/content/${id}`}
-              className='level-item level-shrink'
-              activeClassName='is-active'>{displayName || alias}</Link>
+            {readOnly
+              ? (<ItemButton
+                item={this.props.node}
+                className='button is-small is-link'
+                onClick={onSelect}>{displayName || alias}</ItemButton>)
+              : (<Link to={`/content/${id}`}
+                className='level-item level-shrink'
+                activeClassName='is-active'>{displayName || alias}</Link>)}
           </div>
         </div>
         {this.tree}

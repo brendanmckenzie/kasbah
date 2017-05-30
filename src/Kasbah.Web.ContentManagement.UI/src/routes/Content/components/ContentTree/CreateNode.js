@@ -5,11 +5,11 @@ class CreateNode extends React.Component {
   static propTypes = {
     visible: React.PropTypes.bool,
     parent: React.PropTypes.string,
-    onCancel: React.PropTypes.func.isRequired,
-    createNodeRequest: React.PropTypes.func.isRequired,
-    createNode: React.PropTypes.object.isRequired,
-    listTypesRequest: React.PropTypes.func.isRequired,
-    listTypes: React.PropTypes.object.isRequired
+    onCancel: React.PropTypes.func,
+    createNodeRequest: React.PropTypes.func,
+    createNode: React.PropTypes.object,
+    listTypesRequest: React.PropTypes.func,
+    listTypes: React.PropTypes.object
   }
 
   constructor() {
@@ -19,7 +19,9 @@ class CreateNode extends React.Component {
   }
 
   componentWillMount() {
-    this.props.listTypesRequest()
+    if (this.props.listTypesRequest) {
+      this.props.listTypesRequest()
+    }
   }
 
   componentWillReceiveProps(nextProps) {
