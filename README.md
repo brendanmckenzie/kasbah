@@ -8,8 +8,8 @@ Docker is the easiest way to run the services required to power Kasbah.
 
 ## Requirements
 
- * Kasbah uses ElasticSearch as its datastore, index and store behind the analytic/personalisation engine.
-    * Run a local development instance using docker by executing: `docker run -d -p '9200:9200' elasticsearch`
+ * Kasbah uses PostgreSQL as its datastore.
+    * Run a local development instance using docker by executing: `docker run -d -p '5432:5432' postgres`
  * Kasbah uses Redis for its caching layer.
     * Run a local development instance using docker by executing: `docker run -d -p '6379:6379' redis`
 
@@ -22,7 +22,7 @@ The fastest way to get started with Kasbah is to use the Yeoman generator.
 
 Follow the prompts and you'll have the code ready to build a Kasbah based web application.
 
-This generator assumes that you have ElasticSearch and Redis running on the local host.  If this isn't the case then simple modify the generatored `.vscode/launch.json` file to point to the correct instances.
+This generator assumes that you have PostgreSQL and Redis running on the local host.  If this isn't the case then simple modify the generatored `.vscode/launch.json` file to point to the correct instances.
 
 Run the administration site by executing `dotnet run` in the src/*.ContentManagement folder.  The site will be available at http://localhost:5000/
 
