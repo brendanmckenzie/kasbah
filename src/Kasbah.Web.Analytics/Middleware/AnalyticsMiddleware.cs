@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Kasbah.Web.ContentDelivery.Middleware
+namespace Kasbah.Web.Analytics.Middleware
 {
     public class AnalyticsMiddleware
     {

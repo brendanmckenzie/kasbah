@@ -1,9 +1,7 @@
 using System.Threading.Tasks;
 using Kasbah.Media;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-// TODO: find a way to not have this duplicated in CD and CM
 namespace Kasbah.Web.ContentDelivery.Controllers
 {
     [Route("media")]
@@ -16,7 +14,7 @@ namespace Kasbah.Web.ContentDelivery.Controllers
             _mediaService = mediaService;
         }
 
-        [Route(""), HttpGet, AllowAnonymous, ResponseCache(Duration = 3600)]
+        [Route(""), HttpGet, ResponseCache(Duration = 3600)]
         public async Task<FileResult> GetMedia([FromQuery] GetMediaRequest request)
         {
             var media = await _mediaService.GetMedia(request);

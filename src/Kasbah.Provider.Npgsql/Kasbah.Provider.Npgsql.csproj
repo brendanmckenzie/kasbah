@@ -1,19 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <DebugType>portable</DebugType>
-    <AssemblyName>Kasbah.DataAccess.Npgsql</AssemblyName>
-    <PackageId>Kasbah.DataAccess.Npgsql</PackageId>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Dapper">
-      <Version>1.50.2</Version>
-    </PackageReference>
-    <PackageReference Include="Npgsql">
-      <Version>3.2.2</Version>
-    </PackageReference>
-  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="../Kasbah/Kasbah.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="1.50.2" />
+    <PackageReference Include="Npgsql" Version="3.2.2" />
   </ItemGroup>
 </Project>

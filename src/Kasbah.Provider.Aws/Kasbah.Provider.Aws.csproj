@@ -1,11 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <DebugType>portable</DebugType>
-    <AssemblyName>Kasbah.Media.S3</AssemblyName>
-    <PackageId>Kasbah.Media.S3</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,5 +10,4 @@
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.3.5.3" />
   </ItemGroup>
-
 </Project>

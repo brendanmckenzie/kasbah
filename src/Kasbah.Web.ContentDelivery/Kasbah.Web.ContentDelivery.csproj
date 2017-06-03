@@ -1,19 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
-    <DebugType>portable</DebugType>
-    <AssemblyName>Kasbah.Web.ContentDelivery</AssemblyName>
-    <PackageId>Kasbah.Web.ContentDelivery</PackageId>
-    <NetStandardImplicitPackageVersion>1.6.1</NetStandardImplicitPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\**\*" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
+    <ProjectReference Include="../Kasbah.Web/Kasbah.Web.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Kasbah.Web/Kasbah.Web.csproj" />
+    <EmbeddedResource Include="Resources\**\*" Exclude="bin\**;obj\**;**\*.xproj;packages\**;@(EmbeddedResource)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,5 +17,4 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="1.1.0" />
     <PackageReference Include="Quartz" Version="3.0.0-alpha2" />
   </ItemGroup>
-
 </Project>

@@ -32,7 +32,6 @@ namespace Kasbah.Web.ContentDelivery
 
         public static IApplicationBuilder UseKasbahPublic(this IApplicationBuilder app, IEnumerable<Type> middleware = null)
         {
-            app.UseMiddleware<Middleware.AnalyticsMiddleware>();
             app.UseMiddleware<Middleware.KasbahWebContextInitialisationMiddleware>();
             app.UseMiddleware<Middleware.SiteResolverMiddleware>();
             app.UseMiddleware<Middleware.NodeResolverMiddleware>();
@@ -44,6 +43,7 @@ namespace Kasbah.Web.ContentDelivery
 
             app.UseMvc(routes =>
             {
+                // TODO: See if it's possible to use middleware instead of a custom router
                 var kasbahRouter = app.ApplicationServices.GetService<KasbahRouter>();
                 routes.Routes.Add(kasbahRouter);
                 routes.MapRoute(
