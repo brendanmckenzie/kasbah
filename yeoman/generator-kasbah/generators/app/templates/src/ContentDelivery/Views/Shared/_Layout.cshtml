@@ -6,15 +6,6 @@
   <meta name='viewport' content='width=device-width, initial-scale=1' />
 
   <title>Kasbah Website</title>
-
-  <script src='/analytics/tracker.js' async></script>
-  @if (Model is Item)
-  {
-    <script>
-      window.analytics = window.analytics || []
-      window.analytics.push({ type: 'content:view', source: 'website', data: { id: '@Model.Id' } })
-    </script>
-  }
 </head>
 
 <body>
