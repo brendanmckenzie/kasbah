@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -24,7 +23,7 @@ namespace Kasbah.Web.ContentDelivery.Extensions
         /// <param name="viewComponentHelper">The view component helper.</param>
         /// <returns>The rendered HTML content from the matching modules.</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<IHtmlContent> PlaceholderAsync(this IHtmlHelper htmlHelper, string section, IViewComponentHelper viewComponentHelper = null)
+        public static async Task<IHtmlContent> PlaceholderAsync(this IHtmlHelper htmlHelper, string section, IViewComponentHelper viewComponentHelper)
         {
             var kasbahWebContext = htmlHelper.ViewContext.RouteData.Values["kasbahWebContext"] as KasbahWebContext;
 
