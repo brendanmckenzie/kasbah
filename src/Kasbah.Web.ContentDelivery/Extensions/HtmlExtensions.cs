@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Kasbah.Content;
+using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -23,7 +24,7 @@ namespace Kasbah.Web.ContentDelivery.Extensions
         /// <param name="viewComponentHelper">The view component helper.</param>
         /// <returns>The rendered HTML content from the matching modules.</returns>
         /// <exception cref="ArgumentNullException"></exception>
-        public static async Task<IHtmlContent> ModulesAsync(this IHtmlHelper htmlHelper, string section, IViewComponentHelper viewComponentHelper = null)
+        public static async Task<IHtmlContent> PlaceholderAsync(this IHtmlHelper htmlHelper, string section, IViewComponentHelper viewComponentHelper = null)
         {
             var kasbahWebContext = htmlHelper.ViewContext.RouteData.Values["kasbahWebContext"] as KasbahWebContext;
 
@@ -43,50 +44,21 @@ namespace Kasbah.Web.ContentDelivery.Extensions
                 return null;
             }
 
-            var modulesRoot = await contentService.GetChildByAliasAsync(kasbahWebContext.Node.Id, "modules");
-            if (modulesRoot != null)
+            var node = kasbahWebContext.Node;
+            var data = await contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
+            var content = await kasbahWebContext.TypeMapper.MapTypeAsync(data, node.Type, node, node.PublishedVersion);
+
+            if (content is Presentable)
             {
-                var moduleRoot = await contentService.GetChildByAliasAsync(modulesRoot.Id, section);
-                if (moduleRoot != null)
-                {
-                    var moduleNodes = (await contentService.GetChildrenAsync(moduleRoot.Id)).OrderBy(ent => ent.Alias);
-                    var ret = new List<IHtmlContent>();
-                    foreach (var moduleNode in moduleNodes)
-                    {
-                        if (!moduleNode.PublishedVersion.HasValue)
-                        {
-                            continue;
-                        }
-                        var typeDefinition = kasbahWebContext.TypeRegistry.GetType(moduleNode.Type);
-                        var moduleNodeData = await kasbahWebContext.ContentService.GetRawDataAsync(moduleNode.Id, moduleNode.PublishedVersion);
-                        var module = kasbahWebContext.TypeMapper.MapTypeAsync(moduleNodeData, moduleNode.Type, moduleNode);
-                        var view = typeDefinition.Options.SafeGet("view");
-                        var viewComponent = typeDefinition.Options.SafeGet("viewComponent");
-                        if (viewComponent != null)
-                        {
-                            if (viewComponentHelper == null) { throw new ArgumentNullException(nameof(viewComponentHelper)); }
+                var components = (content as Presentable).Components[section];
 
-                            ret.Add(await viewComponentHelper.InvokeAsync(viewComponent as string, module));
-                        }
-                        else if (view != null)
-                        {
-                            ret.Add(await htmlHelper.PartialAsync(view as string, module, null));
-                        }
-                    }
+                var ret = await Task.WhenAll(components.AsParallel().Select(async ent => await viewComponentHelper.InvokeAsync(ent.Control, ent.DataSource)));
 
-                    if (ret.Any())
-                    {
-                        return htmlHelper.Raw(string.Join(Environment.NewLine, ret.Select(ContentToString)));
-                    }
-                }
-                else
-                {
-                    // _log.LogWarning($"An attempt has been made to render modules where no modules exist for this section.  View: '{htmlHelper.ViewContext.View.Path}' Section: {section}");
-                }
+                return htmlHelper.Raw(string.Join(Environment.NewLine, ret.Where(ent => ent != null).Select(ContentToString)));
             }
             else
             {
-                // _log.LogWarning($"An attempt has been made to render modules where no modules exist.  View: '{htmlHelper.ViewContext.View.Path}' Section: {section}");
+                // log warning
             }
 
             return new StringHtmlContent(string.Empty);
