@@ -1,7 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Kasbah
+namespace Kasbah.Provider.Npgsql
 {
     public static class KasbahNpgsqlExtensions
     {

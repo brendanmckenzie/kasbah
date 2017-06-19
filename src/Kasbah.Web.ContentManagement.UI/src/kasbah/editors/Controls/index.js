@@ -7,6 +7,7 @@ import Nested from './Nested'
 import NodePicker from './NodePicker'
 import NodePickerMulti from './NodePickerMulti'
 import Text from './Text'
+import Components from './Components'
 
 export const controls = {
   Bias,
@@ -17,5 +18,6 @@ export const controls = {
   Nested,
   NodePicker,
   NodePickerMulti,
-  Text
+  Text,
+  Components
 }

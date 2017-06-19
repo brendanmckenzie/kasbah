@@ -1,14 +1,26 @@
 using System.Linq;
+using System.Collections.Generic;
 using Kasbah.Content.Models;
+using Kasbah.Content.Attributes;
 
 namespace Kasbah.Web.Models
 {
-    public class Presentable : Item
+    public interface IPresentable
     {
-        public string Layout { get; set; }
+        // TODO: make these attributes apply to sub-classes
 
-        public ILookup<string, Component> Components { get; set; }
+        [FieldEditor("kasbah_web:components")]
+        ComponentCollection Components { get; set; }
     }
+
+    public abstract class Presentable : Item, IPresentable
+    {
+
+        [FieldEditor("kasbah_web:components")]
+        public ComponentCollection Components { get; set; }
+    }
+
+    public class ComponentCollection : Dictionary<string, ICollection<Component>> { }
 
     public class Component
     {

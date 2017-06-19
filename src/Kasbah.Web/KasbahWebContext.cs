@@ -4,7 +4,7 @@ using Kasbah.Content.Models;
 using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace Kasbah.Web.ContentDelivery
+namespace Kasbah.Web
 {
     public class KasbahWebContext
     {

@@ -165,7 +165,7 @@ namespace Kasbah.Content
                 ret.Options["fields"] = typeInfo.GetProperties().Select(MapProperty).ToList(); // TODO: guard against recurrsion
             }
 
-            var editorAttribute = property.GetCustomAttribute<FieldEditorAttribute>();
+            var editorAttribute = property.GetCustomAttribute<FieldEditorAttribute>(true);
             if (editorAttribute != null)
             {
                 ret.Editor = editorAttribute.Editor;

@@ -21,6 +21,8 @@ namespace Kasbah.Content
         readonly EventBus _eventBus;
         readonly IKasbahQueryProviderFactory _queryProviderFactory;
 
+        public ContentService() { } // TODO: find out how to not need this. it's here because of unit tests
+
         public ContentService(ILoggerFactory loggerFactory, IContentProvider contentProvider, TypeRegistry typeRegistry, EventBus eventBus, IKasbahQueryProviderFactory queryProviderFactory, IDistributedCache cache = null)
         {
             _log = loggerFactory.CreateLogger<ContentService>();

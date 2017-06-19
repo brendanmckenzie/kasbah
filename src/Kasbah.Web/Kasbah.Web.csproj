@@ -2,8 +2,11 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.6</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="../Kasbah/Kasbah.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
+    <PackageReference Include="System.Linq.Parallel" Version="4.3.0" />
   </ItemGroup>
 </Project>

@@ -14,6 +14,7 @@ namespace Kasbah.Web
         public static IServiceCollection AddKasbahWeb(this IServiceCollection services)
         {
             services.AddSingleton<SiteRegistry>();
+            services.AddSingleton<ComponentRegistry>();
 
             return services;
         }
@@ -22,11 +23,13 @@ namespace Kasbah.Web
         {
             var typeRegistry = services.GetService<TypeRegistry>();
             var siteRegistry = services.GetService<SiteRegistry>();
+            var componentRegistry = services.GetService<ComponentRegistry>();
 
-            var registration = services.GetService<IKasbahWebRegistration>();
+            var registration = services.GetService<KasbahWebRegistration>();
 
             registration.RegisterTypes(typeRegistry);
             registration.RegisterSites(siteRegistry);
+            registration.RegisterComponents(componentRegistry);
 
             await Task.Yield();
         }

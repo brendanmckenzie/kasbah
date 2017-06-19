@@ -90,9 +90,16 @@ namespace Kasbah.Content
             // Nested objects
             if (sourceType == typeof(JObject))
             {
-                var dict = (source as JObject).ToObject<IDictionary<string, object>>();
+                if (typeof(IDictionary).IsAssignableFrom(property.PropertyType))
+                {
+                    return (source as JObject).ToObject(property.PropertyType);
+                }
+                else
+                {
+                    var dict = (source as JObject).ToObject<IDictionary<string, object>>();
 
-                return await MapTypeAsync(dict, property.PropertyType.AssemblyQualifiedName, context: context);
+                    return await MapTypeAsync(dict, property.PropertyType.AssemblyQualifiedName, context: context);
+                }
             }
 
             if (property.PropertyType.GetTypeInfo().IsEnum)

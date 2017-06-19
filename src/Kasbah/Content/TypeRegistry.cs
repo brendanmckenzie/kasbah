@@ -22,7 +22,10 @@ namespace Kasbah.Content
                 throw new InvalidOperationException($"All content models must inherit from {typeof(Item).FullName}");
             }
 
-            _types.Add(type);
+            if (GetType(type.Alias) == null)
+            {
+                _types.Add(type);
+            }
         }
 
         public IEnumerable<TypeDefinition> ListTypes()
