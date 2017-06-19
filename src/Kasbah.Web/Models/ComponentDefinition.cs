@@ -6,5 +6,6 @@ namespace Kasbah.Web.Models
     {
         public string Alias { get; set; }
         public Type Control { get; set; }
+        public Type Properties { get; set; }
     }
 }

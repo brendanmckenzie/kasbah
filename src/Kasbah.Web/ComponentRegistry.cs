@@ -27,7 +27,7 @@ namespace Kasbah.Web
 
     public static class ComponentRegistryExtensions
     {
-        public static void RegisterComponent<TComponent>(this ComponentRegistry componentRegistry)
+        public static void RegisterComponent<TComponent>(this ComponentRegistry componentRegistry, Type properties = null)
             where TComponent : ViewComponent
         {
             var type = typeof(TComponent);
@@ -35,7 +35,8 @@ namespace Kasbah.Web
             var definition = new ComponentDefinition
             {
                 Alias = type.Name,
-                Control = type
+                Control = type,
+                Properties = properties
             };
 
             componentRegistry.RegisterComponent(definition);
