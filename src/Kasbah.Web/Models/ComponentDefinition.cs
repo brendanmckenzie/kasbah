@@ -1,4 +1,5 @@
 using System;
+using Kasbah.Content.Models;
 
 namespace Kasbah.Web.Models
 {
@@ -6,6 +7,6 @@ namespace Kasbah.Web.Models
     {
         public string Alias { get; set; }
         public Type Control { get; set; }
-        public Type Properties { get; set; }
+        public TypeDefinition Properties { get; set; }
     }
 }

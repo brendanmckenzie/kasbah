@@ -69,7 +69,16 @@ namespace Kasbah.Web.TagHelpers
                         {
                             var component = _componentRegistry.GetByAlias(ent.Control);
 
-                            return await _viewComponentHelper.InvokeAsync(component.Control, ent.DataSource);
+                            if (ent.Properties != null && component.Properties != null)
+                            {
+                                var properties = await kasbahWebContext.TypeMapper.MapTypeAsync(ent.Properties, component.Properties.Alias);
+
+                                return await _viewComponentHelper.InvokeAsync(component.Control, properties);
+                            }
+                            else
+                            {
+                                return await _viewComponentHelper.InvokeAsync(component.Control);
+                            }
                         }));
 
                         output.TagName = string.Empty;

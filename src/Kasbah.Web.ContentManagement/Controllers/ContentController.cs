@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using Kasbah.Web.ContentManagement.ViewModels;
+using Kasbah.Web.Models;
 
 namespace Kasbah.Web.ContentManagement.Controllers
 {
@@ -17,10 +18,12 @@ namespace Kasbah.Web.ContentManagement.Controllers
     {
         readonly ContentService _contentService;
         readonly TypeRegistry _typeRegistry;
-        public ContentController(ContentService contentService, TypeRegistry typeRegistry)
+        readonly ComponentRegistry _componentRegistry;
+        public ContentController(ContentService contentService, TypeRegistry typeRegistry, ComponentRegistry componentRegistry)
         {
             _contentService = contentService;
             _typeRegistry = typeRegistry;
+            _componentRegistry = componentRegistry;
         }
 
         [Route("{id}/edit"), HttpGet]
@@ -51,6 +54,10 @@ namespace Kasbah.Web.ContentManagement.Controllers
         [Route("types"), HttpGet]
         public async Task<IEnumerable<TypeDefinition>> ListTypes()
             => await Task.FromResult(_typeRegistry.ListTypes());
+
+        [Route("components"), HttpGet]
+        public async Task<IEnumerable<ComponentDefinition>> ListComponents()
+            => await Task.FromResult(_componentRegistry.ListComponents());
 
         [Route("node"), HttpPost]
         public async Task<Guid> CreateNode([FromBody] CreateNodeRequest request)
