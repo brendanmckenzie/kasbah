@@ -61,21 +61,7 @@ namespace Kasbah.Web.ContentDelivery
             await services.InitialiseKasbahAsync();
             await services.InitialiseKasbahWebAsync();
 
-            var application = services.GetService<KasbahWebApplication>();
-            // var loggingService = services.GetService<LoggingService>();
-
-            await Task.WhenAll(
-                services.GetService<ContentService>().InitialiseAsync(),
-                // loggingService.InitialiseAsync(),
-                // loggingService.RegisterInstanceAsync(application.Id, application.Started),
-                Jobs.Configure.ConfigureJobsAsync(services));
-
-            var typeRegistry = services.GetService<TypeRegistry>();
-            var siteRegistry = services.GetService<SiteRegistry>();
-            var registration = services.GetService<IKasbahWebRegistration>();
-
-            registration.RegisterTypes(typeRegistry);
-            registration.RegisterSites(siteRegistry);
+            await Jobs.Configure.ConfigureJobsAsync(services);
         }
     }
 }

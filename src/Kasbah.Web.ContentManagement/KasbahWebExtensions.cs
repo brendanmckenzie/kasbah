@@ -14,6 +14,7 @@ namespace Kasbah.Web.ContentManagement
             services.AddAuthentication();
 
             services.AddKasbah();
+            services.AddKasbahWeb();
 
             services
                 .AddMvc()

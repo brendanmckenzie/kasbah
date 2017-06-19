@@ -37,8 +37,7 @@ namespace Kasbah.Web.ContentDelivery.Middleware
                 ContentService = _contentService,
                 TypeRegistry = _typeRegistry,
                 TypeMapper = _typeMapper,
-                SiteRegistry = _siteRegistry,
-                Profile = context.GetCurrentProfileId()
+                SiteRegistry = _siteRegistry
             };
 
             context.Items["kasbahWebContext"] = kasbahWebContext;
