@@ -3,26 +3,7 @@ import _ from 'lodash'
 import Loading from 'components/Loading'
 import { makeApiRequest } from 'store/util'
 import Nested from './Nested'
-import { Field, FieldArray } from 'redux-form'
-
-const AreaComponent = ({ fields }) => {
-  console.log(fields.map(f => f))
-  return (
-    <li className='component'>
-      <ul>
-        {fields.map((fld, index) => {
-          <li key={index}>
-            <Field name={fld} component={Nested} />
-          </li>
-        })}
-      </ul>
-    </li>
-  )
-}
-
-AreaComponent.propTypes = {
-  fields: React.PropTypes.object
-}
+import { Field } from 'redux-form'
 
 class Area extends React.Component {
   static propTypes = {
@@ -32,43 +13,48 @@ class Area extends React.Component {
     components: React.PropTypes.array.isRequired
   }
 
-  handleAddComponent = (ev) => {
-    ev.preventDefault()
+  handleAddComponent = () => {
     const { area, input: { value, onChange } } = this.props
-    const component = prompt('Which component?')
-
-    if (component) {
-      onChange({
-        ...value,
-        [area]: [
-          ...value[area],
-          {
-            'Control': component
-          }
-        ]
-      })
-    }
+    onChange({
+      ...value,
+      [area]: [
+        ...value[area],
+        {}
+      ]
+    })
   }
 
   render() {
     const { components, area, parent, input: { value } } = this.props
-
-    const nestedOptions = (ent) => components.find(cmp => cmp.alias === ent.Control)
 
     return (
       <li>
         <strong>{area}</strong>
         <ul>
           {value[area].map((ent, index) => (
-            <Field
-              key={index}
-              name={`${parent}.${area}[${index}].Properties`}
-              component={Nested}
-              options={nestedOptions(ent).properties} />
+            <div key={index}>
+              <div className='field'>
+                <label>Control</label>
+                <div className='control'>
+                  <span className='select is-fullwidth'>
+                    <Field name={`${parent}.${area}[${index}].Control`} component='select'>
+                      <option value={null}>Select</option>
+                      {components.map(cmp => (<option key={cmp.alias} value={cmp.alias}>{cmp.alias}</option>))}
+                    </Field>
+                  </span>
+                </div>
+              </div>
+              {components.find(cmp => cmp.alias === ent.Control) && (<div className='field'>
+                <Field
+                  name={`${parent}.${area}[${index}].Properties`}
+                  component={Nested}
+                  options={components.find(cmp => cmp.alias === ent.Control).properties} />
+              </div>)}
+            </div>
           ))}
           <li>
-            <button className='button is-small' onClick={this.handleAddComponent}>
-              Add component to{' '}<strong>{area}</strong>
+            <button type='button' className='button is-small' onClick={this.handleAddComponent}>
+              {'Add component to '}<strong>{area}</strong>
             </button>
           </li>
         </ul>
