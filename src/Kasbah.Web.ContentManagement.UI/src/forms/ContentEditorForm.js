@@ -7,7 +7,6 @@ import kasbah from 'kasbah'
 class ContentEditorForm extends React.Component {
   static propTypes = {
     handleSubmit: React.PropTypes.func.isRequired,
-    onSave: React.PropTypes.func.isRequired,
     type: React.PropTypes.object.isRequired,
     loading: React.PropTypes.bool
   }
@@ -22,16 +21,18 @@ class ContentEditorForm extends React.Component {
             <Tab key={index} title={ent}>
               <div>
                 {type.fields.filter(fld => fld.category === ent).map((fld, fldIndex) => (
-                  <div key={fldIndex} className='control'>
+                  <div key={fldIndex} className='field'>
                     <label className='label' htmlFor={fld.alias}>{fld.displayName}</label>
-                    <Field
-                      name={fld.alias}
-                      id={fld.alias}
-                      component={kasbah.getEditor(fld.editor)}
-                      options={fld.options}
-                      type={fld.type}
-                      className='input' />
-                    {fld.helpText && <span className='help'>{fld.helpText}</span>}
+                    <div className='control'>
+                      <Field
+                        name={fld.alias}
+                        id={fld.alias}
+                        component={kasbah.getEditor(fld.editor)}
+                        options={fld.options}
+                        type={fld.type}
+                        className='input' />
+                      {fld.helpText && <span className='help'>{fld.helpText}</span>}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -39,11 +40,12 @@ class ContentEditorForm extends React.Component {
           ))}
         </Tabs>
         <hr />
-        <div className='has-text-right'>
-          <button className={'button is-disabled' + (loading ? ' is-loading' : '')}
-            type='button' onClick={handleSubmit}>Save</button>
-          <button className={'button is-primary' + (loading ? ' is-loading' : '')}
-            type='button' onClick={handleSubmit}>Save and publish</button>
+        <div className='level'>
+          <div className='level-left' />
+          <div className='level-right'>
+            <button className={'level-item button is-primary' + (loading ? ' is-loading' : '')}
+              type='button' onClick={handleSubmit}>Save</button>
+          </div>
         </div>
       </form>
     )

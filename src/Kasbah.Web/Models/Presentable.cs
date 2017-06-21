@@ -25,6 +25,6 @@ namespace Kasbah.Web.Models
     public class Component
     {
         public string Control { get; set; }
-        internal IDictionary<string, object> Properties { get; set; }
+        public IDictionary<string, object> Properties { get; set; }
     }
 }
