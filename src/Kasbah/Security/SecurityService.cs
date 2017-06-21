@@ -17,9 +17,9 @@ namespace Kasbah.Security
         readonly int _iterCount = 4;
         readonly RandomNumberGenerator _rng;
 
-        public SecurityService(IUserProvider userProvider, ILoggerFactory loggerFactory)
+        public SecurityService(ILogger<SecurityService> log, IUserProvider userProvider)
         {
-            _log = loggerFactory.CreateLogger<SecurityService>();
+            _log = log;
             _userProvider = userProvider;
 
             _rng = RandomNumberGenerator.Create();
@@ -59,6 +59,9 @@ namespace Kasbah.Security
 
             return await _userProvider.CreateUserAsync(username, EncryptPassword(password), name, email);
         }
+
+        public async Task<IEnumerable<User>> ListUsersAsync()
+            => await _userProvider.ListUsersAsync();
 
         public async Task InitialiseAsync()
         {

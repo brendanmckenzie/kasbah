@@ -1,8 +1,24 @@
 import React from 'react'
+import PropTypes from 'prop-types'
+import moment from 'moment'
+import Loading from 'components/Loading'
 
-export const View = () => (
-  <div>
-    <table className='table is-hover'>
+class View extends React.Component {
+  static propTypes = {
+    listUsersRequest: PropTypes.func.isRequired,
+    listUsers: PropTypes.object.isRequired
+  }
+
+  componentWillMount() {
+    this.props.listUsersRequest()
+  }
+
+  get table() {
+    if (this.props.listUsers.loading) {
+      return <Loading />
+    }
+
+    return (<table className='table is-hover'>
       <thead>
         <tr>
           <th>Name</th>
@@ -12,8 +28,27 @@ export const View = () => (
           <th />
         </tr>
       </thead>
+      <tbody>
+        {this.props.listUsers.payload.map(ent => (
+          <tr>
+            <td>{ent.name}</td>
+            <td>{ent.username}</td>
+            <td>{ent.email}</td>
+            <td>{moment.utc(ent.lastLogin).fromNow()}</td>
+          </tr>
+        ))}
+      </tbody>
     </table>
-  </div>
-)
+    )
+  }
+
+  render() {
+    return (
+      <div>
+        {this.table}
+      </div>
+    )
+  }
+}
 
 export default View
