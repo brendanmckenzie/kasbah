@@ -1,4 +1,3 @@
-import OverviewRoute from './childRoutes/Overview'
 import UsersRoute from './childRoutes/Users'
 import RolesRoute from './childRoutes/Roles'
 
@@ -9,9 +8,8 @@ export default (store) => ({
       cb(null, require('./container').default)
     }, 'securityRoute')
   },
-  indexRoute: OverviewRoute(store),
+  indexRoute: UsersRoute(store),
   childRoutes: [
-    UsersRoute(store),
     RolesRoute(store)
   ]
 })

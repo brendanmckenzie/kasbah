@@ -12,5 +12,6 @@ namespace Kasbah.Security
         Task<User> GetUserAsync(Guid id);
         Task<User> GetUserByUsernameAsync(string username);
         Task<IEnumerable<User>> ListUsersAsync();
+        Task UpdateUserAsync(Guid id, string username, string password, string name = null, string email = null);
     }
 }

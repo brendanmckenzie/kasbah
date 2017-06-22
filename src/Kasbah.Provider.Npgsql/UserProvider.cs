@@ -59,10 +59,19 @@ namespace Kasbah.Provider.Npgsql
 
         public async Task<IEnumerable<User>> ListUsersAsync()
         {
-            const string Sql = "select id as Id, username as Username, name as Name, email as Email, created_at as Created, modified_at as Modified, last_login_at as LastLogin from \"user\"";
+            const string Sql = "select id as Id, username as Username, name as Name, email as Email, created_at as Created, modified_at as Modified, last_login_at as LastLogin from \"user\" order by last_login_at desc";
             using (var connection = GetConnection())
             {
                 return await connection.QueryAsync<User>(Sql);
+            }
+        }
+
+        public async Task UpdateUserAsync(Guid id, string username, string password, string name = null, string email = null)
+        {
+            const string Sql = "update \"user\" set username = :username, password = coalesce(:password, password), name = name, email = email where id = :id";
+            using (var connection = GetConnection())
+            {
+                await connection.ExecuteAsync(Sql, new { id, username, password, name, email });
             }
         }
 

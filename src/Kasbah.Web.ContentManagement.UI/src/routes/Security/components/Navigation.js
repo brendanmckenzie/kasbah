@@ -6,10 +6,7 @@ export const Navigation = () => (
     <span className='menu-label'>Sections</span>
     <ul className='menu-list'>
       <li className='menu-item'>
-        <Link activeClassName='is-active' onlyActiveOnIndex to='/security'>Overview</Link>
-      </li>
-      <li className='menu-item'>
-        <Link activeClassName='is-active' to='/security/users'>Users</Link>
+        <Link activeClassName='is-active' onlyActiveOnIndex to='/security'>Users</Link>
       </li>
       <li className='menu-item'>
         <Link activeClassName='is-active' to='/security/roles'>Roles</Link>

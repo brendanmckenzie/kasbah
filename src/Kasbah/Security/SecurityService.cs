@@ -63,6 +63,23 @@ namespace Kasbah.Security
         public async Task<IEnumerable<User>> ListUsersAsync()
             => await _userProvider.ListUsersAsync();
 
+        public async Task<User> UpdateUserAsync(Guid id, string username, string password, string name = null, string email = null)
+        {
+            var user = await GetUserAsync(id);
+            if (!String.Equals(user.Username, username))
+            {
+                var userByUsername = await GetUserAsync(username);
+                if (userByUsername != null)
+                {
+                    throw new UserAlreadyExistsException();
+                }
+            }
+
+            await _userProvider.UpdateUserAsync(id, username, string.IsNullOrEmpty(password) ? null : EncryptPassword(password), name, email);
+
+            return await GetUserAsync(id);
+        }
+
         public async Task InitialiseAsync()
         {
             _log.LogDebug($"Initialising {nameof(SecurityService)}");
@@ -82,6 +99,9 @@ namespace Kasbah.Security
 
         async Task<User> GetUserAsync(string username)
             => await _userProvider.GetUserByUsernameAsync(username);
+
+        async Task<User> GetUserAsync(Guid id)
+            => await _userProvider.GetUserAsync(id);
 
         string EncryptPassword(string input)
         {
