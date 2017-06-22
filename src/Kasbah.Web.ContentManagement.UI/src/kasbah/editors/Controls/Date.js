@@ -1,12 +1,13 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const Date = ({ input: { value, onChange }, className }) => (
   <input type='date' className={className} onChange={onChange} value={value} />
 )
 
 Date.propTypes = {
-  input: React.PropTypes.object.isRequired,
-  className: React.PropTypes.string
+  input: PropTypes.object.isRequired,
+  className: PropTypes.string
 }
 
 Date.alias = 'date'

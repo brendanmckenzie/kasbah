@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const LoaderButton = (props) => {
   const attrs = {
@@ -19,15 +20,15 @@ const LoaderButton = (props) => {
 }
 
 LoaderButton.propTypes = {
-  onClick: React.PropTypes.func.isRequired,
-  className: React.PropTypes.string,
-  style: React.PropTypes.string,
-  task: React.PropTypes.object,
-  medium: React.PropTypes.bool,
-  small: React.PropTypes.bool,
-  primary: React.PropTypes.bool,
-  warning: React.PropTypes.bool,
-  children: React.PropTypes.node
+  onClick: PropTypes.func.isRequired,
+  className: PropTypes.string,
+  style: PropTypes.string,
+  task: PropTypes.object,
+  medium: PropTypes.bool,
+  small: PropTypes.bool,
+  primary: PropTypes.bool,
+  warning: PropTypes.bool,
+  children: PropTypes.node
 }
 
 export default LoaderButton

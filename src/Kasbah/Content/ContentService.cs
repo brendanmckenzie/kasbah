@@ -7,7 +7,6 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Kasbah.Content.Events;
 using Kasbah.Content.Models;
-using Kasbah.Exceptions;
 using Kasbah.Extensions;
 
 namespace Kasbah.Content
@@ -51,17 +50,10 @@ namespace Kasbah.Content
 
         public async Task<IDictionary<string, object>> GetRawDataAsync(Guid id, long? version = null)
         {
-            try
+            return await _cache?.GetOrSetAsync($"{nameof(GetRawDataAsync)}_{id}_{version}", async () =>
             {
-                return await _cache.GetOrSetAsync($"{nameof(GetRawDataAsync)}_{id}_{version}", async () =>
-                {
-                    return await _contentProvider.GetRawDataAsync(id, version);
-                });
-            }
-            catch (EntryNotFoundException)
-            {
-                return null;
-            }
+                return await _contentProvider.GetRawDataAsync(id, version);
+            });
         }
 
         public async Task UpdateDataAsync(Guid id, IDictionary<string, object> data, bool publish)

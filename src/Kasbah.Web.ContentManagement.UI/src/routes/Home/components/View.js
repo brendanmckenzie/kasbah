@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import Content from './Content'
 
@@ -45,8 +46,8 @@ export const View = (props) => (
 )
 
 View.propTypes = {
-  listLatestUpdatesRequest: React.PropTypes.func.isRequired,
-  listLatestUpdates: React.PropTypes.object.isRequired
+  listLatestUpdatesRequest: PropTypes.func.isRequired,
+  listLatestUpdates: PropTypes.object.isRequired
 }
 
 export default View

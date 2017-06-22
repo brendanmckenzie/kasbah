@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Field, reduxForm } from 'redux-form'
 
 const LoginForm = ({ handleSubmit, loading, payload }) => (
@@ -23,9 +24,9 @@ const LoginForm = ({ handleSubmit, loading, payload }) => (
 )
 
 LoginForm.propTypes = {
-  handleSubmit: React.PropTypes.func.isRequired,
-  loading: React.PropTypes.bool,
-  payload: React.PropTypes.object
+  handleSubmit: PropTypes.func.isRequired,
+  loading: PropTypes.bool,
+  payload: PropTypes.object
 }
 
 export default reduxForm({

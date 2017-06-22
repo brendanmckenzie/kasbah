@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import ContentTree from './ContentTree/index.js'
 
 export const View = (props) => (
@@ -19,17 +20,17 @@ export const View = (props) => (
 )
 
 View.propTypes = {
-  children: React.PropTypes.node,
-  describeTree: React.PropTypes.object.isRequired,
-  describeTreeRequest: React.PropTypes.func.isRequired,
-  createNode: React.PropTypes.object.isRequired,
-  createNodeRequest: React.PropTypes.func.isRequired,
-  listTypes: React.PropTypes.object.isRequired,
-  listTypesRequest: React.PropTypes.func.isRequired,
-  deleteNode: React.PropTypes.object.isRequired,
-  updateNodeAlias: React.PropTypes.object.isRequired,
-  changeType: React.PropTypes.object.isRequired,
-  moveNode: React.PropTypes.object.isRequired
+  children: PropTypes.node,
+  describeTree: PropTypes.object.isRequired,
+  describeTreeRequest: PropTypes.func.isRequired,
+  createNode: PropTypes.object.isRequired,
+  createNodeRequest: PropTypes.func.isRequired,
+  listTypes: PropTypes.object.isRequired,
+  listTypesRequest: PropTypes.func.isRequired,
+  deleteNode: PropTypes.object.isRequired,
+  updateNodeAlias: PropTypes.object.isRequired,
+  changeType: PropTypes.object.isRequired,
+  moveNode: PropTypes.object.isRequired
 }
 
 export default View

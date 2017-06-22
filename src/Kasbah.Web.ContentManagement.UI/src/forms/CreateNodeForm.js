@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Field, reduxForm } from 'redux-form'
 import ModalForm from 'components/ModalForm'
 
@@ -25,10 +26,10 @@ const CreateNodeForm = ({ handleSubmit, types, onClose, loading }) => (
 )
 
 CreateNodeForm.propTypes = {
-  handleSubmit: React.PropTypes.func.isRequired,
-  loading: React.PropTypes.bool,
-  onClose: React.PropTypes.func.isRequired,
-  types: React.PropTypes.array.isRequired
+  handleSubmit: PropTypes.func.isRequired,
+  loading: PropTypes.bool,
+  onClose: PropTypes.func.isRequired,
+  types: PropTypes.array.isRequired
 }
 
 export default reduxForm({

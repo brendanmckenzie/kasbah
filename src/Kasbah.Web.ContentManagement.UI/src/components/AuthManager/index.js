@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import moment from 'moment'
 import { connect } from 'react-redux'
 import { makeApiRequest } from 'store/util'
@@ -7,12 +8,12 @@ import { makeApiRequest } from 'store/util'
 
 export class AuthManager extends React.Component {
   static propTypes = {
-    children: React.PropTypes.any,
-    auth: React.PropTypes.object.isRequired
+    children: PropTypes.any,
+    auth: PropTypes.object.isRequired
   }
 
   static contextTypes = {
-    router: React.PropTypes.object.isRequired
+    router: PropTypes.object.isRequired
   }
 
   constructor() {
@@ -21,8 +22,6 @@ export class AuthManager extends React.Component {
     this.state = {
       timeout: null
     }
-
-    this.checkRefresh = this.checkRefresh.bind(this)
   }
 
   componentDidMount() {
@@ -41,7 +40,7 @@ export class AuthManager extends React.Component {
     }
   }
 
-  checkRefresh() {
+  checkRefresh = () => {
     // TODO: move this to a reducer
     if (moment().add(5, 'seconds').isAfter(moment(localStorage.accessTokenExpires))) {
       const user = JSON.parse(localStorage.user)

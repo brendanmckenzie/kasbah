@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import Loading from 'components/Loading'
 import Error from 'components/Error'
@@ -8,25 +9,25 @@ import ContentTree from 'routes/Content/components/ContentTree'
 
 class View extends React.Component {
   static propTypes = {
-    id: React.PropTypes.string.isRequired,
-    describeTreeRequest: React.PropTypes.func.isRequired,
-    describeTree: React.PropTypes.object.isRequired,
-    getDetailRequest: React.PropTypes.func.isRequired,
-    getDetail: React.PropTypes.object.isRequired,
-    putDetailRequest: React.PropTypes.func.isRequired,
-    putDetail: React.PropTypes.object.isRequired,
-    deleteNodeRequest: React.PropTypes.func.isRequired,
-    deleteNode: React.PropTypes.object.isRequired,
-    updateNodeAliasRequest: React.PropTypes.func.isRequired,
-    updateNodeAlias: React.PropTypes.object.isRequired,
-    changeTypeRequest: React.PropTypes.func.isRequired,
-    changeType: React.PropTypes.object.isRequired,
-    moveNodeRequest: React.PropTypes.func.isRequired,
-    moveNode: React.PropTypes.object.isRequired
+    id: PropTypes.string.isRequired,
+    describeTreeRequest: PropTypes.func.isRequired,
+    describeTree: PropTypes.object.isRequired,
+    getDetailRequest: PropTypes.func.isRequired,
+    getDetail: PropTypes.object.isRequired,
+    putDetailRequest: PropTypes.func.isRequired,
+    putDetail: PropTypes.object.isRequired,
+    deleteNodeRequest: PropTypes.func.isRequired,
+    deleteNode: PropTypes.object.isRequired,
+    updateNodeAliasRequest: PropTypes.func.isRequired,
+    updateNodeAlias: PropTypes.object.isRequired,
+    changeTypeRequest: PropTypes.func.isRequired,
+    changeType: PropTypes.object.isRequired,
+    moveNodeRequest: PropTypes.func.isRequired,
+    moveNode: PropTypes.object.isRequired
   }
 
   static contextTypes = {
-    router: React.PropTypes.object.isRequired
+    router: PropTypes.object.isRequired
   }
 
   constructor() {

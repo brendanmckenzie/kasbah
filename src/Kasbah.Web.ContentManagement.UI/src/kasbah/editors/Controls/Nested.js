@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Field } from 'redux-form'
 import _ from 'lodash'
 import { Tabs, Tab } from 'components/Tabs'
@@ -33,8 +34,8 @@ const Nested = ({ input: { name }, options }) => (
 )
 
 Nested.propTypes = {
-  input: React.PropTypes.object.isRequired,
-  options: React.PropTypes.object
+  input: PropTypes.object.isRequired,
+  options: PropTypes.object
 }
 
 Nested.alias = 'nested'

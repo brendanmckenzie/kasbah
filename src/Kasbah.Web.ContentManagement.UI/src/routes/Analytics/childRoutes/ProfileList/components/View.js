@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import _ from 'lodash'
 import moment from 'moment'
 import { Link } from 'react-router'
@@ -7,8 +8,8 @@ import Error from 'components/Error'
 
 class View extends React.Component {
   static propTypes = {
-    listProfilesRequest: React.PropTypes.func.isRequired,
-    listProfiles: React.PropTypes.object.isRequired
+    listProfilesRequest: PropTypes.func.isRequired,
+    listProfiles: PropTypes.object.isRequired
   }
 
   componentWillMount() {

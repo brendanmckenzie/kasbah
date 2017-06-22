@@ -1,13 +1,8 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 class ItemButton extends React.Component {
-  constructor () {
-    super()
-
-    this.handleClick = this.handleClick.bind(this)
-  }
-
-  handleClick () {
+  handleClick = () => {
     this.props.onClick(this.props.item, this.props.action)
   }
 
@@ -22,12 +17,12 @@ class ItemButton extends React.Component {
 }
 
 ItemButton.propTypes = {
-  item: React.PropTypes.any.isRequired,
-  onClick: React.PropTypes.func.isRequired,
-  children: React.PropTypes.any,
-  className: React.PropTypes.string,
-  type: React.PropTypes.string,
-  action: React.PropTypes.any
+  item: PropTypes.any.isRequired,
+  onClick: PropTypes.func.isRequired,
+  children: PropTypes.any,
+  className: PropTypes.string,
+  type: PropTypes.string,
+  action: PropTypes.any
 }
 
 export default ItemButton

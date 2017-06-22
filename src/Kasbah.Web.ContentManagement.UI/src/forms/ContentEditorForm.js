@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Field, reduxForm } from 'redux-form'
 import _ from 'lodash'
 import { Tabs, Tab } from 'components/Tabs'
@@ -6,9 +7,9 @@ import kasbah from 'kasbah'
 
 class ContentEditorForm extends React.Component {
   static propTypes = {
-    handleSubmit: React.PropTypes.func.isRequired,
-    type: React.PropTypes.object.isRequired,
-    loading: React.PropTypes.bool
+    handleSubmit: PropTypes.func.isRequired,
+    type: PropTypes.object.isRequired,
+    loading: PropTypes.bool
   }
 
   render() {

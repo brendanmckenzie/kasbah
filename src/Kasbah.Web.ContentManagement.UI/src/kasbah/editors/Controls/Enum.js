@@ -1,11 +1,12 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 class Enum extends React.PureComponent {
   static propTypes = {
-    input: React.PropTypes.object.isRequired,
-    options: React.PropTypes.object,
-    id: React.PropTypes.string.isRequired,
-    className: React.PropTypes.string
+    input: PropTypes.object.isRequired,
+    options: PropTypes.object,
+    id: PropTypes.string.isRequired,
+    className: PropTypes.string
   }
 
   static alias = 'enum'

@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import moment from 'moment'
 import _ from 'lodash'
 import { Link } from 'react-router'
@@ -7,8 +8,8 @@ import { makeApiRequest } from 'store/util'
 
 class NodePicker extends React.Component {
   static propTypes = {
-    input: React.PropTypes.object.isRequired,
-    type: React.PropTypes.string
+    input: PropTypes.object.isRequired,
+    type: PropTypes.string
   }
 
   static alias = 'nodePicker'

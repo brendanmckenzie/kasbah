@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import moment from 'moment'
 import { Link } from 'react-router'
 import Loading from 'components/Loading'
@@ -6,8 +7,8 @@ import Error from 'components/Error'
 
 class Content extends React.Component {
   static propTypes = {
-    listLatestUpdatesRequest: React.PropTypes.func.isRequired,
-    listLatestUpdates: React.PropTypes.object.isRequired
+    listLatestUpdatesRequest: PropTypes.func.isRequired,
+    listLatestUpdates: PropTypes.object.isRequired
   }
 
   componentWillMount() {

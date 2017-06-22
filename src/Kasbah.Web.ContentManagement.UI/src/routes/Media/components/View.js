@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import moment from 'moment'
 import Dropzone from 'react-dropzone'
 import Loading from 'components/Loading'
@@ -8,18 +9,12 @@ import { API_BASE } from 'store/util'
 
 class View extends React.Component {
   static propTypes = {
-    listMedia: React.PropTypes.object.isRequired,
-    listMediaRequest: React.PropTypes.func.isRequired,
-    uploadMedia: React.PropTypes.object.isRequired,
-    uploadMediaRequest: React.PropTypes.func.isRequired,
-    deleteMedia: React.PropTypes.object.isRequired,
-    deleteMediaRequest: React.PropTypes.func.isRequired
-  }
-
-  constructor() {
-    super()
-
-    this.handleDelete = this.handleDelete.bind(this)
+    listMedia: PropTypes.object.isRequired,
+    listMediaRequest: PropTypes.func.isRequired,
+    uploadMedia: PropTypes.object.isRequired,
+    uploadMediaRequest: PropTypes.func.isRequired,
+    deleteMedia: PropTypes.object.isRequired,
+    deleteMediaRequest: PropTypes.func.isRequired
   }
 
   componentWillMount() {
@@ -40,7 +35,7 @@ class View extends React.Component {
     this.props.listMediaRequest()
   }
 
-  handleDelete(ent) {
+  handleDelete = (ent) => {
     if (confirm('Are you sure?')) {
       this.props.deleteMediaRequest(ent)
     }

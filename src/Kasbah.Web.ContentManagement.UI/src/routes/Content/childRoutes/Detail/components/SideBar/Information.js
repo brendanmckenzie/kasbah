@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import moment from 'moment'
 
 export const Information = ({ node, type, data, onDelete, onRename, onChangeType, onMove }) => (
@@ -36,13 +37,13 @@ export const Information = ({ node, type, data, onDelete, onRename, onChangeType
 )
 
 Information.propTypes = {
-  node: React.PropTypes.object.isRequired,
-  type: React.PropTypes.object.isRequired,
-  data: React.PropTypes.object,
-  onDelete: React.PropTypes.func.isRequired,
-  onRename: React.PropTypes.func.isRequired,
-  onChangeType: React.PropTypes.func.isRequired,
-  onMove: React.PropTypes.func.isRequired
+  node: PropTypes.object.isRequired,
+  type: PropTypes.object.isRequired,
+  data: PropTypes.object,
+  onDelete: PropTypes.func.isRequired,
+  onRename: PropTypes.func.isRequired,
+  onChangeType: PropTypes.func.isRequired,
+  onMove: PropTypes.func.isRequired
 }
 
 export default Information

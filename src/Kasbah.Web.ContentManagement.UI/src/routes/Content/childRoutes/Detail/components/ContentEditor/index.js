@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import ContentEditorForm from 'forms/ContentEditorForm'
 
 export const ContentEditor = ({ payload, loading, publishing, onSubmit, onSave }) => (
@@ -11,11 +12,11 @@ export const ContentEditor = ({ payload, loading, publishing, onSubmit, onSave }
 )
 
 ContentEditor.propTypes = {
-  onSubmit: React.PropTypes.func.isRequired,
-  onSave: React.PropTypes.func.isRequired,
-  payload: React.PropTypes.object.isRequired,
-  loading: React.PropTypes.bool,
-  publishing: React.PropTypes.bool
+  onSubmit: PropTypes.func.isRequired,
+  onSave: PropTypes.func.isRequired,
+  payload: PropTypes.object.isRequired,
+  loading: PropTypes.bool,
+  publishing: PropTypes.bool
 }
 
 export default ContentEditor

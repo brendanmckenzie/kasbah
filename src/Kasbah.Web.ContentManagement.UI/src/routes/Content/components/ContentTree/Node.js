@@ -1,25 +1,20 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Link } from 'react-router'
 import ItemButton from 'components/ItemButton'
 import NodeTree from './NodeTree'
 
 class Node extends React.Component {
   static propTypes = {
-    node: React.PropTypes.object.isRequired
+    node: PropTypes.object.isRequired
   }
 
   static contextTypes = {
-    onToggleNode: React.PropTypes.func.isRequired,
-    expandedNodes: React.PropTypes.object.isRequired,
-    types: React.PropTypes.array,
-    readOnly: React.PropTypes.bool,
-    onSelect: React.PropTypes.func
-  }
-
-  constructor() {
-    super()
-
-    this.handleToggleExpand = this.handleToggleExpand.bind(this)
+    onToggleNode: PropTypes.func.isRequired,
+    expandedNodes: PropTypes.object.isRequired,
+    types: PropTypes.array,
+    readOnly: PropTypes.bool,
+    onSelect: PropTypes.func
   }
 
   get tree() {
@@ -30,7 +25,7 @@ class Node extends React.Component {
     return <NodeTree parent={id} parentAlias={alias} />
   }
 
-  handleToggleExpand() {
+  handleToggleExpand = () => {
     const { node: { id } } = this.props
 
     this.context.onToggleNode(id)

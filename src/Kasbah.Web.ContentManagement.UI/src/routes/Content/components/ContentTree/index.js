@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Loading from 'components/Loading'
 import Error from 'components/Error'
 import NodeTree from './NodeTree'
@@ -6,32 +7,32 @@ import CreateNode from './CreateNode'
 
 class ContentTree extends React.Component {
   static propTypes = {
-    describeTreeRequest: React.PropTypes.func.isRequired,
-    describeTree: React.PropTypes.object.isRequired,
-    createNodeRequest: React.PropTypes.func,
-    createNode: React.PropTypes.object,
-    listTypesRequest: React.PropTypes.func,
-    listTypes: React.PropTypes.object,
-    deleteNode: React.PropTypes.object,
-    updateNodeAlias: React.PropTypes.object,
-    changeType: React.PropTypes.object,
-    moveNode: React.PropTypes.object,
-    readOnly: React.PropTypes.bool,
-    onSelect: React.PropTypes.func
+    describeTreeRequest: PropTypes.func.isRequired,
+    describeTree: PropTypes.object.isRequired,
+    createNodeRequest: PropTypes.func,
+    createNode: PropTypes.object,
+    listTypesRequest: PropTypes.func,
+    listTypes: PropTypes.object,
+    deleteNode: PropTypes.object,
+    updateNodeAlias: PropTypes.object,
+    changeType: PropTypes.object,
+    moveNode: PropTypes.object,
+    readOnly: PropTypes.bool,
+    onSelect: PropTypes.func
   }
 
   static contextTypes = {
-    router: React.PropTypes.object.isRequired
+    router: PropTypes.object.isRequired
   }
 
   static childContextTypes = {
-    expandedNodes: React.PropTypes.object,
-    tree: React.PropTypes.array,
-    types: React.PropTypes.array,
-    onToggleNode: React.PropTypes.func,
-    onCreateNode: React.PropTypes.func,
-    readOnly: React.PropTypes.bool,
-    onSelect: React.PropTypes.func
+    expandedNodes: PropTypes.object,
+    tree: PropTypes.array,
+    types: PropTypes.array,
+    onToggleNode: PropTypes.func,
+    onCreateNode: PropTypes.func,
+    readOnly: PropTypes.bool,
+    onSelect: PropTypes.func
   }
 
   constructor() {
@@ -41,11 +42,6 @@ class ContentTree extends React.Component {
       showCreateNode: false,
       expandedNodes: {}
     }
-
-    this.handleRefresh = this.handleRefresh.bind(this)
-    this.handleCreateNode = this.handleCreateNode.bind(this)
-    this.handleCancelCreateNode = this.handleCancelCreateNode.bind(this)
-    this.handleToggleNode = this.handleToggleNode.bind(this)
   }
 
   componentDidMount() {
@@ -113,25 +109,23 @@ class ContentTree extends React.Component {
     }
   }
 
-  handleRefresh() {
-    this.props.describeTreeRequest()
-  }
+  handleRefresh = () => this.props.describeTreeRequest()
 
-  handleCreateNode(parent) {
+  handleCreateNode = (parent) => {
     this.setState({
       showCreateNode: true,
       createNodeParent: parent
     })
   }
 
-  handleCancelCreateNode() {
+  handleCancelCreateNode = () => {
     this.setState({
       showCreateNode: false,
       createNodeParent: null
     })
   }
 
-  handleToggleNode(id) {
+  handleToggleNode = (id) => {
     this.setState({
       expandedNodes: {
         ...this.state.expandedNodes,

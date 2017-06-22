@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import moment from 'moment'
 import _ from 'lodash'
 import { Tabs, Tab } from 'components/Tabs'
@@ -7,9 +8,9 @@ import Error from 'components/Error'
 
 class View extends React.Component {
   static propTypes = {
-    id: React.PropTypes.string.isRequired,
-    getProfileRequest: React.PropTypes.func.isRequired,
-    getProfile: React.PropTypes.object.isRequired
+    id: PropTypes.string.isRequired,
+    getProfileRequest: PropTypes.func.isRequired,
+    getProfile: PropTypes.object.isRequired
   }
 
   componentWillMount() {

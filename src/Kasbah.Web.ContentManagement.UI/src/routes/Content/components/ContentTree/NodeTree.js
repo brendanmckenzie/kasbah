@@ -1,27 +1,20 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Node from './Node'
 
 class NodeTree extends React.Component {
   static propTypes = {
-    parent: React.PropTypes.string,
-    parentAlias: React.PropTypes.string
+    parent: PropTypes.string,
+    parentAlias: PropTypes.string
   }
 
   static contextTypes = {
-    tree: React.PropTypes.array.isRequired,
-    onCreateNode: React.PropTypes.func.isRequired,
-    readOnly: React.PropTypes.bool
+    tree: PropTypes.array.isRequired,
+    onCreateNode: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool
   }
 
-  constructor() {
-    super()
-
-    this.handleCreateNode = this.handleCreateNode.bind(this)
-  }
-
-  handleCreateNode() {
-    this.context.onCreateNode(this.props.parent)
-  }
+  handleCreateNode = () => this.context.onCreateNode(this.props.parent)
 
   render() {
     const { parent, parentAlias } = this.props

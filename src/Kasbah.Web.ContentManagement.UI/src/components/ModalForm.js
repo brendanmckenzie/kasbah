@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 const ModalForm = ({ onSubmit, onClose, children, title, loading }) => (
   <div className='modal is-active'>
@@ -24,11 +25,11 @@ const ModalForm = ({ onSubmit, onClose, children, title, loading }) => (
 )
 
 ModalForm.propTypes = {
-  onSubmit: React.PropTypes.func.isRequired,
-  onClose: React.PropTypes.func.isRequired,
-  loading: React.PropTypes.bool,
-  children: React.PropTypes.any.isRequired,
-  title: React.PropTypes.string.isRequired
+  onSubmit: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
+  loading: PropTypes.bool,
+  children: PropTypes.any.isRequired,
+  title: PropTypes.string.isRequired
 }
 
 export default ModalForm

@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import _ from 'lodash'
 import Loading from 'components/Loading'
 import { makeApiRequest } from 'store/util'
@@ -7,10 +8,10 @@ import { Field } from 'redux-form'
 
 class Area extends React.Component {
   static propTypes = {
-    input: React.PropTypes.object.isRequired,
-    area: React.PropTypes.string.isRequired,
-    parent: React.PropTypes.string.isRequired,
-    components: React.PropTypes.array.isRequired
+    input: PropTypes.object.isRequired,
+    area: PropTypes.string.isRequired,
+    parent: PropTypes.string.isRequired,
+    components: PropTypes.array.isRequired
   }
 
   handleAddComponent = () => {
@@ -65,8 +66,8 @@ class Area extends React.Component {
 
 class Components extends React.Component {
   static propTypes = {
-    input: React.PropTypes.object.isRequired,
-    className: React.PropTypes.string
+    input: PropTypes.object.isRequired,
+    className: PropTypes.string
   }
 
   static alias = 'kasbah_web:components'

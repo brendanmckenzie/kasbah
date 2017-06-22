@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import _ from 'lodash'
 import moment from 'moment'
 import Loading from 'components/Loading'
@@ -6,8 +7,8 @@ import { API_BASE, makeApiRequest } from 'store/util'
 
 class MediaPicker extends React.Component {
   static propTypes = {
-    input: React.PropTypes.object.isRequired,
-    options: React.PropTypes.object
+    input: PropTypes.object.isRequired,
+    options: PropTypes.object
   }
 
   static alias = 'mediaPicker'
@@ -21,19 +22,13 @@ class MediaPicker extends React.Component {
       media: [],
       selection: null
     }
-
-    this.handleHideModal = this.handleHideModal.bind(this)
-    this.handleShowModal = this.handleShowModal.bind(this)
-    this.handleSelect = this.handleSelect.bind(this)
-    this.handleCommit = this.handleCommit.bind(this)
-    this.handleClear = this.handleClear.bind(this)
   }
 
   componentWillMount() {
     this.handleReloadMediaDetail(this.props.input.value)
   }
 
-  handleShowModal() {
+  handleShowModal = () => {
     this.setState({
       showModal: true,
       loading: true,
@@ -49,19 +44,19 @@ class MediaPicker extends React.Component {
       })
   }
 
-  handleHideModal() {
+  handleHideModal = () => {
     this.setState({
       showModal: false
     })
   }
 
-  handleSelect(item) {
+  handleSelect = (item) => {
     this.setState({
       selection: item
     })
   }
 
-  handleCommit() {
+  handleCommit = () => {
     const { input: { onChange } } = this.props
 
     onChange(this.state.selection)
@@ -71,7 +66,7 @@ class MediaPicker extends React.Component {
     this.handleHideModal()
   }
 
-  handleClear() {
+  handleClear = () => {
     const { input: { onChange } } = this.props
 
     onChange(null)
@@ -80,7 +75,7 @@ class MediaPicker extends React.Component {
     })
   }
 
-  handleReloadMediaDetail(value) {
+  handleReloadMediaDetail = (value) => {
     if (!value) { return }
 
     makeApiRequest({ url: `/media/${value}/meta`, method: 'GET' })

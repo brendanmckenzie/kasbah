@@ -1,10 +1,11 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import moment from 'moment'
 
 class View extends React.Component {
   static propTypes = {
-    listInstancesRequest: React.PropTypes.func.isRequired,
-    listInstances: React.PropTypes.object.isRequired
+    listInstancesRequest: PropTypes.func.isRequired,
+    listInstances: PropTypes.object.isRequired
   }
   componentWillMount() {
     this.props.listInstancesRequest()

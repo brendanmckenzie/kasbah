@@ -1,21 +1,16 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import CreateNodeForm from 'forms/CreateNodeForm'
 
 class CreateNode extends React.Component {
   static propTypes = {
-    visible: React.PropTypes.bool,
-    parent: React.PropTypes.string,
-    onCancel: React.PropTypes.func,
-    createNodeRequest: React.PropTypes.func,
-    createNode: React.PropTypes.object,
-    listTypesRequest: React.PropTypes.func,
-    listTypes: React.PropTypes.object
-  }
-
-  constructor() {
-    super()
-
-    this.handleSubmit = this.handleSubmit.bind(this)
+    visible: PropTypes.bool,
+    parent: PropTypes.string,
+    onCancel: PropTypes.func,
+    createNodeRequest: PropTypes.func,
+    createNode: PropTypes.object,
+    listTypesRequest: PropTypes.func,
+    listTypes: PropTypes.object
   }
 
   componentWillMount() {
@@ -30,7 +25,7 @@ class CreateNode extends React.Component {
     }
   }
 
-  handleSubmit(values) {
+  handleSubmit = (values) => {
     const data = {
       parent: this.props.parent,
       ...values

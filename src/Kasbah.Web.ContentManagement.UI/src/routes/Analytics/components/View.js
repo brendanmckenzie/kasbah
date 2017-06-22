@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import Navigation from './Navigation'
 
 export const View = ({ children }) => (
@@ -38,7 +39,7 @@ export const View = ({ children }) => (
 )
 
 View.propTypes = {
-  children: React.PropTypes.any
+  children: PropTypes.any
 }
 
 export default View

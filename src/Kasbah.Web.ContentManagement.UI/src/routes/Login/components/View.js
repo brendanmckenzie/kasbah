@@ -1,15 +1,16 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import moment from 'moment'
 import LoginForm from '../forms/LoginForm'
 
 export class View extends React.Component {
   static propTypes = {
-    loginRequest: React.PropTypes.func.isRequired,
-    login: React.PropTypes.object.isRequired
+    loginRequest: PropTypes.func.isRequired,
+    login: PropTypes.object.isRequired
   }
 
   static contextTypes = {
-    router: React.PropTypes.object.isRequired
+    router: PropTypes.object.isRequired
   }
 
   componentWillMount() {

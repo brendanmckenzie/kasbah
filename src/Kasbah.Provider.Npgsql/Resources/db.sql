@@ -34,7 +34,8 @@ create table "user" (
 
   created_at timestamp default now() not null,
   modified_at timestamp default now() not null,
-  last_login_at timestamp default now() not null
+  last_login_at timestamp,
+  disabled_at timestamp
 );
 
 create table media (

@@ -1,9 +1,10 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
 export class Tab extends React.Component {
   static propTypes = {
-    title: React.PropTypes.string.isRequired,
-    children: React.PropTypes.any.isRequired
+    title: PropTypes.string.isRequired,
+    children: PropTypes.any.isRequired
   }
 
   render() {
@@ -13,21 +14,13 @@ export class Tab extends React.Component {
 
 class TabHeader extends React.Component {
   static propTypes = {
-    index: React.PropTypes.number.isRequired,
-    currentIndex: React.PropTypes.number.isRequired,
-    title: React.PropTypes.string.isRequired,
-    onClick: React.PropTypes.func.isRequired
+    index: PropTypes.number.isRequired,
+    currentIndex: PropTypes.number.isRequired,
+    title: PropTypes.string.isRequired,
+    onClick: PropTypes.func.isRequired
   }
 
-  constructor() {
-    super()
-
-    this.handleClick = this.handleClick.bind(this)
-  }
-
-  handleClick() {
-    this.props.onClick(this.props.index)
-  }
+  handleClick = () => this.props.onClick(this.props.index)
 
   render() {
     const attrs = {
@@ -40,21 +33,16 @@ class TabHeader extends React.Component {
 
 export class Tabs extends React.Component {
   static propTypes = {
-    children: React.PropTypes.arrayOf(React.PropTypes.node)
+    children: PropTypes.arrayOf(PropTypes.node)
   }
 
   constructor() {
     super()
 
     this.state = { currentIndex: 0 }
-    this.setCurrentIndex = this.setCurrentIndex.bind(this)
   }
 
-  setCurrentIndex(index) {
-    this.setState({
-      currentIndex: index
-    })
-  }
+  setCurrentIndex = (currentIndex) => this.setState({ currentIndex })
 
   get tabs() {
     if (this.props.children instanceof Array) {
