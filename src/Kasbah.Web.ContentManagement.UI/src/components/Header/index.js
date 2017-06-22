@@ -4,9 +4,7 @@ import { IndexLink, Link } from 'react-router'
 const sections = [
   { link: '/content', title: 'Content' },
   { link: '/media', title: 'Media' },
-  { link: '/analytics', title: 'Analytics' },
-  { link: '/security', title: 'Security' },
-  { link: '/system', title: 'System' }
+  { link: '/security', title: 'Security' }
 ]
 
 export const Header = () => (
