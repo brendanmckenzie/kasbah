@@ -1,0 +1,7 @@
+<Project>
+    <PropertyGroup>
+        <Product>Kasbah</Product>
+        <TargetFramework>netstandard1.6</TargetFramework>
+        <VersionPrefix>1.0.1</VersionPrefix>
+    </PropertyGroup>
+</Project>
