@@ -3,9 +3,7 @@ import HomeRoute from './Home'
 import LoginRoute from './Login'
 import ContentRoute from './Content'
 import MediaRoute from './Media'
-import AnalyticsRoute from './Analytics'
 import SecurityRoute from './Security'
-import SystemRoute from './System'
 
 export const createRoutes = (store) => ({
   childRoutes: [
@@ -17,9 +15,7 @@ export const createRoutes = (store) => ({
       childRoutes: [
         ContentRoute(store),
         MediaRoute(store),
-        AnalyticsRoute(store),
-        SecurityRoute(store),
-        SystemRoute(store)
+        SecurityRoute(store)
       ]
     }
   ]
