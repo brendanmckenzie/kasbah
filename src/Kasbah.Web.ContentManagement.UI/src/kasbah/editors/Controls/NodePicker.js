@@ -147,7 +147,7 @@ class NodePicker extends React.Component {
         <section className='modal-card-body'>
           {this.state.loading ? <Loading /> : (
             _(this.state.nodes).sortBy('modified').reverse().value().map(ent => (
-              <div key={ent.id} className='control'>
+              <div key={ent.id} className='field'>
                 <div
                   className={'card' + ((this.state.selection === ent.id) ? ' is-selected' : '')}
                   onClick={() => this.handleSelect(ent)}>
