@@ -164,9 +164,12 @@ class MediaPicker extends React.Component {
   render() {
     return (<div className='media-picker'>
       {this.display}
-      <div className='has-text-right'>
-        <button type='button' className='button is-small' onClick={this.handleClear}>Clear</button>
-        <button type='button' className='button is-primary is-small' onClick={this.handleShowModal}>Select media</button>
+      <div className='level'>
+        <div className='level-left' />
+        <div className='level-right'>
+          <button type='button' className='level-item button is-small' onClick={this.handleClear}>Clear</button>
+          <button type='button' className='level-item button is-primary is-small' onClick={this.handleShowModal}>Select media</button>
+        </div>
       </div>
       {this.state.showModal && this.modal}
     </div>)

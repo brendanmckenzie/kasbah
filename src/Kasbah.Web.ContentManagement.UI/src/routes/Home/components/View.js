@@ -13,7 +13,7 @@ export const View = (props) => (
               <article className='tile is-child notification is-danger'>
                 <p className='heading'>Content authoring and marketing platform</p>
                 <p className='title'>Kasbah</p>
-                <p className='subtitle'>v1.0</p>
+                <p className='subtitle'>v1.0.0.0</p>
               </article>
               <Link to='/security' className='tile is-child notification is-warning'>
                 <p className='title'>Security</p>
@@ -21,20 +21,11 @@ export const View = (props) => (
               </Link>
             </div>
             <div className='tile is-parent'>
-              <div className='tile is-child notification is-info'>
-                <h2 className='title'><Link to='/analytics'>Analytics</Link></h2>
-                <p className='subtitle'>Some sort of analytics here</p>
-              </div>
+              <div className='tile is-child notification is-info' />
             </div>
           </div>
           <div className='tile is-parent'>
-            <div className='tile is-light is-child notification'>
-              <h2 className='title'><Link to='/system'>System information</Link></h2>
-              <p className='subtitle'>Aligned with the right tile</p>
-              <div className='content'>
-                <p>Server statistics, requests/minute, uptime, total # of requests...</p>
-              </div>
-            </div>
+            <div className='tile is-light is-child notification' />
           </div>
         </div>
         <div className='tile is-parent'>

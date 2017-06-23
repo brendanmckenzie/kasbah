@@ -4,21 +4,29 @@ import { Field, reduxForm } from 'redux-form'
 
 const LoginForm = ({ handleSubmit, loading, payload }) => (
   <form onSubmit={handleSubmit}>
-    <div className='control'>
+    <div className='field'>
       <label className='label' htmlFor='username'>Username</label>
-      <Field name='username' component='input' type='text' className='input' autoFocus />
+      <div className='control'>
+        <Field name='username' component='input' type='text' className='input' autoFocus />
+      </div>
     </div>
-    <div className='control'>
+    <div className='field'>
       <label className='label' htmlFor='password'>Password</label>
-      <Field name='password' component='input' type='password' className='input' />
+      <div className='control'>
+        <Field name='password' component='input' type='password' className='input' />
+      </div>
     </div>
     {payload && payload.errorMessage && (
       <div className='notification is-danger'>
         {payload.errorMessage}
       </div>
     )}
-    <div className='has-text-centered'>
-      <button className={'button is-primary ' + (loading ? 'is-loading' : '')}>Login</button>
+    <div className='level'>
+      <div className='level-left' />
+      <div className='level-center'>
+        <button className={'button is-primary ' + (loading ? 'is-loading' : '')}>Login</button>
+      </div>
+      <div className='level-right' />
     </div>
   </form>
 )

@@ -13,16 +13,18 @@ const Nested = ({ input: { name }, options }) => (
           <Tab key={index} title={ent}>
             <div>
               {options.fields.filter(fld => fld.category === ent).map((fld, fldIndex) => (
-                <div key={fldIndex} className='control'>
+                <div key={fldIndex} className='field'>
                   <label className='label' htmlFor={`${name}_${fld.alias}`}>{fld.displayName}</label>
-                  <Field
-                    name={`${name}.${fld.alias}`}
-                    id={`${name}_${fld.alias}`}
-                    component={kasbah.getEditor(fld.editor)}
-                    options={fld.options}
-                    type={fld.type}
-                    className='input' />
-                  {fld.helpText && <span className='help'>{fld.helpText}</span>}
+                  <div className='control'>
+                    <Field
+                      name={`${name}.${fld.alias}`}
+                      id={`${name}_${fld.alias}`}
+                      component={kasbah.getEditor(fld.editor)}
+                      options={fld.options}
+                      type={fld.type}
+                      className='input' />
+                    {fld.helpText && <span className='help'>{fld.helpText}</span>}
+                  </div>
                 </div>
               ))}
             </div>

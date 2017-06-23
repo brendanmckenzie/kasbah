@@ -40,7 +40,7 @@ export class View extends React.Component {
                       <p className='title'>Kasbah</p>
                     </div>
                     <div className='level-right'>
-                      <small>v0.0.1</small>
+                      <small>v1.0.0.0</small>
                     </div>
                   </div>
                 </div>
