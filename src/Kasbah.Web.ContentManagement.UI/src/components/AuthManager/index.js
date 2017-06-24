@@ -42,6 +42,11 @@ export class AuthManager extends React.Component {
 
   checkRefresh = () => {
     // TODO: move this to a reducer
+    if (!localStorage.user || !localStorage.accessTokenExpires) {
+      this.context.router.push('/login')
+      return
+    }
+
     if (moment().add(5, 'seconds').isAfter(moment(localStorage.accessTokenExpires))) {
       const user = JSON.parse(localStorage.user)
       console.log('issue refresh token request')

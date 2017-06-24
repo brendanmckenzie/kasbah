@@ -1,5 +1,16 @@
 export const API_BASE = __PROD__ ? '' : 'http://localhost:5000'
 
+const handleErrors = res => {
+  if (res.ok) {
+    return res
+  }
+
+  const err = Error(res)
+  err.respose = res
+
+  throw err
+}
+
 export const makeApiRequest = (request) => {
   const user = localStorage.user ? JSON.parse(localStorage.user) : null
   const authHeader = user ? { 'Authorization': `${user.token_type} ${user.access_token}` } : {}
@@ -27,5 +38,6 @@ export const makeApiRequest = (request) => {
   const url = `${API_BASE}${request.url}`
 
   return fetch(url, params)
+    .then(handleErrors)
     .then(res => res.json())
 }
