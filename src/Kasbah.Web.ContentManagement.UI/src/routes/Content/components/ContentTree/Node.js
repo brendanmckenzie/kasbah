@@ -53,7 +53,7 @@ class Node extends React.Component {
       }
     }
 
-    return <i className='fa fa-file-o' />
+    return <i className='fa fa-file' />
   }
 
   render() {
