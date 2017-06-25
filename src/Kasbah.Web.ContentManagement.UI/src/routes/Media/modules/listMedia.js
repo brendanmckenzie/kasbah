@@ -15,3 +15,11 @@ export const action = (request) => {
 }
 
 export const reducer = createReducer([LIST_MEDIA, LIST_MEDIA_SUCCESS, LIST_MEDIA_FAILURE])
+
+export const key = 'listMedia'
+
+export default {
+  key,
+  action,
+  reducer
+}

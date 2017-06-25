@@ -11,5 +11,6 @@ namespace Kasbah.Media
         Task<IEnumerable<MediaItem>> ListMediaAsync();
         Task<MediaItem> GetMediaAsync(Guid id);
         Task DeleteMediaAsync(Guid id);
+        Task<MediaItem> PutMediaAsync(MediaItem item);
     }
 }

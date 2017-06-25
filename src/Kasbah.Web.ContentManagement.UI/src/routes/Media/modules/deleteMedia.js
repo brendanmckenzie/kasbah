@@ -17,3 +17,11 @@ export const action = (request) => {
 }
 
 export const reducer = createReducer(types)
+
+export const key = 'deleteMedia'
+
+export default {
+  key,
+  action,
+  reducer
+}

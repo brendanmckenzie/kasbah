@@ -26,3 +26,11 @@ export const action = (files) => {
 }
 
 export const reducer = createReducer(types, { loading: false })
+
+export const key = 'uploadMedia'
+
+export default {
+  key,
+  action,
+  reducer
+}

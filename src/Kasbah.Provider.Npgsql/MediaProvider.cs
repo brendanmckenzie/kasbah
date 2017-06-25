@@ -53,6 +53,17 @@ namespace Kasbah.Provider.Npgsql
             }
         }
 
+        public async Task<MediaItem> PutMediaAsync(MediaItem item)
+        {
+            const string Sql = "update media set file_name = @FileName, content_type = @ContentType, modified_at = now() where id = @Id";
+            using (var connection = GetConnection())
+            {
+                await connection.ExecuteAsync(Sql, item);
+            }
+
+            return item;
+        }
+
         NpgsqlConnection GetConnection()
         {
             return new NpgsqlConnection(_settings.ConnectionString);

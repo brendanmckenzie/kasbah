@@ -34,7 +34,7 @@ namespace Kasbah.Media
             await Task.Delay(0);
         }
 
-        public async Task<Guid> PutMediaAsync(Stream source, string fileName, string contentType)
+        public async Task<Guid> CreateMediaAsync(Stream source, string fileName, string contentType)
         {
             var id = await _mediaStorageProvider.StoreMediaAsync(source);
 
@@ -58,6 +58,9 @@ namespace Kasbah.Media
                 _mediaProvider.DeleteMediaAsync(id),
                 _mediaStorageProvider.DeleteMediaAsync(id));
         }
+
+        public async Task<MediaItem> PutMediaAsync(MediaItem item)
+            => await _mediaProvider.PutMediaAsync(item);
 
         public async Task<GetMediaResponse> GetMedia(GetMediaRequest request)
         {

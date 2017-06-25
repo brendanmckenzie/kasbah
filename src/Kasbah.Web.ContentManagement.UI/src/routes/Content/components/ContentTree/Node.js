@@ -68,7 +68,7 @@ class Node extends React.Component {
               className='button is-small expand level-item'
               onClick={this.handleToggleExpand}>
               <span className='icon is-small'>
-                <i className={this.expanded ? 'fa fa-minus-square-o' : 'fa fa-plus-square-o'} />
+                <i className={this.expanded ? 'fa fa-minus-circle' : 'fa fa-plus-circle'} />
               </span>
             </button>
             <span className='level-item icon is-small'>
