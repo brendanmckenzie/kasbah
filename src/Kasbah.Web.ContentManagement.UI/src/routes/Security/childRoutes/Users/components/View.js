@@ -108,7 +108,7 @@ class View extends React.Component {
       <div>
         <div className='level'>
           <div className='level-left'>
-            <h1 className='level-item title'>Users</h1>
+            <h1 className='level-item subtitle'>Users</h1>
           </div>
           <div className='level-right'>
             <button
