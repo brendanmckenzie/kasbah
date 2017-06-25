@@ -100,7 +100,6 @@ class View extends React.Component {
     return (
       <div className='section'>
         <div className='container'>
-          <h1 className='title'>Media</h1>
           {this.upload}
           <hr />
           {this.list}

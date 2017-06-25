@@ -5,7 +5,6 @@ import ContentTree from './ContentTree/index.js'
 export const View = (props) => (
   <div className='section'>
     <div className='container'>
-      <h1 className='title'>Content</h1>
       <div className='columns'>
         <div className='column is-2'>
           <ContentTree
