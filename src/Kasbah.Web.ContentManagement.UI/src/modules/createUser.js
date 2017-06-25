@@ -15,7 +15,7 @@ export const action = (request) => {
   }
 }
 
-const reducer = createReducer([CREATE_USER, CREATE_USER_SUCCESS, CREATE_USER_FAILURE])
+const reducer = createReducer([CREATE_USER, CREATE_USER_SUCCESS, CREATE_USER_FAILURE], { loading: false })
 const key = 'createUser'
 
 export default {
