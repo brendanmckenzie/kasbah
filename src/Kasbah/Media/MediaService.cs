@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ImageSharp;
 using ImageSharp.Processing;
+using SixLabors.Primitives;
 using Kasbah.Media.Models;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
