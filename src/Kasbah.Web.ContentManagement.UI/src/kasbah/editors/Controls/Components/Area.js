@@ -1,14 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import Nested from '../Nested'
-import { Field } from 'redux-form'
+import ItemButton from 'components/ItemButton'
+import AreaComponent from './AreaComponent'
 
 class Area extends React.Component {
   static propTypes = {
     input: PropTypes.object.isRequired,
     area: PropTypes.string.isRequired,
-    parent: PropTypes.string.isRequired,
-    components: PropTypes.array.isRequired
+    onDelete: PropTypes.func.isRequired
   }
 
   handleAddComponent = () => {
@@ -23,86 +22,32 @@ class Area extends React.Component {
   }
 
   render() {
-    const { components, area, parent, input: { value } } = this.props
+    const { area, input: { value } } = this.props
 
     return (
       <li>
         <div className='level'>
           <div className='level-left'>
-            <strong className='subtitle level-item'><span>Components for <code>{area}</code></span></strong>
+            <code className='subtitle level-item'>{area}</code>
           </div>
           <div className='level-right'>
-            <button type='button' className='level-item button is-small is-warning'>
+            <ItemButton
+              type='button'
+              className='level-item button is-small is-warning'
+              onClick={this.props.onDelete}
+              item={this.props.area}>
               <span className='icon is-small'>
                 <i className='fa fa-trash' />
               </span>
               <span>Remove area</span>
-            </button>
+            </ItemButton>
             <button type='button' className='level-item button is-small is-primary' onClick={this.handleAddComponent}>
               <span>Add component</span>
             </button>
           </div>
         </div>
 
-        {value[area].map((ent, index) => {
-          const component = components.find(cmp => cmp.alias === ent.Control)
-
-          return (
-            <div key={index}>
-              <div className='level'>
-                <div className='level-left'>
-                  <button type='button' className='level-item button is-small is-white'>
-                    {component ? component.alias : 'Select control'}
-                  </button>
-                </div>
-                <div className='level-right'>
-                  <button type='button' className='level-item button is-small is-warning'>
-                    <span className='icon is-small'>
-                      <i className='fa fa-trash' />
-                    </span>
-                    <span>Remove component</span>
-                  </button>
-                  <button type='button' className='level-item button is-small is-light'>
-                    <span className='icon is-small'>
-                      <i className='fa fa-long-arrow-up' />
-                    </span>
-                    <span>Move up</span>
-                  </button>
-                  <button type='button' className='level-item button is-small is-light'>
-                    <span className='icon is-small'>
-                      <i className='fa fa-long-arrow-down' />
-                    </span>
-                    <span>Move down</span>
-                  </button>
-                </div>
-              </div>
-              {/*<div className='field is-horizontal'>
-              <div className='field-label is-normal'>
-                <label className='label'>Control</label>
-              </div>
-              <div className='field-body'>
-                <div className='field'>
-                  <div className='control'>
-                    <span className='select is-fullwidth'>
-                      <Field name={`${parent}.${area}[${index}].Control`} component='select'>
-                        <option value={null}>Select</option>
-                        {components.map(cmp => (<option key={cmp.alias} value={cmp.alias}>{cmp.alias}</option>))}
-                      </Field>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>*/}
-              {components.find(cmp => cmp.alias === ent.Control) && (<div className='field'>
-                <Field
-                  name={`${parent}.${area}[${index}].Properties`}
-                  component={Nested}
-                  options={components.find(cmp => cmp.alias === ent.Control).properties} />
-              </div>)}
-              <hr />
-            </div>
-          )
-        })}
+        {value[area].map((ent, index) => <AreaComponent key={index} index={index} ent={ent} {...this.props} />)}
       </li>
     )
   }

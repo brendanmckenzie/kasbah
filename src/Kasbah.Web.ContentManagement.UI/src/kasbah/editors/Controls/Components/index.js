@@ -31,8 +31,7 @@ class Components extends React.Component {
       })
   }
 
-  handleAddArea = (ev) => {
-    ev.preventDefault()
+  handleAddArea = () => {
     const { input: { value, onChange } } = this.props
     const area = prompt('Which area?')
 
@@ -44,6 +43,16 @@ class Components extends React.Component {
     }
   }
 
+  handleRemoveArea = (area) => {
+    const { input: { value, onChange } } = this.props
+
+    // TODO: immutability...
+    const newValue = { ...value }
+    delete newValue[area]
+
+    onChange(newValue)
+  }
+
   render() {
     if (this.state.loading) {
       return <Loading />
@@ -53,12 +62,14 @@ class Components extends React.Component {
     return (
       <div>
         <ul>
-          {_.keys(value).map(area => <Area key={area} parent={name} area={area} {...this.state} {...this.props} />)}
+          {_.keys(value).map(area => <Area
+            key={area} parent={name} area={area}
+            onDelete={this.handleRemoveArea} {...this.state} {...this.props} />)}
         </ul>
         <div className='level'>
           <div className='level-left' />
           <div className='level-right'>
-            <button className='level-tiem button is-small is-primary' onClick={this.handleAddArea}>Add area</button>
+            <button type='button' className='level-tiem button is-small is-primary' onClick={this.handleAddArea}>Add area</button>
           </div>
         </div>
       </div>
