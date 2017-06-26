@@ -6,6 +6,7 @@ namespace Kasbah.Web.Models
     public class ComponentDefinition
     {
         public string Alias { get; set; }
+        public string Hint { get; set; }
         public Type Control { get; set; }
         public TypeDefinition Properties { get; set; }
     }

@@ -27,17 +27,7 @@ class AreaComponent extends React.Component {
     })
   }
 
-  handleShowModal = () => {
-    this.setState({
-      showModal: true
-    })
-  }
-
-  handleHideModal = () => {
-    this.setState({
-      showModal: false
-    })
-  }
+  handleToggleModal = (showModal) => () => this.setState({ showModal })
 
   get modal() {
     if (!this.state.showModal) {
@@ -49,13 +39,13 @@ class AreaComponent extends React.Component {
 
     return (
       <div className='modal is-active'>
-        <div className='modal-background' onClick={this.handleHideModal} />
+        <div className='modal-background' onClick={this.handleHideModal(false)} />
         <div className='modal-card'>
           <header className='modal-card-head'>
             <span className='modal-card-title'>
               Edit component properties
             </span>
-            <button type='button' className='delete' onClick={this.handleHideModal} />
+            <button type='button' className='delete' onClick={this.handleHideModal(false)} />
           </header>
           <section className='modal-card-body'>
             <div className='field is-horizontal'>
@@ -97,7 +87,7 @@ class AreaComponent extends React.Component {
             </div>)}
           </section>
           <footer className='modal-card-foot'>
-            <button type='button' className='button is-primary' onClick={this.handleHideModal}>Close</button>
+            <button type='button' className='button is-primary' onClick={this.handleHideModal(false)}>Close</button>
           </footer>
         </div>
       </div>
@@ -113,7 +103,7 @@ class AreaComponent extends React.Component {
         <div className='level'>
           <div className='level-left'>
             {ent.Hint && <span className='level-item'>{ent.Hint}</span>}
-            <button type='button' className='level-item button is-small is-white' onClick={this.handleShowModal}>
+            <button type='button' className='level-item button is-small is-white' onClick={this.handleToggleModal(true)}>
               {component ? `${component.alias}: Change control` : 'Select control'}
             </button>
           </div>
