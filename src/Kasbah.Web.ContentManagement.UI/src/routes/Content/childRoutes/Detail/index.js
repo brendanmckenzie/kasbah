@@ -11,6 +11,7 @@ export default (store) => ({
       injectReducer(store, { key: 'changeType', reducer: require('modules/changeType').reducer })
       injectReducer(store, { key: 'moveNode', reducer: require('modules/moveNode').reducer })
       injectReducer(store, { key: 'describeTree', reducer: require('modules/describeTree').reducer })
+      injectReducer(store, require('modules/putNode').default)
 
       cb(null, require('./container').default)
     }, 'contentDetailRoute')

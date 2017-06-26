@@ -6,28 +6,26 @@ import Error from 'components/Error'
 import ContentEditor from './ContentEditor'
 import SideBar from './SideBar'
 import ContentTree from 'routes/Content/components/ContentTree'
+import NodeForm from 'forms/NodeForm'
 
 class View extends React.Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
-    describeTreeRequest: PropTypes.func.isRequired,
-    describeTree: PropTypes.object.isRequired,
     getDetailRequest: PropTypes.func.isRequired,
     getDetail: PropTypes.object.isRequired,
     putDetailRequest: PropTypes.func.isRequired,
     putDetail: PropTypes.object.isRequired,
     deleteNodeRequest: PropTypes.func.isRequired,
     deleteNode: PropTypes.object.isRequired,
-    updateNodeAliasRequest: PropTypes.func.isRequired,
-    updateNodeAlias: PropTypes.object.isRequired,
-    changeTypeRequest: PropTypes.func.isRequired,
-    changeType: PropTypes.object.isRequired,
+    putNodeRequest: PropTypes.func.isRequired,
+    putNode: PropTypes.object.isRequired,
     moveNodeRequest: PropTypes.func.isRequired,
     moveNode: PropTypes.object.isRequired
   }
 
   static contextTypes = {
-    router: PropTypes.object.isRequired
+    router: PropTypes.object.isRequired,
+    listTypes: PropTypes.object.isRequired
   }
 
   constructor() {
@@ -36,7 +34,7 @@ class View extends React.Component {
     this.state = {
       payload: null,
       initialLoad: true,
-      showChangeTypeModal: false,
+      showputNodeModal: false,
       showMoveNodeModal: false,
       moveNodeSelection: null
     }
@@ -51,12 +49,9 @@ class View extends React.Component {
       this.handleLoad(nextProps.id)
     }
 
-    if (nextProps.updateNodeAlias.success && nextProps.updateNodeAlias.success !== this.props.updateNodeAlias.success) {
+    if (nextProps.putNode.success && nextProps.putNode.success !== this.props.putNode.success) {
       this.handleLoad(this.props.id)
-    }
-
-    if (nextProps.changeType.success && nextProps.changeType.success !== this.props.changeType.success) {
-      this.handleLoad(this.props.id)
+      this.handleHideEditModal()
     }
 
     if (nextProps.getDetail.success && nextProps.getDetail.success !== this.props.getDetail.success) {
@@ -108,36 +103,29 @@ class View extends React.Component {
     }
   }
 
-  handleRename = () => {
-    const { node } = this.state.payload
-
-    const alias = prompt('What should we rename this to?', node.alias)
-    if (!alias || alias === node.alias) {
-      // no change
-      return
-    }
-
-    // update.
-    this.props.updateNodeAliasRequest({
-      id: this.props.id,
-      alias
-    })
+  handleShowEditModal = () => {
+    this.setState({ showEditModal: true })
   }
 
-  handleChangeType = () => {
-    const { node } = this.state.payload
+  handleHideEditModal = () => {
+    this.setState({ showEditModal: false })
+  }
 
-    const type = prompt('What type should we give this node?', node.type)
-    if (!type || type === node.type) {
-      // no change
-      return
+  handleEdit = (values) => {
+    this.props.putNodeRequest(values)
+  }
+
+  get editModal() {
+    if (!this.state.showEditModal) {
+      return null
     }
 
-    // update.
-    this.props.changeTypeRequest({
-      id: this.props.id,
-      type
-    })
+    return (<NodeForm
+      initialValues={this.state.payload.node}
+      onClose={this.handleHideEditModal}
+      onSubmit={this.handleEdit}
+      types={this.context.listTypes.payload}
+      loading={this.props.putNode.loading} />)
   }
 
   handleMoveNodeSelection = (item) => {
@@ -174,20 +162,12 @@ class View extends React.Component {
     })
   }
 
-  get changeTypeModal() {
-    if (!this.state.showChangeTypeModal) {
-      return null
-    }
-    return null
-  }
-
   get moveToPath() {
     if (!this.state.moveNodeSelection) {
       return (
         <ul className='breadcrumb'>
           <li>root</li>
         </ul>
-
       )
     }
 
@@ -218,7 +198,7 @@ class View extends React.Component {
             <button type='button' className='delete' onClick={this.handleHideMoveNodeModal} />
           </header>
           <section className='modal-card-body'>
-            <ContentTree {...this.props} readOnly onSelect={this.handleMoveNodeSelection} />
+            <ContentTree {...this.props} {...this.context} readOnly onSelect={this.handleMoveNodeSelection} />
             <hr />
             <div className='level'>
               <div className='level-left'>
@@ -276,12 +256,12 @@ class View extends React.Component {
           <div className='column is-3'>
             <SideBar {...this.state.payload}
               onDelete={this.handleDelete}
-              onRename={this.handleRename}
-              onChangeType={this.handleChangeType}
+              onEdit={this.handleShowEditModal}
               onMove={this.handleShowMoveNodeModal} />
           </div>
         </div>
         {this.moveNodeModal}
+        {this.editModal}
       </div>
     )
   }

@@ -15,7 +15,7 @@ class ContentTree extends React.Component {
     listTypes: PropTypes.object,
     deleteNode: PropTypes.object,
     updateNodeAlias: PropTypes.object,
-    changeType: PropTypes.object,
+    putNode: PropTypes.object,
     moveNode: PropTypes.object,
     readOnly: PropTypes.bool,
     onSelect: PropTypes.func
@@ -59,14 +59,14 @@ class ContentTree extends React.Component {
       if (nextProps.updateNodeAlias.success && nextProps.updateNodeAlias.success !== this.props.updateNodeAlias.success) {
         this.handleRefresh()
       }
-      if (nextProps.changeType.success && nextProps.changeType.success !== this.props.changeType.success) {
+      if (nextProps.putNode.success && nextProps.putNode.success !== this.props.putNode.success) {
         this.handleRefresh()
       }
       if (nextProps.moveNode.success && nextProps.moveNode.success !== this.props.moveNode.success) {
         this.handleRefresh()
 
         if (!this.props.readOnly) {
-          const getNode = id => this.props.describeTree.payload.filter(ent => ent.id === id)[0]
+          const getNode = id => this.props.describeTree.payload.find(ent => ent.id === id)
           let node = getNode(this.context.router.params.id)
           let expandedNodes = {}
           while (node.parent !== null) {
@@ -82,7 +82,7 @@ class ContentTree extends React.Component {
     if (nextProps.describeTree.success && nextProps.describeTree.success !== this.props.describeTree.success) {
       if (this.context.router.params.id) {
         if (!this.props.readOnly) {
-          const getNode = id => nextProps.describeTree.payload.filter(ent => ent.id === id)[0]
+          const getNode = id => nextProps.describeTree.payload.find(ent => ent.id === id)
           let node = getNode(this.context.router.params.id)
           let expandedNodes = {}
           while (node.parent !== null) {

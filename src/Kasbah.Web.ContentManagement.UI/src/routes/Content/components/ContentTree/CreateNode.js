@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import CreateNodeForm from 'forms/CreateNodeForm'
+import NodeForm from 'forms/NodeForm'
 
 class CreateNode extends React.Component {
   static propTypes = {
@@ -36,7 +36,7 @@ class CreateNode extends React.Component {
   render() {
     if (!this.props.visible) { return null }
     return (
-      <CreateNodeForm
+      <NodeForm
         onSubmit={this.handleSubmit}
         onClose={this.props.onCancel}
         types={this.props.listTypes.payload}

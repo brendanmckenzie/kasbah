@@ -39,7 +39,7 @@ class Node extends React.Component {
 
   get icon() {
     const { types } = this.context
-    const type = types.filter(ent => ent.alias === this.props.node.type)[0]
+    const type = types.find(ent => ent.alias.split(',')[0] === this.props.node.type.split(',')[0])
 
     if (type) {
       if (type.icon) {

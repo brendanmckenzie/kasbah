@@ -32,7 +32,7 @@ namespace Kasbah.Content
             => _types.AsEnumerable();
 
         public TypeDefinition GetType(string type)
-            => _types.SingleOrDefault(ent => ent.Alias == type);
+            => _types.SingleOrDefault(ent => String.Equals(ent.Alias.Split(',').First(), type.Split(',').First()));
 
         public IEnumerable<TypeDefinition> GetTypesThatImplement(Type type)
             => _types.Where(ent => type.IsAssignableFrom(Type.GetType(ent.Alias)));

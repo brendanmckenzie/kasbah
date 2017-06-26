@@ -2,8 +2,18 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 
-export const Information = ({ node, type, data, onDelete, onRename, onChangeType, onMove }) => (
+export const Information = ({ node, type, data, onDelete, onRename, onEdit, onMove }) => (
   <div className='content'>
+    <p>
+      <span className='heading'>Alias</span>
+      <span>{node.alias}</span>
+    </p>
+
+    <p>
+      <span className='heading'>Display name</span>
+      <span>{node.displayName}</span>
+    </p>
+
     <p>
       <span className='heading'>Type</span>
       <span>{type.displayName}</span>
@@ -27,11 +37,25 @@ export const Information = ({ node, type, data, onDelete, onRename, onChangeType
       <span>{node.publishedVersion ? `Published (v${node.publishedVersion})` : 'Draft'}</span>
     </p>
 
-    <div className='control has-addons is-fullwidth'>
-      <button className='button is-danger is-small' type='button' onClick={onDelete}>Delete</button>
-      <button className='button is-small' type='button' onClick={onRename}>Rename</button>
-      <button className='button is-small' type='button' onClick={onChangeType}>Change type</button>
-      <button className='button is-small' type='button' onClick={onMove}>Move</button>
+    <div className='field is-grouped'>
+      <div className='control'>
+        <button className='button is-danger' type='button' onClick={onDelete}>
+          <span className='icon is-small'><i className='fa fa-trash' /></span>
+          <span>Delete</span>
+        </button>
+      </div>
+      <div className='control'>
+        <button className='button' type='button' onClick={onEdit}>
+          <span className='icon is-small'><i className='fa fa-pencil' /></span>
+          <span>Edit</span>
+        </button>
+      </div>
+      <div className='control'>
+        <button className='button' type='button' onClick={onMove}>
+          <span className='icon is-small'><i className='fa fa-long-arrow-right' /></span>
+          <span>Move</span>
+        </button>
+      </div>
     </div>
   </div>
 )
@@ -41,8 +65,7 @@ Information.propTypes = {
   type: PropTypes.object.isRequired,
   data: PropTypes.object,
   onDelete: PropTypes.func.isRequired,
-  onRename: PropTypes.func.isRequired,
-  onChangeType: PropTypes.func.isRequired,
+  onEdit: PropTypes.func.isRequired,
   onMove: PropTypes.func.isRequired
 }
 

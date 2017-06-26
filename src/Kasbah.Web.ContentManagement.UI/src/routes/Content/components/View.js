@@ -2,34 +2,44 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import ContentTree from './ContentTree/index.js'
 
-export const View = (props) => (
-  <div className='section'>
-    <div className='container'>
-      <div className='columns'>
-        <div className='column is-2'>
-          <ContentTree
-            {...props} />
-        </div>
-        <div className='column'>
-          {props.children}
+class View extends React.Component {
+  static propTypes = {
+    children: PropTypes.node,
+    listTypes: PropTypes.object.isRequired,
+    listTypesRequest: PropTypes.func.isRequired
+  }
+
+  static childContextTypes = {
+    listTypes: PropTypes.object.isRequired
+  }
+
+  getChildContext() {
+    return {
+      listTypes: this.props.listTypes
+    }
+  }
+
+  componentWillMount() {
+    this.props.listTypesRequest()
+  }
+
+  render() {
+    return (
+      <div className='section'>
+        <div className='container'>
+          <div className='columns'>
+            <div className='column is-2'>
+              <ContentTree
+                {...this.props} />
+            </div>
+            <div className='column'>
+              {this.props.children}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
-)
-
-View.propTypes = {
-  children: PropTypes.node,
-  describeTree: PropTypes.object.isRequired,
-  describeTreeRequest: PropTypes.func.isRequired,
-  createNode: PropTypes.object.isRequired,
-  createNodeRequest: PropTypes.func.isRequired,
-  listTypes: PropTypes.object.isRequired,
-  listTypesRequest: PropTypes.func.isRequired,
-  deleteNode: PropTypes.object.isRequired,
-  updateNodeAlias: PropTypes.object.isRequired,
-  changeType: PropTypes.object.isRequired,
-  moveNode: PropTypes.object.isRequired
+    )
+  }
 }
 
 export default View

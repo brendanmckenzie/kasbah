@@ -17,7 +17,7 @@ const mapStateToProps = (state) => ({
   listTypes: state.listTypes,
   deleteNode: state.deleteNode,
   updateNodeAlias: state.updateNodeAlias,
-  changeType: state.changeType,
+  putNode: state.putNode,
   moveNode: state.moveNode
 })
 

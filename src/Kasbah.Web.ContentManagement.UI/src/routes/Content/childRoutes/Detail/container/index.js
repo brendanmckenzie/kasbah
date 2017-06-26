@@ -6,6 +6,7 @@ import { action as updateNodeAliasRequest } from 'modules/updateNodeAlias'
 import { action as changeTypeRequest } from 'modules/changeType'
 import { action as moveNodeRequest } from 'modules/moveNode'
 import { action as describeTreeRequest } from 'modules/describeTree'
+import putNode from 'modules/putNode'
 
 import View from '../components/View'
 
@@ -16,7 +17,8 @@ const mapDispatchToProps = {
   updateNodeAliasRequest,
   changeTypeRequest,
   moveNodeRequest,
-  describeTreeRequest
+  describeTreeRequest,
+  putNodeRequest: putNode.action
 }
 
 const mapStateToProps = (state, ownProps) => ({
@@ -27,7 +29,8 @@ const mapStateToProps = (state, ownProps) => ({
   updateNodeAlias: state.updateNodeAlias,
   changeType: state.changeType,
   moveNode: state.moveNode,
-  describeTree: state.describeTree
+  describeTree: state.describeTree,
+  [putNode.key]: state[putNode.key]
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(View)

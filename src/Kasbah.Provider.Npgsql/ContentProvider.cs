@@ -227,7 +227,7 @@ where
 
                     if (publish)
                     {
-                        await connection.ExecuteAsync("update node set published_version_id = @version where id = @id", new { id, version });
+                        await connection.ExecuteAsync("update node set published_version_id = @version, modified_at = now() where id = @id", new { id, version });
                     }
 
                     await transaction.CommitAsync();
@@ -237,6 +237,7 @@ where
 
         public async Task UpdateNodeAliasAsync(Guid id, string alias)
         {
+            // TODO: check for clashes
             var node = await GetNodeAsync(id);
             var taxoIndex = node.Taxonomy.Aliases.Count();
 
@@ -245,8 +246,8 @@ where
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    const string UpdateNodeSql = "update node set alias = @alias where id = @id";
-                    var updateTaxonomySql = $"update node set alias_taxonomy[{taxoIndex}] = @alias where id_taxonomy[1:{taxoIndex}] = @taxonomy::uuid[]";
+                    const string UpdateNodeSql = "update node set alias = @alias, modified_at = now() where id = @id";
+                    var updateTaxonomySql = $"update node set alias_taxonomy[{taxoIndex}] = @alias, modified_at = now() where id_taxonomy[1:{taxoIndex}] = @taxonomy::uuid[]";
 
                     await connection.ExecuteAsync(UpdateNodeSql, new { id, alias });
                     await connection.ExecuteAsync(updateTaxonomySql, new { alias, taxonomy = node.Taxonomy.Ids });
@@ -258,7 +259,7 @@ where
 
         public async Task ChangeNodeTypeAsync(Guid id, string type)
         {
-            const string Sql = "update node set type = @type where id = @id";
+            const string Sql = "update node set type = @type, modified_at = now() where id = @id";
             using (var connection = GetConnection())
             {
                 await connection.ExecuteAsync(Sql, new { id, type });
@@ -324,7 +325,8 @@ limit {take}";
                     update node set
                         parent_id = @parent,
                         alias_taxonomy = (select alias_taxonomy from node where id = @parent) || alias,
-                        id_taxonomy = (select id_taxonomy from node where id = @parent) || id
+                        id_taxonomy = (select id_taxonomy from node where id = @parent) || id,
+                        modified_at = now()
                         where id = @id";
                     var updateTaxonomySql = $"update node set alias_taxonomy = (select alias_taxonomy from node where id = @id) || alias, id_taxonomy = (select id_taxonomy from node where id = @id) || id where id_taxonomy[1:{taxoIndex}] = @taxonomy::uuid[]";
 
@@ -334,6 +336,32 @@ limit {take}";
                     await transaction.CommitAsync();
                 }
             }
+        }
+
+        public async Task<Node> PutNodeAsync(Node node)
+        {
+            var currentNode = await GetNodeAsync(node.Id);
+
+            if (!String.Equals(currentNode.Alias, node.Alias))
+            {
+                await UpdateNodeAliasAsync(node.Id, node.Alias);
+            }
+
+            if (!String.Equals(currentNode.Type, node.Type))
+            {
+                await ChangeNodeTypeAsync(node.Id, node.Type);
+            }
+
+            if (!String.Equals(currentNode.DisplayName, node.DisplayName))
+            {
+                const string Sql = @"update node set display_name = :DisplayName, modified_at = now() where id = :Id";
+                using (var connection = GetConnection())
+                {
+                    await connection.ExecuteAsync(Sql, node);
+                }
+            }
+
+            return node;
         }
 
         NpgsqlConnection GetConnection()

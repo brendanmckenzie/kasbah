@@ -106,6 +106,10 @@ namespace Kasbah.Web.ContentManagement.Controllers
 
             return new EmptyResponse { };
         }
+
+        [Route("node"), HttpPut]
+        public async Task<Node> PutNodeAsync([FromBody] Node node)
+            => await _contentService.PutNodeAsync(node);
     }
 
     public class CreateNodeRequest

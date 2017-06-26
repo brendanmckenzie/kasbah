@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import { Field, reduxForm } from 'redux-form'
 import ModalForm from 'components/ModalForm'
 
-const CreateNodeForm = ({ handleSubmit, types, onClose, loading }) => (
+const NodeForm = ({ handleSubmit, types, onClose, loading }) => (
   <ModalForm onClose={onClose} onSubmit={handleSubmit} loading={loading} title='Create node'>
     <div className='field'>
       <label className='label' htmlFor='Type'>Type</label>
@@ -31,7 +31,7 @@ const CreateNodeForm = ({ handleSubmit, types, onClose, loading }) => (
   </ModalForm>
 )
 
-CreateNodeForm.propTypes = {
+NodeForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
@@ -39,5 +39,5 @@ CreateNodeForm.propTypes = {
 }
 
 export default reduxForm({
-  form: 'CreateNodeForm'
-})(CreateNodeForm)
+  form: 'NodeForm'
+})(NodeForm)
