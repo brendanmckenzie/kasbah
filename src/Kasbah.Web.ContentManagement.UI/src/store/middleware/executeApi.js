@@ -1,4 +1,5 @@
 import { makeApiRequest } from 'store/util'
+import { push } from 'react-router-redux'
 
 export const API_FAILURE = 'API_FAILURE'
 
@@ -31,7 +32,11 @@ export const middleware = ({ dispatch, getState }) => {
       })
       .catch(ex => {
         dispatch({ type: failureType, payload: { errorMessage: 'An error has occurred', detail: ex } })
-        dispatch({ type: API_FAILURE, payload: { ...ex } })
+        if (ex.response) {
+          switch (ex.response.status) {
+            case 401: dispatch(push('/login'))
+          }
+        }
       })
   }
 }

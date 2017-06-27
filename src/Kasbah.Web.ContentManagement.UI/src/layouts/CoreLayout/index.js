@@ -1,20 +1,27 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import Header from 'components/Header'
-import AuthManager from 'components/AuthManager'
+import Modal from 'components/Modal'
 import 'styles/core.scss'
 
-export const CoreLayout = ({ children }) => (
+export const CoreLayout = ({ children, ui, auth }) => (
   <div>
-    <Header />
-    <AuthManager>
-      {children}
-    </AuthManager>
+    {auth.user && <Header />}
+    {children}
+    <Modal modal={ui.modal} />
   </div>
 )
 
 CoreLayout.propTypes = {
-  children: PropTypes.element.isRequired
+  children: PropTypes.any.isRequired,
+  ui: PropTypes.object.isRequired,
+  auth: PropTypes.object.isRequired
 }
 
-export default CoreLayout
+const mapStateToProps = (state) => ({
+  ui: state.ui,
+  auth: state.auth
+})
+
+export default connect(mapStateToProps)(CoreLayout)

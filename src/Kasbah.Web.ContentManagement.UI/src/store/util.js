@@ -6,7 +6,7 @@ const handleErrors = res => {
   }
 
   const err = Error(res)
-  err.respose = res
+  err.response = res
 
   throw err
 }

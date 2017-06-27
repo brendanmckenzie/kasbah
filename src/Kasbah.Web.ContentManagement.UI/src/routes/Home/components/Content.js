@@ -1,31 +1,28 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import { Link } from 'react-router'
+import { Link } from 'react-router-dom'
 import Loading from 'components/Loading'
-import Error from 'components/Error'
 
 class Content extends React.Component {
   static propTypes = {
-    listLatestUpdatesRequest: PropTypes.func.isRequired,
-    listLatestUpdates: PropTypes.object.isRequired
+    listLatestUpdates: PropTypes.func.isRequired,
+    content: PropTypes.object.isRequired
   }
 
   componentWillMount() {
-    this.props.listLatestUpdatesRequest({ take: 7 })
+    if (!this.props.content.latestUpdates.loaded) {
+      this.props.listLatestUpdates({ take: 7 })
+    }
   }
 
   get list() {
-    if (this.props.listLatestUpdates.loading) {
+    if (!this.props.content.latestUpdates.loaded) {
       return <Loading />
     }
 
-    if (!this.props.listLatestUpdates.success) {
-      return <Error />
-    }
-
     return (
-      this.props.listLatestUpdates.payload.map(ent => (
+      this.props.content.latestUpdates.list.map(ent => (
         <div key={ent.id} className='level'>
           <div className='level-left level-shrink'>
             <div className='level-item level-shrink'>

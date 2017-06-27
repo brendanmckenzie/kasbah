@@ -1,12 +1,14 @@
-import { injectReducer } from 'store/reducers'
+import { connect } from 'react-redux'
+import { actions as authActions } from 'store/appReducers/auth'
 
-export default (store) => ({
-  path: 'login',
-  getComponent (nextState, cb) {
-    require.ensure([], (require) => {
-      injectReducer(store, { key: 'login', reducer: require('./modules/login').reducer })
+import View from './components/View'
 
-      cb(null, require('./container').default)
-    }, 'loginRoute')
-  }
+const mapDispatchToProps = {
+  ...authActions
+}
+
+const mapStateToProps = (state) => ({
+  auth: state.auth
 })
+
+export default connect(mapStateToProps, mapDispatchToProps)(View)

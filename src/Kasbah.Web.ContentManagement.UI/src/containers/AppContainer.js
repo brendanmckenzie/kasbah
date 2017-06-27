@@ -1,10 +1,12 @@
-import React, { Component, PropTypes } from 'react'
-import { browserHistory, Router } from 'react-router'
+import React from 'react'
+import PropTypes from 'prop-types'
 import { Provider } from 'react-redux'
+import { ConnectedRouter } from 'react-router-redux'
 
-class AppContainer extends Component {
+import routes from 'routes'
+
+class AppContainer extends React.Component {
   static propTypes = {
-    routes: PropTypes.object.isRequired,
     store: PropTypes.object.isRequired
   }
 
@@ -13,11 +15,13 @@ class AppContainer extends Component {
   }
 
   render() {
-    const { routes, store } = this.props
+    const { store } = this.props
 
     return (
       <Provider store={store}>
-        <Router history={browserHistory} children={routes} />
+        <ConnectedRouter history={store.history}>
+          {routes}
+        </ConnectedRouter>
       </Provider>
     )
   }
