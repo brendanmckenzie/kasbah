@@ -3,6 +3,27 @@ import PropTypes from 'prop-types'
 import { Field } from 'redux-form'
 import Nested from '../Nested'
 
+export const arrayMove = (array, oldIndex, newIndex) => {
+  if (oldIndex === newIndex) {
+    return array
+  }
+
+  const targetIndex = (newIndex === array.length ? 0 : (newIndex === -1 ? newIndex = array.length : newIndex))
+  if (oldIndex < targetIndex) {
+    return [
+      ...array.filter((_, index) => index <= targetIndex && index !== oldIndex),
+      array[oldIndex],
+      ...array.filter((_, index) => index > targetIndex && index !== oldIndex)
+    ]
+  } else {
+    return [
+      ...array.filter((_, index) => index < targetIndex && index !== oldIndex),
+      array[oldIndex],
+      ...array.filter((_, index) => index >= targetIndex && index !== oldIndex)
+    ]
+  }
+}
+
 class AreaComponent extends React.Component {
   static propTypes = {
     ent: PropTypes.object.isRequired,
@@ -27,6 +48,14 @@ class AreaComponent extends React.Component {
     })
   }
 
+  handleMove = (offset) => () => {
+    const { ent, area, input: { value, onChange } } = this.props
+    onChange({
+      ...value,
+      [area]: arrayMove(value[area], value[area].indexOf(ent), value[area].indexOf(ent) + offset)
+    })
+  }
+
   handleToggleModal = (showModal) => () => this.setState({ showModal })
 
   get modal() {
@@ -39,13 +68,13 @@ class AreaComponent extends React.Component {
 
     return (
       <div className='modal is-active'>
-        <div className='modal-background' onClick={this.handleHideModal(false)} />
+        <div className='modal-background' onClick={this.handleToggleModal(false)} />
         <div className='modal-card'>
           <header className='modal-card-head'>
             <span className='modal-card-title'>
               Edit component properties
             </span>
-            <button type='button' className='delete' onClick={this.handleHideModal(false)} />
+            <button type='button' className='delete' onClick={this.handleToggleModal(false)} />
           </header>
           <section className='modal-card-body'>
             <div className='field is-horizontal'>
@@ -87,7 +116,7 @@ class AreaComponent extends React.Component {
             </div>)}
           </section>
           <footer className='modal-card-foot'>
-            <button type='button' className='button is-primary' onClick={this.handleHideModal(false)}>Close</button>
+            <button type='button' className='button is-primary' onClick={this.handleToggleModal(false)}>Close</button>
           </footer>
         </div>
       </div>
@@ -103,9 +132,7 @@ class AreaComponent extends React.Component {
         <div className='level'>
           <div className='level-left'>
             {ent.Hint && <span className='level-item'>{ent.Hint}</span>}
-            <button type='button' className='level-item button is-small is-white' onClick={this.handleToggleModal(true)}>
-              {component ? `${component.alias}: Change control` : 'Select control'}
-            </button>
+            {component && <span className='level-item'>{component.alias}</span>}
           </div>
           <div className='level-right'>
             <button type='button' className='level-item button is-small is-warning' onClick={this.handleRemove}>
@@ -114,9 +141,9 @@ class AreaComponent extends React.Component {
               </span>
               <span>Remove component</span>
             </button>
-            <div className='level-item field has-addons'>
+            <div className='level-item has-addons'>
               <div className='control'>
-                <button type='button' className='button is-small is-light'>
+                <button type='button' className='button is-small is-light' onClick={this.handleMove(-1)}>
                   <span className='icon is-small'>
                     <i className='fa fa-long-arrow-up' />
                   </span>
@@ -124,7 +151,7 @@ class AreaComponent extends React.Component {
                 </button>
               </div>
               <div className='control'>
-                <button type='button' className='button is-small is-light'>
+                <button type='button' className='button is-small is-light' onClick={this.handleMove(+1)}>
                   <span className='icon is-small'>
                     <i className='fa fa-long-arrow-down' />
                   </span>
@@ -132,6 +159,9 @@ class AreaComponent extends React.Component {
                 </button>
               </div>
             </div>
+            <button type='button' className='level-item button is-small is-primary' onClick={this.handleToggleModal(true)}>
+              {component ? `Edit: ${component.alias}` : 'Select control'}
+            </button>
           </div>
         </div>
         <hr />

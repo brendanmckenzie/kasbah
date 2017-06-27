@@ -13,8 +13,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Kasbah.Web.TagHelpers
 {
-    [HtmlTargetElement("placeholder")]
-    public class PlaceholderTagHelper : TagHelper
+    [HtmlTargetElement("components")]
+    public class ComponentsTagHelper : TagHelper
     {
         [HtmlAttributeName("area")]
         public string Area { get; set; }
@@ -27,7 +27,7 @@ namespace Kasbah.Web.TagHelpers
         readonly ContentService _contentService;
         readonly ComponentRegistry _componentRegistry;
 
-        public PlaceholderTagHelper(ILogger<PlaceholderTagHelper> log, IViewComponentHelper viewComponentHelper, ContentService contentService, ComponentRegistry componentRegistry)
+        public ComponentsTagHelper(ILogger<ComponentsTagHelper> log, IViewComponentHelper viewComponentHelper, ContentService contentService, ComponentRegistry componentRegistry)
         {
             _log = log;
             _viewComponentHelper = viewComponentHelper as DefaultViewComponentHelper;
@@ -65,7 +65,7 @@ namespace Kasbah.Web.TagHelpers
                     {
                         _viewComponentHelper.Contextualize(ViewContext);
 
-                        var ret = await Task.WhenAll(presentable.Components[Area].AsParallel().Select(async ent =>
+                        var ret = await Task.WhenAll(presentable.Components[Area].AsParallel().AsOrdered().Select(async ent =>
                         {
                             var component = _componentRegistry.GetByAlias(ent.Control);
 
