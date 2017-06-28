@@ -19,7 +19,7 @@ const View = ({ login, auth }) => (
                 </div>
               </div>
             </div>
-            <LoginForm onSubmit={login} loading={auth.authenticating} />
+            <LoginForm onSubmit={login} loading={auth.authenticating} errorMessage={auth.error} />
           </div>
         </div>
       </div>

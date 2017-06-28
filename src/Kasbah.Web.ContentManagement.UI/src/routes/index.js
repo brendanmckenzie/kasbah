@@ -1,6 +1,6 @@
 import React from 'react'
-import { connect } from 'react-redux'
-import { push } from 'react-router-redux'
+import { Provider, connect } from 'react-redux'
+import { ConnectedRouter, push } from 'react-router-redux'
 import PropTypes from 'prop-types'
 import { Route, Switch } from 'react-router'
 
@@ -8,9 +8,9 @@ import CoreLayout from 'layouts/CoreLayout'
 
 import HomeRoute from './Home'
 import LoginRoute from './Login'
-
 import ContentRoute from './Content'
 import MediaRoute from './Media'
+
 import SecurityRoute from './Security'
 import SystemRoute from './System'
 
@@ -61,12 +61,33 @@ const checkAuth = (props) => {
   }
 }
 
-export default (
-  <div>
-    <Route path='/login' component={LoginRoute} />
-    <CoreLayout>
-      <Route exact path='/' component={withRouteOnEnter(checkAuth)(HomeRoute)} />
-      <Route path='/content' component={ContentRoute} />
-    </CoreLayout>
-  </div>
-)
+class AppContainer extends React.Component {
+  static propTypes = {
+    store: PropTypes.object.isRequired
+  }
+
+  shouldComponentUpdate() {
+    return false
+  }
+
+  render() {
+    const { store } = this.props
+
+    return (
+      <Provider store={store}>
+        <ConnectedRouter history={store.history}>
+          <Switch>
+            <Route path='/login' component={LoginRoute} />
+            <CoreLayout>
+              <Route exact path='/' component={withRouteOnEnter(checkAuth)(HomeRoute)} />
+              <Route path='/content' component={ContentRoute} />
+              <Route path='/media' component={MediaRoute} />
+            </CoreLayout>
+          </Switch>
+        </ConnectedRouter>
+      </Provider>
+    )
+  }
+}
+
+export default AppContainer

@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Field, reduxForm } from 'redux-form'
 
-const LoginForm = ({ handleSubmit, loading, payload }) => (
+const LoginForm = ({ handleSubmit, loading, errorMessage }) => (
   <form onSubmit={handleSubmit}>
     <div className='field'>
       <label className='label' htmlFor='username'>Username</label>
@@ -16,9 +16,9 @@ const LoginForm = ({ handleSubmit, loading, payload }) => (
         <Field name='password' component='input' type='password' className='input' />
       </div>
     </div>
-    {payload && payload.errorMessage && (
+    {errorMessage && (
       <div className='notification is-danger'>
-        {payload.errorMessage}
+        {errorMessage}
       </div>
     )}
     <div className='level'>
@@ -34,9 +34,7 @@ const LoginForm = ({ handleSubmit, loading, payload }) => (
 LoginForm.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   loading: PropTypes.bool,
-  payload: PropTypes.object
+  errorMessage: PropTypes.string
 }
 
-export default reduxForm({
-  form: 'LoginForm'
-})(LoginForm)
+export default reduxForm({ form: 'LoginForm' })(LoginForm)

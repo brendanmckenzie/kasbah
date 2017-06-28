@@ -16,6 +16,7 @@ export const actions = {
       rawBody: `grant_type=password&username=${request.username}&password=${request.password}`
     }
 
+    dispatch({ type: LOGIN_REQUEST })
     makeApiRequest(req)
       .then(res => {
         if (res.error) {
@@ -29,30 +30,31 @@ export const actions = {
         }
       })
       .catch(ex => {
-        dispatch({ type: LOGIN_REQUEST_FAILURE, payload: { errorMessage: 'An error has occurred', detail: ex } })
+        dispatch({ type: LOGIN_REQUEST_FAILURE, error: 'An error has occurred' })
       })
   }
 }
 
 const initialState = {
-  authError: false,
   user: localStorage.user ? JSON.parse(localStorage.user) : null,
   authenticating: false
 }
 
 const actionHandlers = {
-  [LOGIN_REQUEST]: (state) => ({ ...state, authenticating: true }),
+  [LOGIN_REQUEST]: (state) => ({
+    ...state,
+    authenticating: true,
+    error: null
+  }),
   [LOGIN_REQUEST_SUCCESS]: (state, { payload }) => ({
     ...state,
-    authError: false,
     authenticating: false,
     user: payload
   }),
-  [LOGIN_REQUEST_FAILURE]: (state, { payload }) => ({
+  [LOGIN_REQUEST_FAILURE]: (state, { error }) => ({
     ...state,
-    authError: false,
     authenticating: false,
-    error: payload
+    error
   })
 }
 

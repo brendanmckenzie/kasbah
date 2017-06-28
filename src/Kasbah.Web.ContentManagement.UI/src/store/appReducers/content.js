@@ -181,6 +181,13 @@ const actionHandlers = {
       loading: false
     }
   }),
+  [DESCRIBE_TREE]: (state, { payload }) => ({
+    ...state,
+    tree: {
+      ...state.tree,
+      loading: true
+    }
+  }),
   [DESCRIBE_TREE_SUCCESS]: (state, { payload }) => ({
     ...state,
     tree: {

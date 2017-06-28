@@ -27,6 +27,12 @@ class MediaItem extends React.Component {
     }
   }
 
+  handleDelete = (ent) => {
+    if (confirm('Are you sure?')) {
+      this.props.deleteMediaRequest(ent)
+    }
+  }
+
   handleToggleModal = (showModal) => () => {
     this.setState({ showModal })
   }
