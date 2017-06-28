@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import Content from './Content'
 
 export const View = (props) => (
@@ -14,10 +14,10 @@ export const View = (props) => (
                 <p className='title'>Kasbah</p>
                 <p className='subtitle'>v1.0.0.0</p>
               </article>
-              <Link to='/security' className='tile is-child notification is-warning'>
+              <NavLink to='/security' className='tile is-child notification is-warning'>
                 <p className='title'>Security</p>
                 <p className='subtitle'>Manage user access and roles</p>
-              </Link>
+              </NavLink>
             </div>
             <div className='tile is-parent'>
               <div className='tile is-child notification is-info' />

@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Link } from 'react-router'
+import { NavLink } from 'react-router-dom'
 import Loading from 'components/Loading'
 import Error from 'components/Error'
 import ContentEditor from './ContentEditor'
@@ -224,7 +224,7 @@ class View extends React.Component {
         <li key={index}>
           {taxonomy.ids[index] === id
             ? (<span>{ent}</span>)
-            : (<Link to={`/content/${taxonomy.ids[index]}`}>{ent}</Link>)}
+            : (<NavLink to={`/content/${taxonomy.ids[index]}`}>{ent}</NavLink>)}
         </li>
       ))}
     </ul>)

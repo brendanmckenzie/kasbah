@@ -2,7 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { push } from 'react-router-redux'
 import PropTypes from 'prop-types'
-import { Route } from 'react-router'
+import { Route, Switch } from 'react-router'
 
 import CoreLayout from 'layouts/CoreLayout'
 
@@ -66,7 +66,7 @@ export default (
     <Route path='/login' component={LoginRoute} />
     <CoreLayout>
       <Route exact path='/' component={withRouteOnEnter(checkAuth)(HomeRoute)} />
-      <Route path='/content' component={withRouteOnEnter(checkAuth)(ContentRoute)} />
+      <Route path='/content' component={ContentRoute} />
     </CoreLayout>
   </div>
 )

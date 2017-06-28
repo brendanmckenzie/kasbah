@@ -17,7 +17,7 @@ export const Header = () => (
 
       <div className='nav-right'>
         {sections.map((ent, index) => (
-          <NavLink key={index} className='nav-item' to={ent.link}>{ent.title}</NavLink>
+          <NavLink key={index} className='nav-item' activeClassName='is-active' to={ent.link}>{ent.title}</NavLink>
         ))}
         <NavLink className='nav-item' to='/login'>Logout</NavLink>
       </div>

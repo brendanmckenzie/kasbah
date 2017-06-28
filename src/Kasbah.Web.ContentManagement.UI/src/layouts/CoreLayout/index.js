@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router-dom'
 import Header from 'components/Header'
 import Modal from 'components/Modal'
 import 'styles/core.scss'
@@ -24,4 +25,4 @@ const mapStateToProps = (state) => ({
   auth: state.auth
 })
 
-export default connect(mapStateToProps)(CoreLayout)
+export default withRouter(connect(mapStateToProps)(CoreLayout))

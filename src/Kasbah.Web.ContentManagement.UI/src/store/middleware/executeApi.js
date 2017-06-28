@@ -7,7 +7,8 @@ export const middleware = ({ dispatch, getState }) => {
   return next => action => {
     const {
       request,
-      types
+      types,
+      params
     } = action
 
     if (!request) {
@@ -21,17 +22,21 @@ export const middleware = ({ dispatch, getState }) => {
 
     const [requestType, successType, failureType] = types
 
-    dispatch({ type: requestType })
+    dispatch({ type: requestType, params })
     return makeApiRequest(request)
       .then(res => {
         if (res.error) {
-          dispatch({ type: failureType, payload: { errorMessage: 'An error has occurred', detail: res.error } })
+          dispatch({ type: failureType, params, payload: { errorMessage: 'An error has occurred', detail: res.error } })
         } else {
-          dispatch({ type: successType, payload: res })
+          try {
+            dispatch({ type: successType, params, payload: res })
+          } catch (ex) {
+            console.error(ex)
+          }
         }
       })
       .catch(ex => {
-        dispatch({ type: failureType, payload: { errorMessage: 'An error has occurred', detail: ex } })
+        dispatch({ type: failureType, params, payload: { errorMessage: 'An error has occurred', detail: ex } })
         if (ex.response) {
           switch (ex.response.status) {
             case 401: dispatch(push('/login'))

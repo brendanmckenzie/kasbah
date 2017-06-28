@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import Loading from 'components/Loading'
 
 class Content extends React.Component {
@@ -26,7 +26,7 @@ class Content extends React.Component {
         <div key={ent.id} className='level'>
           <div className='level-left level-shrink'>
             <div className='level-item level-shrink'>
-              <p><Link to={`/content/${ent.id}`}>{ent.displayName || ent.alias}</Link></p>
+              <p><NavLink to={`/content/${ent.id}`}>{ent.displayName || ent.alias}</NavLink></p>
             </div>
           </div>
           <div className='level-right'>
@@ -43,7 +43,7 @@ class Content extends React.Component {
     return (
       (
         <div className='tile is-child notification is-success'>
-          <h2 className='title'><Link to='/content'>Recent updates</Link></h2>
+          <h2 className='title'><NavLink to='/content'>Recent updates</NavLink></h2>
           {this.list}
         </div>
       )

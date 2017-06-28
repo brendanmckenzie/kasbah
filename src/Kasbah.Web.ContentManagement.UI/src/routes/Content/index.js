@@ -1,14 +1,5 @@
-import { connect } from 'react-redux'
-import { actions as contentActions } from 'store/appReducers/content'
+import { withRouter } from 'react-router-dom'
 
 import View from './components/View'
 
-const mapDispatchToProps = {
-  ...contentActions
-}
-
-const mapStateToProps = (state) => ({
-  content: state.content
-})
-
-export default connect(mapStateToProps, mapDispatchToProps)(View)
+export default withRouter(View)

@@ -4,11 +4,9 @@ export const HIDE_MODAL = 'HIDE_MODAL'
 export const actions = {
   showModal: (buttons, title, control) => ({
     type: SHOW_MODAL,
-    payload: {
-      buttons,
-      title,
-      control
-    }
+    buttons,
+    title,
+    control
   }),
   hideModal: () => ({
     type: HIDE_MODAL

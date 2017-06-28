@@ -1,0 +1,58 @@
+import React from 'react'
+import { connect } from 'react-redux'
+import { actions as contentActions } from 'store/appReducers/content'
+import PropTypes from 'prop-types'
+import NodeTree from './NodeTree'
+
+class ContentTree extends React.Component {
+  static propTypes = {
+    describeTree: PropTypes.func.isRequired,
+    listTypes: PropTypes.func.isRequired,
+    content: PropTypes.object.isRequired,
+    context: PropTypes.string.isRequired,
+    readOnly: PropTypes.bool,
+    selected: PropTypes.string,
+    expandToNode: PropTypes.func.isRequired
+  }
+
+  static childContextTypes = {
+    contextName: PropTypes.string.isRequired,
+    readOnly: PropTypes.bool
+  }
+
+  getChildContext() {
+    return {
+      contextName: this.props.context,
+      readOnly: this.props.readOnly
+    }
+  }
+
+  componentDidMount() {
+    if (!this.props.content.tree.loaded) {
+      this.props.describeTree()
+    }
+    if (!this.props.content.types.loaded) {
+      this.props.listTypes()
+    }
+
+    if (this.props.selected) {
+      this.props.expandToNode(this.props.context, this.props.selected)
+    }
+  }
+
+  render() {
+    return (
+      <NodeTree parent={null} />
+    )
+  }
+}
+
+const mapStateToProps = (state, ownProps) => ({
+  content: state.content
+})
+
+const mapDispatchToProps = {
+  ...contentActions
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ContentTree)

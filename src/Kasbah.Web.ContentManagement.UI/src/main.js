@@ -17,7 +17,7 @@ const MOUNT_NODE = document.getElementById('root')
 
 let render = () => {
   ReactDOM.render(
-    <AppContainer store={store} routes={require('./routes/index').default} />,
+    <AppContainer store={store} />,
     MOUNT_NODE
   )
 }
@@ -44,8 +44,9 @@ if (__DEV__) {
     }
 
     // Setup hot module replacement
-    module.hot.accept(['./routes/index'], () =>
+    module.hot.accept(['./containers/AppContainer', './routes/index'], () =>
       setImmediate(() => {
+        console.log('re-render')
         ReactDOM.unmountComponentAtNode(MOUNT_NODE)
         render()
       })

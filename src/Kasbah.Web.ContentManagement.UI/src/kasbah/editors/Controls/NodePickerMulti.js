@@ -2,7 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import _ from 'lodash'
-import { Link } from 'react-router'
+import { NavLink } from 'react-router-dom'
 import Loading from 'components/Loading'
 import { makeApiRequest } from 'store/util'
 
@@ -109,7 +109,7 @@ class NodePickerMulti extends React.Component {
         <div className='level'>
           <div className='level-left'>
             <div className='level-item'>
-              <p><Link to={`/content/${id}`}>{item.displayName}</Link></p>
+              <p><NavLink to={`/content/${id}`}>{item.displayName}</NavLink></p>
               <p><small>{item.alias}</small></p>
             </div>
           </div>
@@ -122,7 +122,7 @@ class NodePickerMulti extends React.Component {
       )
     } else {
       return (
-        <Link to={`/content/${id}`}>{id}</Link>
+        <NavLink to={`/content/${id}`}>{id}</NavLink>
       )
     }
   }

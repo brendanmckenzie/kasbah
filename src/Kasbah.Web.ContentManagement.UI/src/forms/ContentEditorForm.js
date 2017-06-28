@@ -16,7 +16,7 @@ class ContentEditorForm extends React.Component {
     const { handleSubmit, type, loading } = this.props
 
     return (
-      <form className='content-editor__form' disabled={loading}>
+      <form className='content-editor__form' disabled={loading} onSubmit={handleSubmit}>
         <Tabs>
           {_(type.fields).map(ent => ent.category).uniq().value().map((ent, index) => (
             <Tab key={index} title={ent}>
@@ -45,7 +45,7 @@ class ContentEditorForm extends React.Component {
           <div className='level-left' />
           <div className='level-right'>
             <button className={'level-item button is-primary' + (loading ? ' is-loading' : '')}
-              type='button' onClick={handleSubmit}>Save</button>
+              type='submit'>Save</button>
           </div>
         </div>
       </form>
@@ -53,6 +53,4 @@ class ContentEditorForm extends React.Component {
   }
 }
 
-export default reduxForm({
-  form: 'ContentEditorForm'
-})(ContentEditorForm)
+export default reduxForm({ form: 'ContentEditorForm' })(ContentEditorForm)

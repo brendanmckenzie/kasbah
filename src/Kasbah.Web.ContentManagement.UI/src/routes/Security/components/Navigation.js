@@ -1,12 +1,12 @@
 import React from 'react'
-import { Link } from 'react-router'
+import { NavLink } from 'react-router-dom'
 
 export const Navigation = () => (
   <div className='menu'>
     <span className='menu-label'>Sections</span>
     <ul className='menu-list'>
       <li className='menu-item'>
-        <Link activeClassName='is-active' onlyActiveOnIndex to='/security'>Users</Link>
+        <NavLink activeClassName='is-active' onlyActiveOnIndex to='/security'>Users</NavLink>
       </li>
     </ul>
   </div>
