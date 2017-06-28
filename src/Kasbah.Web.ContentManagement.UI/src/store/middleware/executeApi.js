@@ -1,5 +1,6 @@
 import { makeApiRequest } from 'store/util'
 import { push } from 'react-router-redux'
+import { HIDE_MODAL } from '../appReducers/ui'
 
 export const API_FAILURE = 'API_FAILURE'
 
@@ -8,7 +9,8 @@ export const middleware = ({ dispatch, getState }) => {
     const {
       request,
       types,
-      params
+      params,
+      hideModalOnSuccess
     } = action
 
     if (!request) {
@@ -30,6 +32,12 @@ export const middleware = ({ dispatch, getState }) => {
         } else {
           try {
             dispatch({ type: successType, params, payload: res })
+
+            if (hideModalOnSuccess) {
+              dispatch({ type: HIDE_MODAL })
+            }
+
+            request.callback && request.callback(null, res)
           } catch (ex) {
             console.error(ex)
           }
@@ -42,6 +50,8 @@ export const middleware = ({ dispatch, getState }) => {
             case 401: dispatch(push('/login'))
           }
         }
+
+        request.callback && request.callback(ex)
       })
   }
 }

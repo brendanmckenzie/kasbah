@@ -2,11 +2,11 @@ export const SHOW_MODAL = 'SHOW_MODAL'
 export const HIDE_MODAL = 'HIDE_MODAL'
 
 export const actions = {
-  showModal: (buttons, title, control) => ({
+  showModal: (title, control, buttons) => ({
     type: SHOW_MODAL,
-    buttons,
     title,
-    control
+    control,
+    buttons
   }),
   hideModal: () => ({
     type: HIDE_MODAL

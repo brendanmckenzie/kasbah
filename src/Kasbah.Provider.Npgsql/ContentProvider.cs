@@ -274,9 +274,11 @@ where
 
             using (var connection = GetConnection())
             {
-                var deleteSql = $"delete from node where id_taxonomy[1:{taxoIndex}] = (select id_taxonomy from node where id = @id)";
+                var deleteContentSql = $"delete from node_content where id in (select id from node where id_taxonomy[1:{taxoIndex}] = (select id_taxonomy from node where id = @id))";
+                var deleteNodesSql = $"delete from node where id_taxonomy[1:{taxoIndex}] = (select id_taxonomy from node where id = @id)";
 
-                await connection.ExecuteAsync(deleteSql, new { id });
+                await connection.ExecuteAsync(deleteContentSql, new { id });
+                await connection.ExecuteAsync(deleteNodesSql, new { id });
             }
         }
 

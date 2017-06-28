@@ -1,19 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import { connect } from 'react-redux'
-import { actions as uiActions } from 'store/appReducers/ui'
+import DeleteButton from './DeleteButton'
+import EditButton from './EditButton'
 
 class Information extends React.Component {
   static propTypes = {
     node: PropTypes.object.isRequired,
     type: PropTypes.object.isRequired,
-    data: PropTypes.object,
-    showModal: PropTypes.func.isRequired
-  }
-
-  handleDelete = () => {
-    this.props.showModal([], 'title', 'control')
+    data: PropTypes.object
   }
 
   render() {
@@ -56,16 +51,10 @@ class Information extends React.Component {
 
         <div className='field is-grouped'>
           <div className='control'>
-            <button className='button is-danger' type='button' onClick={this.handleDelete}>
-              <span className='icon is-small'><i className='fa fa-trash' /></span>
-              <span>Delete</span>
-            </button>
+            <DeleteButton node={node} />
           </div>
           <div className='control'>
-            <button className='button' type='button' onClick={() => { }}>
-              <span className='icon is-small'><i className='fa fa-pencil' /></span>
-              <span>Edit</span>
-            </button>
+            <EditButton node={node} />
           </div>
           <div className='control'>
             <button className='button' type='button' onClick={() => { }}>
@@ -79,8 +68,4 @@ class Information extends React.Component {
   }
 }
 
-const mapDispatchToProps = {
-  ...uiActions
-}
-
-export default connect(null, mapDispatchToProps)(Information)
+export default Information

@@ -9,14 +9,21 @@ export const DESCRIBE_TREE_FAILURE = 'DESCRIBE_TREE_FAILURE'
 export const LIST_TYPES = 'LIST_TYPES'
 export const LIST_TYPES_SUCCESS = 'LIST_TYPES_SUCCESS'
 export const LIST_TYPES_FAILURE = 'LIST_TYPES_FAILURE'
-export const TOGGLE_NODE = 'TOGGLE_NODE'
-export const SELECT_NODE = 'SELECT_NODE'
 export const GET_DETAIL = 'GET_DETAIL'
 export const GET_DETAIL_SUCCESS = 'GET_DETAIL_SUCCESS'
 export const GET_DETAIL_FAILURE = 'GET_DETAIL_FAILURE'
 export const PUT_DETAIL = 'PUT_DETAIL'
 export const PUT_DETAIL_SUCCESS = 'PUT_DETAIL_SUCCESS'
 export const PUT_DETAIL_FAILURE = 'PUT_DETAIL_FAILURE'
+export const DELETE_NODE = 'DELETE_NODE'
+export const DELETE_NODE_SUCCESS = 'DELETE_NODE_SUCCESS'
+export const DELETE_NODE_FAILURE = 'DELETE_NODE_FAILURE'
+export const PUT_NODE = 'PUT_NODE'
+export const PUT_NODE_SUCCESS = 'PUT_NODE_SUCCESS'
+export const PUT_NODE_FAILURE = 'PUT_NODE_FAILURE'
+
+export const TOGGLE_NODE = 'TOGGLE_NODE'
+export const SELECT_NODE = 'SELECT_NODE'
 export const EDIT_NODE_DATA = 'EDIT_NODE_DATA'
 export const EXPAND_TO_NODE = 'EXPAND_TO_NODE'
 
@@ -113,7 +120,32 @@ export const actions = {
     type: EXPAND_TO_NODE,
     context,
     id
-  })
+  }),
+  deleteNode: (node) => {
+    const types = [DELETE_NODE, DELETE_NODE_SUCCESS, DELETE_NODE_FAILURE]
+    return {
+      types,
+      params: { node },
+      hideModalOnSuccess: true,
+      request: {
+        method: 'DELETE',
+        url: `/content/node/${node.id}`
+      }
+    }
+  },
+  putNode: (node) => {
+    const types = [PUT_NODE, PUT_NODE_SUCCESS, PUT_NODE_FAILURE]
+    return {
+      types,
+      params: { node },
+      hideModalOnSuccess: true,
+      request: {
+        url: '/content/node',
+        method: 'PUT',
+        body: node
+      }
+    }
+  }
 }
 
 const initialState = {
@@ -240,6 +272,34 @@ const actionHandlers = {
         [context]: buildHierarchy(state.tree.nodes, id)
       }
       : state.nodeState
+  }),
+  [DELETE_NODE]: (state, { params: { node } }) => ({
+    ...state,
+    tree: {
+      ...state.tree,
+      nodes: state.tree.nodes.map(ent => ent === node ? { ...node, deleting: moment().format() } : ent)
+    }
+  }),
+  [DELETE_NODE_SUCCESS]: (state, { params: { node } }) => ({
+    ...state,
+    tree: {
+      ...state.tree,
+      nodes: state.tree.nodes.filter(ent => ent.id !== node.id)
+    }
+  }),
+  [PUT_NODE]: (state, { params: { node } }) => ({
+    ...state,
+    tree: {
+      ...state.tree,
+      nodes: state.tree.nodes.map(ent => ent === node ? { ...node, updating: moment().format() } : ent)
+    }
+  }),
+  [PUT_NODE_SUCCESS]: (state, { payload }) => ({
+    ...state,
+    tree: {
+      ...state.tree,
+      nodes: state.tree.nodes.map(ent => ent.id === payload.id ? payload : ent)
+    }
   })
 }
 
