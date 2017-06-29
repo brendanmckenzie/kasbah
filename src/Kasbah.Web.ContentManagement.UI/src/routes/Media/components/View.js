@@ -11,7 +11,7 @@ class View extends React.Component {
     uploadMedia: PropTypes.func.isRequired
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (!this.props.media.loaded) {
       this.handleRefresh()
     }

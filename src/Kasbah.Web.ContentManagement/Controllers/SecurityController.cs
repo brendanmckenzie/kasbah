@@ -27,8 +27,8 @@ namespace Kasbah.Web.ContentManagement.Controllers
             => await _securityService.CreateUserAsync(request.Username, request.Password, request.Name, request.Email);
 
         [Route("users"), HttpPut]
-        public async Task<User> UpdateUserAsync([FromBody] UpdateUserRequest request)
-            => await _securityService.UpdateUserAsync(request.Id, request.Username, request.Password, request.Name, request.Email);
+        public async Task<User> PutUserAsync([FromBody] UpdateUserRequest request)
+            => await _securityService.PutUserAsync(request.Id, request.Username, request.Password, request.Name, request.Email);
     }
 
     public class CreateUserRequest

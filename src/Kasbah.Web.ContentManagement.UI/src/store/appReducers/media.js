@@ -84,7 +84,7 @@ const initialState = {
 }
 
 const actionHandlers = {
-  [LIST_MEDIA_SUCCESS]: (state, { payload }) => ({
+  [LIST_MEDIA]: (state, { payload }) => ({
     ...state,
     list: {
       ...state.list,
