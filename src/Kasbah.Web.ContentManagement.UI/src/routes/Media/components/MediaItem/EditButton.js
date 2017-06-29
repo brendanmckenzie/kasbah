@@ -2,16 +2,16 @@ import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import { actions as uiActions } from 'store/appReducers/ui'
-import { actions as contentActions } from 'store/appReducers/content'
-import NodeForm from 'forms/NodeForm'
+import { actions as mediaActions } from 'store/appReducers/media'
+import MediaForm from 'forms/MediaForm'
 
 class EditButton extends React.Component {
   static propTypes = {
-    node: PropTypes.object.isRequired,
-    content: PropTypes.object.isRequired,
+    media: PropTypes.object.isRequired,
+    className: PropTypes.string,
     showModal: PropTypes.func.isRequired,
     hideModal: PropTypes.func.isRequired,
-    putNode: PropTypes.func.isRequired
+    putMedia: PropTypes.func.isRequired
   }
 
   handleClick = () => {
@@ -19,20 +19,19 @@ class EditButton extends React.Component {
   }
 
   handleSave = (values) => {
-    this.props.putNode(values)
+    this.props.putMedia(values)
   }
 
   get form() {
-    return (<NodeForm
-      initialValues={this.props.node}
+    return (<MediaForm
+      initialValues={this.props.media}
       onClose={this.props.hideModal}
-      onSubmit={this.handleSave}
-      types={this.props.content.types.list} />)
+      onSubmit={this.handleSave} />)
   }
 
   render() {
     return (
-      <button className='button' type='button' onClick={this.handleClick}>
+      <button className={this.props.className} type='button' onClick={this.handleClick}>
         <span className='icon is-small'><i className='fa fa-pencil' /></span>
         <span>Edit</span>
       </button>
@@ -40,13 +39,9 @@ class EditButton extends React.Component {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  content: state.content
-})
-
 const mapDispatchToProps = {
   ...uiActions,
-  ...contentActions
+  ...mediaActions
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditButton)
+export default connect(null, mapDispatchToProps)(EditButton)
