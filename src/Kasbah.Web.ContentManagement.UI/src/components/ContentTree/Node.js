@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import { actions as contentActions } from 'store/appReducers/content'
-import ItemButton from 'components/ItemButton'
 import NodeTree from './NodeTree'
 import NodeIcon from './NodeIcon'
 
@@ -61,10 +60,9 @@ class Node extends React.Component {
               <NodeIcon {...this.props} />
             </span>
             {readOnly
-              ? (<ItemButton
-                item={this.props.node}
+              ? (<button
                 className='button is-small is-link'
-                onClick={this.handleSelect}>{displayName || alias}</ItemButton>)
+                onClick={this.handleSelect}>{displayName || alias}</button>)
               : (<NavLink to={`/content/${id}`}
                 className='level-item level-shrink'
                 activeClassName='is-active'>{displayName || alias}</NavLink>)}
