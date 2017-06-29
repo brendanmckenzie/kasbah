@@ -1,7 +1,8 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { actions as contentActions } from 'store/appReducers/content'
-import PropTypes from 'prop-types'
+import Loading from 'components/Loading'
 import NodeTree from './NodeTree'
 
 class ContentTree extends React.Component {
@@ -41,6 +42,10 @@ class ContentTree extends React.Component {
   }
 
   render() {
+    if (this.props.content.tree.loading) {
+      return <Loading />
+    }
+
     return (
       <NodeTree parent={null} />
     )
