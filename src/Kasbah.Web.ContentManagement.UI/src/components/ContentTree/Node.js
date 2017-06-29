@@ -24,6 +24,10 @@ class Node extends React.Component {
     this.props.toggleNode(this.context.contextName, this.props.node.id)
   }
 
+  handleSelect = () => {
+    this.props.selectNode(this.context.contextName, this.props.node.id)
+  }
+
   get expanded() {
     const nodeState = this.props.content.nodeState
 
@@ -39,7 +43,7 @@ class Node extends React.Component {
   }
 
   render() {
-    const { node: { id, displayName, alias }, selectNode } = this.props
+    const { node: { id, displayName, alias } } = this.props
     const { readOnly } = this.context
 
     return (
@@ -60,7 +64,7 @@ class Node extends React.Component {
               ? (<ItemButton
                 item={this.props.node}
                 className='button is-small is-link'
-                onClick={selectNode}>{displayName || alias}</ItemButton>)
+                onClick={this.handleSelect}>{displayName || alias}</ItemButton>)
               : (<NavLink to={`/content/${id}`}
                 className='level-item level-shrink'
                 activeClassName='is-active'>{displayName || alias}</NavLink>)}

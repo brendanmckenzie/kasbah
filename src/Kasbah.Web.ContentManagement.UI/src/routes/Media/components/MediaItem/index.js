@@ -27,7 +27,7 @@ class MediaItem extends React.Component {
               <div className='level-left level-vertical'>
                 <strong className='level-item'>{item.fileName}</strong>
                 <span className='level-item'>{item.contentType}</span>
-                <small className='level-item'>{moment(item.created).fromNow()}</small>
+                <small className='level-item'>{moment.utc(item.created).fromNow()}</small>
               </div>
               <div className='level-right level-vertical'>
                 <EditButton className='level-item button is-small is-secondary' media={item} />

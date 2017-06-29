@@ -14,7 +14,7 @@ export const PUT_MEDIA_SUCCESS = 'PUT_MEDIA_SUCCESS'
 export const PUT_MEDIA_FAILURE = 'PUT_MEDIA_FAILURE'
 
 export const actions = {
-  listMedia: (request) => {
+  listMedia: () => {
     const types = [LIST_MEDIA, LIST_MEDIA_SUCCESS, LIST_MEDIA_FAILURE]
 
     return {
@@ -25,7 +25,7 @@ export const actions = {
       }
     }
   },
-  uploadMedia: (files) => {
+  uploadMedia: (files) => (dispatch) => {
     const types = [UPLOAD_MEDIA, UPLOAD_MEDIA_SUCCESS, UPLOAD_MEDIA_FAILURE]
     const data = new FormData()
 
@@ -33,16 +33,17 @@ export const actions = {
       data.append(file.name, file, file.name)
     }
 
-    return {
+    dispatch({
       types,
       request: {
         url: '/media/upload',
+        callback: () => dispatch(actions.listMedia()),
         rawBody: data,
         headers: {
           'Content-Type': null // 'multipart/form-data'
         }
       }
-    }
+    })
   },
   deleteMedia: (media) => {
     const types = [DELETE_MEDIA, DELETE_MEDIA_SUCCESS, DELETE_MEDIA_FAILURE]
@@ -97,6 +98,18 @@ const actionHandlers = {
       loaded: true,
       loading: false
     }
+  }),
+  [UPLOAD_MEDIA]: (state) => ({
+    ...state,
+    uploading: true
+  }),
+  [UPLOAD_MEDIA_SUCCESS]: (state) => ({
+    ...state,
+    uploading: false
+  }),
+  [UPLOAD_MEDIA_FAILURE]: (state) => ({
+    ...state,
+    uploading: false
   }),
   [DELETE_MEDIA]: (state, { params: { media } }) => ({
     ...state,

@@ -31,7 +31,7 @@ class Content extends React.Component {
           </div>
           <div className='level-right'>
             <p className='level-item'>
-              <small title={moment.utc(ent.modified).format('MMM Do h:mma')}>{moment(ent.modified).fromNow()}</small>
+              <small title={moment.utc(ent.modified).format('MMM Do h:mma')}>{moment.utc(ent.modified).fromNow()}</small>
             </p>
           </div>
         </div>

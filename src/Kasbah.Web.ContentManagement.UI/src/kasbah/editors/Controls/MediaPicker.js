@@ -103,7 +103,7 @@ class MediaPicker extends React.Component {
           <div className='media-content'>
             <p><strong>{this.state.mediaDetail.fileName}</strong></p>
             <p><small>{this.state.mediaDetail.contentType}</small></p>
-            <p><small>{moment(this.state.mediaDetail.created).fromNow()}</small></p>
+            <p><small>{moment.utc(this.state.mediaDetail.created).fromNow()}</small></p>
           </div>
         </div>
       )
@@ -144,7 +144,7 @@ class MediaPicker extends React.Component {
                     <div className='card-content'>
                       <p className='filename' title={ent.fileName}><strong>{ent.fileName}</strong></p>
                       <p><small>{ent.contentType}</small></p>
-                      <p><small>{moment(ent.created).fromNow()}</small></p>
+                      <p><small>{moment.utc(ent.created).fromNow()}</small></p>
                     </div>
                   </div>
                 </div>

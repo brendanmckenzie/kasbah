@@ -21,10 +21,12 @@ export const DELETE_NODE_FAILURE = 'DELETE_NODE_FAILURE'
 export const PUT_NODE = 'PUT_NODE'
 export const PUT_NODE_SUCCESS = 'PUT_NODE_SUCCESS'
 export const PUT_NODE_FAILURE = 'PUT_NODE_FAILURE'
+export const MOVE_NODE = 'MOVE_NODE'
+export const MOVE_NODE_SUCCESS = 'MOVE_NODE_SUCCESS'
+export const MOVE_NODE_FAILURE = 'MOVE_NODE_FAILURE'
 
 export const TOGGLE_NODE = 'TOGGLE_NODE'
 export const SELECT_NODE = 'SELECT_NODE'
-export const EDIT_NODE_DATA = 'EDIT_NODE_DATA'
 export const EXPAND_TO_NODE = 'EXPAND_TO_NODE'
 
 // TODO: immutability
@@ -85,8 +87,9 @@ export const actions = {
     context,
     node
   }),
-  selectNode: (node) => ({
+  selectNode: (context, node) => ({
     type: SELECT_NODE,
+    context,
     node
   }),
   getDetail: (id) => {
@@ -112,10 +115,6 @@ export const actions = {
       }
     }
   },
-  editNode: (id) => ({
-    type: EDIT_NODE_DATA,
-    id
-  }),
   expandToNode: (context, id) => ({
     type: EXPAND_TO_NODE,
     context,
@@ -145,6 +144,19 @@ export const actions = {
         body: node
       }
     }
+  },
+  moveNode: (id, parent) => (dispatch) => {
+    const types = [MOVE_NODE, MOVE_NODE_SUCCESS, MOVE_NODE_FAILURE]
+    dispatch({
+      types,
+      params: { id, parent },
+      hideModalOnSuccess: true,
+      request: {
+        url: `/content/node/${id}/move?parent=${parent}`,
+        callback: () => dispatch(actions.describeTree()),
+        method: 'PUT'
+      }
+    })
   }
 }
 
@@ -166,10 +178,7 @@ const initialState = {
   },
   nodeState: {},
   detail: {},
-  editing: {
-    id: null,
-    values: null
-  }
+  selection: {}
 }
 
 const actionHandlers = {
@@ -232,8 +241,7 @@ const actionHandlers = {
         ...payload,
         loaded: moment.utc().format()
       }
-    },
-    editing: (state.editing && payload.node.id === state.editing.id) ? payload.data : state.editing
+    }
   }),
   [PUT_DETAIL]: (state, { params }) => ({
     ...state,
@@ -265,10 +273,6 @@ const actionHandlers = {
         saving: false
       }
     }
-  }),
-  [EDIT_NODE_DATA]: (state, { id }) => ({
-    ...state,
-    editing: { id, values: state.detail[id] ? state.detail[id].data : null }
   }),
   [EXPAND_TO_NODE]: (state, { context, id }) => ({
     ...state,
@@ -306,6 +310,13 @@ const actionHandlers = {
     tree: {
       ...state.tree,
       nodes: state.tree.nodes.map(ent => ent.id === payload.id ? payload : ent)
+    }
+  }),
+  [SELECT_NODE]: (state, { context, node }) => ({
+    ...state,
+    selection: {
+      ...state.selection,
+      [context]: node
     }
   })
 }

@@ -153,7 +153,7 @@ class NodePicker extends React.Component {
                   onClick={() => this.handleSelect(ent)}>
                   <div className='card-content'>
                     <p><strong>{ent.displayName}</strong> <small>{ent.alias}</small></p>
-                    <p><small>{moment(ent.modified).fromNow()}</small></p>
+                    <p><small>{moment.utc(ent.modified).fromNow()}</small></p>
                   </div>
                 </div>
               </div>
