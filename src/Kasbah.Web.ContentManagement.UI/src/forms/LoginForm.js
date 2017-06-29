@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Field, reduxForm } from 'redux-form'
+import Error from 'components/Error'
 
 const LoginForm = ({ handleSubmit, loading, errorMessage }) => (
   <form onSubmit={handleSubmit}>
@@ -16,11 +17,7 @@ const LoginForm = ({ handleSubmit, loading, errorMessage }) => (
         <Field name='password' component='input' type='password' className='input' />
       </div>
     </div>
-    {errorMessage && (
-      <div className='notification is-danger'>
-        {errorMessage}
-      </div>
-    )}
+    {errorMessage && <Error message={errorMessage} />}
     <div className='level'>
       <div className='level-left' />
       <div className='level-center'>
