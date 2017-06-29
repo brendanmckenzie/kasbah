@@ -3,6 +3,7 @@ import { Provider, connect } from 'react-redux'
 import { ConnectedRouter, push } from 'react-router-redux'
 import PropTypes from 'prop-types'
 import { Route, Switch } from 'react-router'
+import { actions as authActions } from 'store/appReducers/auth'
 
 import CoreLayout from 'layouts/CoreLayout'
 
@@ -66,8 +67,8 @@ class AppContainer extends React.Component {
     store: PropTypes.object.isRequired
   }
 
-  shouldComponentUpdate() {
-    return false
+  componentDidMount() {
+    this.props.store.dispatch(authActions.watchRefreshToken())
   }
 
   render() {

@@ -5,6 +5,7 @@ import { makeApiRequest } from 'store/util'
 export const LOGIN_REQUEST = 'LOGIN_REQUEST'
 export const LOGIN_REQUEST_SUCCESS = 'LOGIN_REQUEST_SUCCESS'
 export const LOGIN_REQUEST_FAILURE = 'LOGIN_REQUEST_FAILURE'
+export const ACCESS_TOKEN_REFRESH = 'ACCESS_TOKEN_REFRESH'
 
 export const actions = {
   login: (request) => (dispatch) => {
@@ -32,6 +33,38 @@ export const actions = {
       .catch(ex => {
         dispatch({ type: LOGIN_REQUEST_FAILURE, error: 'An error has occurred' })
       })
+  },
+  watchRefreshToken: () => (dispatch) => {
+    // TODO: this operates entirely outside the scope of redux
+    const checkRefresh = () => {
+      if (!localStorage.accessTokenExpires || !localStorage.user) {
+        return
+      }
+
+      if (moment().add(30, 'seconds').isAfter(moment(localStorage.accessTokenExpires))) {
+        const user = JSON.parse(localStorage.user)
+        makeApiRequest({
+          url: '/connect/token',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          rawBody: `grant_type=refresh_token&refresh_token=${user.refresh_token}`
+        })
+          .then(res => {
+            localStorage.user = JSON.stringify(res)
+            localStorage.accessTokenExpires = moment().add(res.expires_in, 'seconds').format()
+
+            dispatch({ type: ACCESS_TOKEN_REFRESH, res })
+          })
+          .catch(err => {
+            console.error(err)
+
+            dispatch(push('/login'))
+          })
+      }
+    }
+
+    setInterval(checkRefresh, 1000)
   }
 }
 
