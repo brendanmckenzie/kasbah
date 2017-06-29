@@ -77,7 +77,12 @@ namespace Kasbah.Security
 
             await _userProvider.UpdateUserAsync(id, username, string.IsNullOrEmpty(password) ? null : EncryptPassword(password), name, email);
 
-            return await GetUserAsync(id);
+            var ret = await GetUserAsync(id);
+
+            // TODO: handle this in the provider
+            ret.Password = null;
+
+            return ret;
         }
 
         public async Task InitialiseAsync()

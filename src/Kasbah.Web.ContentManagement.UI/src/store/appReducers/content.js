@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { push } from 'react-router-redux'
 
 export const LIST_LATEST_UPDATES = 'LIST_LATEST_UPDATES'
 export const LIST_LATEST_UPDATES_SUCCESS = 'LIST_LATEST_UPDATES_SUCCESS'
@@ -24,6 +25,9 @@ export const PUT_NODE_FAILURE = 'PUT_NODE_FAILURE'
 export const MOVE_NODE = 'MOVE_NODE'
 export const MOVE_NODE_SUCCESS = 'MOVE_NODE_SUCCESS'
 export const MOVE_NODE_FAILURE = 'MOVE_NODE_FAILURE'
+export const CREATE_NODE = 'CREATE_NODE'
+export const CREATE_NODE_SUCCESS = 'CREATE_NODE_SUCCESS'
+export const CREATE_NODE_FAILURE = 'CREATE_NODE_FAILURE'
 
 export const TOGGLE_NODE = 'TOGGLE_NODE'
 export const SELECT_NODE = 'SELECT_NODE'
@@ -120,17 +124,18 @@ export const actions = {
     context,
     id
   }),
-  deleteNode: (node) => {
+  deleteNode: (node) => (dispatch) => {
     const types = [DELETE_NODE, DELETE_NODE_SUCCESS, DELETE_NODE_FAILURE]
-    return {
+    dispatch({
       types,
       params: { node },
       hideModalOnSuccess: true,
       request: {
         method: 'DELETE',
-        url: `/content/node/${node.id}`
+        url: `/content/node/${node.id}`,
+        callback: () => dispatch(push('/content')),
       }
-    }
+    })
   },
   putNode: (node) => {
     const types = [PUT_NODE, PUT_NODE_SUCCESS, PUT_NODE_FAILURE]
@@ -152,9 +157,25 @@ export const actions = {
       params: { id, parent },
       hideModalOnSuccess: true,
       request: {
+        method: 'PUT',
         url: `/content/node/${id}/move?parent=${parent}`,
-        callback: () => dispatch(actions.describeTree()),
-        method: 'PUT'
+        callback: () => dispatch(actions.describeTree())
+      }
+    })
+  },
+  createNode: (node) => (dispatch) => {
+    dispatch({
+      types: [CREATE_NODE, CREATE_NODE_SUCCESS, CREATE_NODE_FAILURE],
+      hideModalOnSuccess: true,
+      params: { node },
+      request: {
+        url: '/content/node',
+        body: node,
+        callback: (err, res) => {
+          if (err) { throw err }
+          dispatch(actions.describeTree())
+          dispatch(push(`/content/${res}`))
+        }
       }
     })
   }
@@ -317,6 +338,16 @@ const actionHandlers = {
     selection: {
       ...state.selection,
       [context]: node
+    }
+  }),
+  [CREATE_NODE_SUCCESS]: (state, { payload, params: { node } }) => ({
+    ...state,
+    tree: {
+      ...state.tree,
+      nodes: [
+        ...state.tree.nodes,
+        { id: payload, ...node }
+      ]
     }
   })
 }

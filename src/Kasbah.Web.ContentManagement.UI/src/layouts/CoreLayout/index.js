@@ -4,15 +4,18 @@ import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
 import Header from 'components/Header'
 import Modal from 'components/Modal'
+import Loading from 'components/Loading'
 import 'styles/core.scss'
 
-export const CoreLayout = ({ children, ui, auth }) => (
+const AwaitingAuth = () => (<Loading message='Checking credentials' />)
+
+export const CoreLayout = ({ children, ui, auth }) => auth.ready ? (
   <div>
-    {auth.user && <Header />}
+    <Header />
     {children}
     <Modal modal={ui.modal} />
   </div>
-)
+) : <AwaitingAuth />
 
 CoreLayout.propTypes = {
   children: PropTypes.any.isRequired,

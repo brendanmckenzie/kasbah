@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { actions as securityActions } from 'store/appReducers/security'
 import Loading from 'components/Loading'
 import UserListRow from './UserListRow'
+import CreateButton from './CreateButton'
 
 class View extends React.Component {
   static propTypes = {
@@ -20,24 +21,6 @@ class View extends React.Component {
   handleRefresh = () => {
     this.props.listUsers()
   }
-
-  handleSave = (values) => {
-    if (this.state.editing) {
-      this.props.putUserRequest(values)
-    } else {
-      this.props.createUserRequest(values)
-    }
-  }
-
-  // get modal() {
-  //   if (!this.state.showModal) { return null }
-
-  //   return (<UserForm
-  //     onClose={this.handleHideModal}
-  //     onSubmit={this.handleSave}
-  //     initialValues={this.state.editing}
-  //     loading={this.props.createUser.loading || this.props.putUser.loading} />)
-  // }
 
   get table() {
     if (this.props.security.users.loading) {
@@ -69,10 +52,8 @@ class View extends React.Component {
             <h1 className='level-item subtitle'>Users</h1>
           </div>
           <div className='level-right'>
-            <button
-              type='button'
-              className='level-item button is-primary'
-              onClick={this.handleShowModal}>New user</button>
+            <button className='level-item button is-secondary' onClick={this.handleRefresh}>Refresh</button>
+            <CreateButton className='level-item button is-primary'>New user</CreateButton>
           </div>
         </div>
         {this.table}

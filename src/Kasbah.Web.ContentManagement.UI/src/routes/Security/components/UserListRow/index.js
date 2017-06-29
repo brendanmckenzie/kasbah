@@ -1,8 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import ItemButton from 'components/ItemButton'
-// import UserForm from 'forms/UserForm'
+import EditButton from './EditButton'
 
 class UserListRow extends React.Component {
   static propTypes = {
@@ -17,11 +16,7 @@ class UserListRow extends React.Component {
         <td>{user.username}</td>
         <td>{user.email}</td>
         <td>{moment.utc(user.lastLogin).fromNow()}</td>
-        <td>
-          <ItemButton
-            type='button' className='button is-small'
-            onClick={this.handleShowModal} item={user}>Edit</ItemButton>
-        </td>
+        <td><EditButton className='button is-small is-secondary' user={user} /></td>
       </tr>
     )
   }

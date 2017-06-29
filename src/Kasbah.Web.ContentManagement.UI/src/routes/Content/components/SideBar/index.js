@@ -4,6 +4,7 @@ import moment from 'moment'
 import DeleteButton from './DeleteButton'
 import EditButton from './EditButton'
 import MoveButton from './MoveButton'
+import CreateButton from '../CreateButton'
 
 const Information = ({ node, type, data }) => (
   <div className='content'>
@@ -51,6 +52,7 @@ const Information = ({ node, type, data }) => (
         <MoveButton node={node} />
       </div>
     </div>
+    <CreateButton parent={node.id} className='button' />
   </div >
 
 )

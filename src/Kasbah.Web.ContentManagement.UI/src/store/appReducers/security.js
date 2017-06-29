@@ -25,6 +25,7 @@ export const actions = {
 
     return {
       types,
+      hideModalOnSuccess: true,
       params: { user },
       request: {
         url: '/security/users',
@@ -38,6 +39,7 @@ export const actions = {
 
     return {
       types,
+      hideModalOnSuccess: true,
       params: { user },
       request: {
         url: '/security/users',

@@ -41,7 +41,7 @@ namespace Kasbah.Provider.Npgsql
 
         public async Task<User> GetUserAsync(Guid id)
         {
-            const string Sql = "select id as Id, username as Username, password as Password, name as Name, email as Email from \"user\" where id = @id";
+            const string Sql = "select id as Id, username as Username, password as Password, name as Name, email as Email, created_at as Created, modified_at as Modified, last_login_at as LastLogin from \"user\" where id = @id";
             using (var connection = GetConnection())
             {
                 return await connection.QuerySingleAsync<User>(Sql, new { id });
@@ -50,7 +50,7 @@ namespace Kasbah.Provider.Npgsql
 
         public async Task<User> GetUserByUsernameAsync(string username)
         {
-            const string Sql = "select id as Id, username as Username, password as Password, name as Name, email as Email from \"user\" where username = @username";
+            const string Sql = "select id as Id, username as Username, password as Password, name as Name, email as Email, created_at as Created, modified_at as Modified, last_login_at as LastLogin from \"user\" where username = @username";
             using (var connection = GetConnection())
             {
                 return await connection.QuerySingleOrDefaultAsync<User>(Sql, new { username });
@@ -68,7 +68,7 @@ namespace Kasbah.Provider.Npgsql
 
         public async Task UpdateUserAsync(Guid id, string username, string password, string name = null, string email = null)
         {
-            const string Sql = "update \"user\" set username = :username, password = coalesce(:password, password), name = name, email = email where id = :id";
+            const string Sql = "update \"user\" set username = :username, password = coalesce(:password, password), name = name, email = :email where id = :id";
             using (var connection = GetConnection())
             {
                 await connection.ExecuteAsync(Sql, new { id, username, password, name, email });

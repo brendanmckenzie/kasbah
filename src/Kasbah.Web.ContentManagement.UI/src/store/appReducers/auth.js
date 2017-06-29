@@ -6,6 +6,7 @@ export const LOGIN_REQUEST = 'LOGIN_REQUEST'
 export const LOGIN_REQUEST_SUCCESS = 'LOGIN_REQUEST_SUCCESS'
 export const LOGIN_REQUEST_FAILURE = 'LOGIN_REQUEST_FAILURE'
 export const ACCESS_TOKEN_REFRESH = 'ACCESS_TOKEN_REFRESH'
+export const AUTH_TOKEN_VALID = 'AUTH_TOKEN_VALID'
 
 export const actions = {
   login: (request) => (dispatch) => {
@@ -65,12 +66,17 @@ export const actions = {
     }
 
     setInterval(checkRefresh, 1000)
+
+    if (moment(localStorage.accessTokenExpires).isAfter(moment())) {
+      dispatch({ type: AUTH_TOKEN_VALID })
+    }
   }
 }
 
 const initialState = {
   user: localStorage.user ? JSON.parse(localStorage.user) : null,
-  authenticating: false
+  authenticating: false,
+  ready: false
 }
 
 const actionHandlers = {
@@ -88,6 +94,10 @@ const actionHandlers = {
     ...state,
     authenticating: false,
     error
+  }),
+  [AUTH_TOKEN_VALID]: (state) => ({
+    ...state,
+    ready: true
   })
 }
 
