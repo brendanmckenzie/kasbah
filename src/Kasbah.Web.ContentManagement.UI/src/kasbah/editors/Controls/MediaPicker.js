@@ -7,8 +7,7 @@ import { API_BASE, makeApiRequest } from 'store/util'
 
 class MediaPicker extends React.Component {
   static propTypes = {
-    input: PropTypes.object.isRequired,
-    options: PropTypes.object
+    input: PropTypes.object.isRequired
   }
 
   static alias = 'mediaPicker'
@@ -168,7 +167,10 @@ class MediaPicker extends React.Component {
         <div className='level-left' />
         <div className='level-right'>
           <button type='button' className='level-item button is-small' onClick={this.handleClear}>Clear</button>
-          <button type='button' className='level-item button is-primary is-small' onClick={this.handleShowModal}>Select media</button>
+          <button
+            type='button'
+            className='level-item button is-primary is-small'
+            onClick={this.handleShowModal}>Select media</button>
         </div>
       </div>
       {this.state.showModal && this.modal}

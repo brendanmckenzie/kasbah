@@ -95,7 +95,11 @@ class View extends React.Component {
             <td>{ent.username}</td>
             <td>{ent.email}</td>
             <td>{moment.utc(ent.lastLogin).fromNow()}</td>
-            <td><ItemButton type='button' className='button is-small' onClick={this.handleShowModal} item={ent}>Edit</ItemButton></td>
+            <td>
+              <ItemButton
+                type='button' className='button is-small'
+                onClick={this.handleShowModal} item={ent}>Edit</ItemButton>
+            </td>
           </tr>
         ))}
       </tbody>

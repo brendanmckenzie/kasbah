@@ -1,4 +1,3 @@
-import Bias from './Bias'
 import Enum from './Enum'
 import Date from './Date'
 import LongText from './LongText'
@@ -10,7 +9,6 @@ import Text from './Text'
 import Components from './Components'
 
 export const controls = {
-  Bias,
   Enum,
   Date,
   LongText,

@@ -11,8 +11,8 @@ import LoginRoute from './Login'
 import ContentRoute from './Content'
 import MediaRoute from './Media'
 
-import SecurityRoute from './Security'
-import SystemRoute from './System'
+// import SecurityRoute from './Security'
+// import SystemRoute from './System'
 
 const withRouteOnEnter = callback => BaseComponent => {
   const routeOnEnterCallback = (props) => {

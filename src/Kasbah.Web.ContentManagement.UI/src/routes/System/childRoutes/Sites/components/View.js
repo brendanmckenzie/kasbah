@@ -1,9 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import moment from 'moment'
 import Loading from 'components/Loading'
-import ItemButton from 'components/ItemButton'
-import UserForm from 'forms/UserForm'
 
 class View extends React.Component {
   static propTypes = {

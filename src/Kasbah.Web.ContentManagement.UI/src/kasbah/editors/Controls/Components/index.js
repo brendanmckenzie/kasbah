@@ -69,7 +69,12 @@ class Components extends React.Component {
         <div className='level'>
           <div className='level-left' />
           <div className='level-right'>
-            <button type='button' className='level-tiem button is-small is-primary' onClick={this.handleAddArea}>Add area</button>
+            <button
+              type='button'
+              className='level-tiem button is-small is-primary'
+              onClick={this.handleAddArea}>
+              Add area
+            </button>
           </div>
         </div>
       </div>

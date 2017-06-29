@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 
 export class Tab extends React.Component {
   static propTypes = {
-    title: PropTypes.string.isRequired,
     children: PropTypes.any.isRequired
   }
 

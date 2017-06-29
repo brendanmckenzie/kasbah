@@ -175,7 +175,10 @@ class NodePicker extends React.Component {
         <div className='level-left' />
         <div className='level-right'>
           <button type='button' className='level-item button is-small' onClick={this.handleClear}>Clear</button>
-          <button type='button' className='level-item button is-small' onClick={this.handleShowModal}>Select node</button>
+          <button
+            type='button'
+            className='level-item button is-small'
+            onClick={this.handleShowModal}>Select node</button>
         </div>
       </div>
       {this.modal}

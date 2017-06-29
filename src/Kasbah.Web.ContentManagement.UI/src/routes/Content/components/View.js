@@ -10,7 +10,8 @@ const View = () => (
         <div className='column is-2'>
           <Switch>
             <Route exact path='/content' render={props => <ContentTree context='browser' />} />
-            <Route exact path='/content/:id' render={props => <ContentTree context='browser' selected={props.match.params.id} />} />
+            <Route exact path='/content/:id'
+              render={props => <ContentTree context='browser' selected={props.match.params.id} />} />
           </Switch>
         </div>
         <div className='column'>

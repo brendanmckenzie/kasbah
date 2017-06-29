@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Dropzone from 'react-dropzone'
 import Loading from 'components/Loading'
-import MediaItem from './MediaItem'
 import MediaList from './MediaList'
 
 class View extends React.Component {

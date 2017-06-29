@@ -183,7 +183,10 @@ class NodePickerMulti extends React.Component {
         <div className='level-left' />
         <div className='level-right'>
           <button type='button' className='level-item button is-small' onClick={this.handleClear}>Clear</button>
-          <button type='button' className='level-item button is-small' onClick={this.handleShowModal}>Select nodes</button>
+          <button
+            type='button'
+            className='level-item button is-small'
+            onClick={this.handleShowModal}>Select nodes</button>
         </div>
       </div>
       {this.modal}

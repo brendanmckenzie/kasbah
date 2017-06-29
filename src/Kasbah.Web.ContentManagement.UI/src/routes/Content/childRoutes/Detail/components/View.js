@@ -209,7 +209,9 @@ class View extends React.Component {
           </section>
           <footer className='modal-card-foot'>
             <button type='button' className='button' onClick={this.handleHideMoveNodeModal}>Cancel</button>
-            <button type='button' className={'button is-primary ' + (this.props.moveNode.loading ? 'is-loading' : '')} onClick={this.handleMoveNode}>Save</button>
+            <button
+              type='button' className={'button is-primary ' + (this.props.moveNode.loading ? 'is-loading' : '')}
+              onClick={this.handleMoveNode}>Save</button>
           </footer>
         </div>
       </div>

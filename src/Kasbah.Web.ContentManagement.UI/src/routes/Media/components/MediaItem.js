@@ -10,7 +10,8 @@ class MediaItem extends React.Component {
     item: PropTypes.object.isRequired,
     onDelete: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
-    putMedia: PropTypes.object.isRequired
+    putMedia: PropTypes.object.isRequired,
+    deleteMedia: PropTypes.object.isRequired
   }
 
   constructor() {
@@ -29,7 +30,7 @@ class MediaItem extends React.Component {
 
   handleDelete = (ent) => {
     if (confirm('Are you sure?')) {
-      this.props.deleteMediaRequest(ent)
+      this.props.deleteMedia(ent)
     }
   }
 
