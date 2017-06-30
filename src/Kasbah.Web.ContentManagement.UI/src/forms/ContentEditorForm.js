@@ -53,4 +53,4 @@ class ContentEditorForm extends React.Component {
   }
 }
 
-export default reduxForm({ form: 'ContentEditorForm' })(ContentEditorForm)
+export default reduxForm({ form: 'ContentEditorForm', enableReinitialize: true })(ContentEditorForm)
