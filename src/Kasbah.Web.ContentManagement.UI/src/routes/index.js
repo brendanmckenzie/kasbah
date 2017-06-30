@@ -8,8 +8,7 @@ import LoginRoute from './Login'
 import ContentRoute from './Content'
 import MediaRoute from './Media'
 import SecurityRoute from './Security'
-
-// import SystemRoute from './System'
+import SystemRoute from './System'
 
 const checkAuth = (props) => {
   if (!props.auth.user) {
@@ -17,14 +16,17 @@ const checkAuth = (props) => {
   }
 }
 
+const checkAuthOnEnter = withRouteOnEnter(checkAuth)
+
 export default (
   <Switch>
     <Route path='/login' component={LoginRoute} />
     <CoreLayout>
-      <Route exact path='/' component={withRouteOnEnter(checkAuth)(HomeRoute)} />
-      <Route path='/content' component={ContentRoute} />
-      <Route path='/media' component={MediaRoute} />
-      <Route path='/security' component={SecurityRoute} />
+      <Route exact path='/' component={checkAuthOnEnter(HomeRoute)} />
+      <Route path='/content' component={checkAuthOnEnter(ContentRoute)} />
+      <Route path='/media' component={checkAuthOnEnter(MediaRoute)} />
+      <Route path='/security' component={checkAuthOnEnter(SecurityRoute)} />
+      <Route path='/system' component={checkAuthOnEnter(SystemRoute)} />
     </CoreLayout>
   </Switch>
 )

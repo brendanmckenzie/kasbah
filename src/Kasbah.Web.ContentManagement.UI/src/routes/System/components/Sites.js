@@ -1,11 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
+import { actions as systemActions } from 'store/appReducers/system'
 import Loading from 'components/Loading'
 
 class View extends React.Component {
   static propTypes = {
-    listSitesRequest: PropTypes.func.isRequired,
-    listSites: PropTypes.object.isRequired
+    system: PropTypes.object.isRequired,
+    listSites: PropTypes.func.isRequired
   }
 
   constructor() {
@@ -15,19 +17,21 @@ class View extends React.Component {
   }
 
   componentWillMount() {
-    this.handleRefresh()
+    if (!this.props.system.sites.loading) {
+      this.handleRefresh()
+    }
   }
 
   handleRefresh = () => {
-    this.props.listSitesRequest()
+    this.props.listSites()
   }
 
   get table() {
-    if (this.props.listSites.loading) {
+    if (this.props.system.loading) {
       return <Loading />
     }
 
-    return (<table className='table is-hover'>
+    return (<table className='table is-striped'>
       <thead>
         <tr>
           <th>Alias</th>
@@ -38,7 +42,7 @@ class View extends React.Component {
         </tr>
       </thead>
       <tbody>
-        {this.props.listSites.payload.map(ent => (
+        {this.props.system.sites.list.map(ent => (
           <tr key={ent.alias}>
             <td>{ent.alias}</td>
             <td>{ent.contentRoot.join('/')}</td>
@@ -66,4 +70,12 @@ class View extends React.Component {
   }
 }
 
-export default View
+const mapStateToProps = (state) => ({
+  system: state.system
+})
+
+const mapDispatchToProps = {
+  ...systemActions
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(View)

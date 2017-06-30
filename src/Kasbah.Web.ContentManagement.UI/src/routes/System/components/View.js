@@ -1,8 +1,9 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import { Route, Switch } from 'react-router'
 import Navigation from './Navigation'
+import Sites from './Sites'
 
-export const View = ({ children }) => (
+export const View = () => (
   <div className='section'>
     <div className='container'>
       <h1 className='title'>System</h1>
@@ -11,15 +12,13 @@ export const View = ({ children }) => (
           <Navigation />
         </div>
         <div className='column'>
-          {children}
+          <Switch>
+            <Route exact path='/system/sites' component={Sites} />
+          </Switch>
         </div>
       </div>
     </div>
   </div>
 )
-
-View.propTypes = {
-  children: PropTypes.node
-}
 
 export default View
