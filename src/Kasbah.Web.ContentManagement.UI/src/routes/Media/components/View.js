@@ -17,12 +17,6 @@ class View extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.media.list.loaded) {
-      this.handleRefresh()
-    }
-  }
-
   handleRefresh() {
     this.props.listMedia()
   }
