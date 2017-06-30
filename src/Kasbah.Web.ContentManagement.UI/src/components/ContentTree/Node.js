@@ -41,6 +41,34 @@ class Node extends React.Component {
     return <NodeTree parent={id} parentAlias={alias} />
   }
 
+  get hasChildren() {
+    const { content: { tree: { nodes } }, node: { id } } = this.props
+
+    return nodes.filter(ent => ent.parent === id).length > 0
+  }
+
+  get expandButton() {
+    if (this.hasChildren) {
+      return (
+        <button
+          className='button is-small expand level-item'
+          onClick={this.handleToggleExpand}>
+          <span className='icon is-small'>
+            <i className={this.expanded ? 'fa fa-minus-circle' : 'fa fa-plus-circle'} />
+          </span>
+        </button>
+      )
+    } else {
+      return (
+        <button className='button is-small expand level-item' disabled>
+          <span className='icon is-small'>
+            <i className='fa fa-circle' />
+          </span>
+        </button>
+      )
+    }
+  }
+
   render() {
     const { node: { id, displayName, alias } } = this.props
     const { readOnly } = this.context
@@ -49,13 +77,7 @@ class Node extends React.Component {
       <li>
         <div className='level'>
           <div className='level-left'>
-            <button
-              className='button is-small expand level-item'
-              onClick={this.handleToggleExpand}>
-              <span className='icon is-small'>
-                <i className={this.expanded ? 'fa fa-minus-circle' : 'fa fa-plus-circle'} />
-              </span>
-            </button>
+            {this.expandButton}
             <span className='level-item icon is-small'>
               <NodeIcon {...this.props} />
             </span>
