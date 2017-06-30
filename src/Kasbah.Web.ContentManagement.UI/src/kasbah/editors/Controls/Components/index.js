@@ -46,11 +46,7 @@ class Components extends React.Component {
   handleRemoveArea = (area) => {
     const { input: { value, onChange } } = this.props
 
-    // TODO: immutability...
-    const newValue = { ...value }
-    delete newValue[area]
-
-    onChange(newValue)
+    onChange(_.omit(value, area))
   }
 
   render() {
