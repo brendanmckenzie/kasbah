@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import moment from 'moment'
 import _ from 'lodash'
 import { NavLink } from 'react-router-dom'
@@ -9,6 +10,7 @@ import { makeApiRequest } from 'store/util'
 class NodePicker extends React.Component {
   static propTypes = {
     input: PropTypes.object.isRequired,
+    content: PropTypes.object.isRequired,
     type: PropTypes.string
   }
 
@@ -24,10 +26,6 @@ class NodePicker extends React.Component {
       selection: null,
       nodeDetail: {}
     }
-  }
-
-  componentWillMount() {
-    this.handleReloadNodeDetail(this.props.input.value)
   }
 
   handleRefresh = () => {
@@ -76,17 +74,6 @@ class NodePicker extends React.Component {
     this.handleHideModal()
   }
 
-  handleReloadNodeDetail = (value) => {
-    if (!value) { return }
-
-    makeApiRequest({ url: `/content/node/${value}`, method: 'GET' })
-      .then(nodeDetail => {
-        this.setState({
-          nodeDetail
-        })
-      })
-  }
-
   handleClear = () => {
     const { input: { onChange } } = this.props
 
@@ -97,8 +84,10 @@ class NodePicker extends React.Component {
   }
 
   renderNode(id) {
-    if (this.state.nodeDetail) {
-      const item = this.state.nodeDetail
+    const { content: { tree: { nodes } } } = this.props
+    const item = nodes.find(ent => ent.id === id)
+
+    if (item) {
       return (
         <div className='level'>
           <div className='level-left'>
@@ -186,4 +175,8 @@ class NodePicker extends React.Component {
   }
 }
 
-export default NodePicker
+const mapStateToProps = (state) => ({
+  content: state.content
+})
+
+export default connect(mapStateToProps)(NodePicker)

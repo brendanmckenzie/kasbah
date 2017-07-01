@@ -1,5 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import moment from 'moment'
 import _ from 'lodash'
 import { NavLink } from 'react-router-dom'
@@ -9,6 +10,7 @@ import { makeApiRequest } from 'store/util'
 class NodePickerMulti extends React.Component {
   static propTypes = {
     input: PropTypes.object.isRequired,
+    content: PropTypes.object.isRequired,
     type: PropTypes.string
   }
 
@@ -24,10 +26,6 @@ class NodePickerMulti extends React.Component {
       selection: [],
       nodeDetail: {}
     }
-  }
-
-  componentWillMount() {
-    this.handleReloadNodeDetail(this.props.input.value)
   }
 
   handleRefresh = () => {
@@ -73,24 +71,7 @@ class NodePickerMulti extends React.Component {
 
     onChange(this.state.selection)
 
-    this.handleReloadNodeDetail(this.state.selection)
-
     this.handleHideModal()
-  }
-
-  handleReloadNodeDetail = (value) => {
-    if (!value) { return }
-
-    Promise.all(value.map(ent => makeApiRequest({ url: `/content/node/${ent}`, method: 'GET' })))
-      .then(res => {
-        let detail = {}
-        res.forEach(ent => {
-          detail[ent.id] = ent
-        })
-        this.setState({
-          nodeDetail: detail
-        })
-      })
   }
 
   handleClear = () => {
@@ -103,8 +84,10 @@ class NodePickerMulti extends React.Component {
   }
 
   renderNode(id) {
-    if (this.state.nodeDetail[id]) {
-      const item = this.state.nodeDetail[id]
+    const { content: { tree: { nodes } } } = this.props
+    const item = nodes.find(ent => ent.id === id)
+
+    if (item) {
       return (
         <div className='level'>
           <div className='level-left'>
@@ -194,4 +177,8 @@ class NodePickerMulti extends React.Component {
   }
 }
 
-export default NodePickerMulti
+const mapStateToProps = (state) => ({
+  content: state.content
+})
+
+export default connect(mapStateToProps)(NodePickerMulti)
