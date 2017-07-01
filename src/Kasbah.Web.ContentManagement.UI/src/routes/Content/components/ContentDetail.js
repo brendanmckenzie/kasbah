@@ -1,11 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { NavLink } from 'react-router-dom'
 import { actions as contentActions } from 'store/appReducers/content'
 import Loading from 'components/Loading'
 import ContentEditorForm from 'forms/ContentEditorForm'
 import SideBar from './SideBar'
+import Breadcrumbs from './Breadcrumbs'
 
 class ContentDetail extends React.Component {
   static propTypes = {
@@ -34,42 +34,21 @@ class ContentDetail extends React.Component {
     this.props.putDetail(detail.node.id, values, true)
   }
 
-  get breadcrumb() {
-    const { match: { params } } = this.props
-
-    if (!this.props.content.detail[params.id]) {
-      return null
-    }
-
-    const detail = this.props.content.detail[params.id]
-    const { taxonomy, id } = detail.node
-
-    return (<ul className='breadcrumb'>
-      {taxonomy.aliases.map((ent, index) => (
-        <li key={index}>
-          {taxonomy.ids[index] === id
-            ? (<span>{ent}</span>)
-            : (<NavLink to={`/content/${taxonomy.ids[index]}`}>{ent}</NavLink>)}
-        </li>
-      ))}
-    </ul>)
-  }
-
   render() {
     const { match: { params } } = this.props
-
-    if (!this.props.content.detail[params.id]) {
-      return <Loading />
-    }
-
     const detail = this.props.content.detail[params.id]
 
-    // TODO: why is the form not updating
+    if (!detail) {
+      return <Loading />
+    }
 
     return (
       <div>
         <h2 className='subtitle'>{detail.node.displayName}</h2>
-        {this.breadcrumb}
+        <div className='field'>
+          <Breadcrumbs id={params.id} content={this.props.content} />
+        </div>
+
         <div className='columns'>
           <div className='column'>
             {detail.type.fields.length === 0

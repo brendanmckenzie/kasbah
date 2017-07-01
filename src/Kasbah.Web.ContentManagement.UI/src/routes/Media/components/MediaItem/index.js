@@ -7,8 +7,7 @@ import EditButton from './EditButton'
 
 class MediaItem extends React.Component {
   static propTypes = {
-    item: PropTypes.object.isRequired,
-    putMedia: PropTypes.object.isRequired
+    item: PropTypes.object.isRequired
   }
 
   render() {
