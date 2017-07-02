@@ -45,7 +45,7 @@ class Components extends React.Component {
         <ul>
           {_.keys(value).map(area => <Area
             key={area} parent={name} area={area}
-            onDelete={this.handleRemoveArea} {...this.state} {...this.props} />)}
+            onDelete={this.handleRemoveArea} {...this.props} />)}
         </ul>
         <div className='level'>
           <div className='level-left' />

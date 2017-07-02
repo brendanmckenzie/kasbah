@@ -10,14 +10,8 @@ class View extends React.Component {
     listSites: PropTypes.func.isRequired
   }
 
-  constructor() {
-    super()
-
-    this.state = { showModal: false }
-  }
-
   componentWillMount() {
-    if (!this.props.system.sites.loading) {
+    if (!this.props.system.sites.loaded && !this.props.system.sites.loading) {
       this.handleRefresh()
     }
   }
@@ -27,7 +21,7 @@ class View extends React.Component {
   }
 
   get table() {
-    if (this.props.system.loading) {
+    if (this.props.system.sites.loading) {
       return <Loading />
     }
 
