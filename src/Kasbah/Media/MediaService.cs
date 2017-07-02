@@ -82,7 +82,19 @@ namespace Kasbah.Media
                     });
 
                     responseStream = new MemoryStream();
-                    resized.Save(responseStream);
+                    switch (item.ContentType)
+                    {
+                        case "media/gif":
+                            resized.SaveAsGif(responseStream);
+                            break;
+                        case "media/png":
+                            resized.SaveAsPng(responseStream);
+                            break;
+                        case "media/jpeg":
+                        default:
+                            resized.SaveAsJpeg(responseStream);
+                            break;
+                    }
 
                     await _cache?.SetAsync(cacheKey, (responseStream as MemoryStream).ToArray());
 
