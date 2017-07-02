@@ -1,15 +1,13 @@
-import UsersRoute from './childRoutes/Users'
-import RolesRoute from './childRoutes/Roles'
+import View from './components/View'
+import { connect } from 'react-redux'
+import { actions as securityActions } from 'store/appReducers/security'
 
-export default (store) => ({
-  path: 'security',
-  getComponent(nextState, cb) {
-    require.ensure([], (require) => {
-      cb(null, require('./container').default)
-    }, 'securityRoute')
-  },
-  indexRoute: UsersRoute(store),
-  childRoutes: [
-    RolesRoute(store)
-  ]
+const mapStateToProps = (state) => ({
+  security: state.security
 })
+
+const mapDispatchToProps = {
+  ...securityActions
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(View)

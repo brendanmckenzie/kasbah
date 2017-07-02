@@ -1,9 +1,10 @@
-const createReducer = (types, initialStateDefaults = {}) => {
+const createReducer = (types, initialStateDefaults = {}, handlers = {}) => {
   const [requestType, successType, failureType] = types
   const actionHandlers = {
     [requestType]: (state, { payload }) => ({ loading: true, success: false, error: null }),
     [successType]: (state, { payload }) => ({ loading: false, success: true, payload }),
-    [failureType]: (state, { payload }) => ({ loading: false, success: false, payload })
+    [failureType]: (state, { payload }) => ({ loading: false, success: false, payload }),
+    ...handlers
   }
 
   const initialState = {

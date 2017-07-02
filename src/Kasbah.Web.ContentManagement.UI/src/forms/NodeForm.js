@@ -4,7 +4,7 @@ import { Field, reduxForm } from 'redux-form'
 import ModalForm from 'components/ModalForm'
 
 const NodeForm = ({ handleSubmit, types, onClose, loading }) => (
-  <ModalForm onClose={onClose} onSubmit={handleSubmit} loading={loading} title='Create node'>
+  <ModalForm onClose={onClose} onSubmit={handleSubmit} loading={loading} title='Node details'>
     <div className='field'>
       <label className='label' htmlFor='Type'>Type</label>
       <div className='control'>

@@ -83,22 +83,6 @@ namespace Kasbah.Web.ContentManagement.Controllers
             return new EmptyResponse { };
         }
 
-        [Route("node/{id}/type"), HttpPut]
-        public async Task<EmptyResponse> ChangeNodeTypeAsync(Guid id, [FromQuery] string type)
-        {
-            await _contentService.ChangeNodeTypeAsync(id, type);
-
-            return new EmptyResponse { };
-        }
-
-        [Route("node/{id}/alias"), HttpPut]
-        public async Task<EmptyResponse> UpdateNodeAliasAsync(Guid id, [FromQuery] string alias)
-        {
-            await _contentService.UpdateNodeAliasAsync(id, alias);
-
-            return new EmptyResponse { };
-        }
-
         [Route("node/{id}/move"), HttpPut]
         public async Task<EmptyResponse> MoveNodeAsync(Guid id, [FromQuery] Guid? parent)
         {

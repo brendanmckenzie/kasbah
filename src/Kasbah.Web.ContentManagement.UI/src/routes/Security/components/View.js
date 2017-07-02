@@ -1,25 +1,13 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import Navigation from './Navigation'
+import UserList from './UserList'
 
-export const View = ({ children }) => (
+export const View = () => (
   <div className='section'>
     <div className='container'>
       <h1 className='title'>Security</h1>
-      <div className='columns'>
-        <div className='column is-2'>
-          <Navigation />
-        </div>
-        <div className='column'>
-          {children}
-        </div>
-      </div>
+      <UserList />
     </div>
   </div>
 )
-
-View.propTypes = {
-  children: PropTypes.node
-}
 
 export default View

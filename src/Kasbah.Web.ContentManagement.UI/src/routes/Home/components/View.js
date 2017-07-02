@@ -1,6 +1,5 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import { Link } from 'react-router'
+import { NavLink } from 'react-router-dom'
 import Content from './Content'
 
 export const View = (props) => (
@@ -15,10 +14,10 @@ export const View = (props) => (
                 <p className='title'>Kasbah</p>
                 <p className='subtitle'>v1.0.0.0</p>
               </article>
-              <Link to='/security' className='tile is-child notification is-warning'>
+              <NavLink to='/security' className='tile is-child notification is-warning'>
                 <p className='title'>Security</p>
                 <p className='subtitle'>Manage user access and roles</p>
-              </Link>
+              </NavLink>
             </div>
             <div className='tile is-parent'>
               <div className='tile is-child notification is-info' />
@@ -35,10 +34,5 @@ export const View = (props) => (
     </div>
   </div>
 )
-
-View.propTypes = {
-  listLatestUpdatesRequest: PropTypes.func.isRequired,
-  listLatestUpdates: PropTypes.object.isRequired
-}
 
 export default View

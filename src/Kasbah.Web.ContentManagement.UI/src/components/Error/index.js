@@ -1,9 +1,16 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 
-export default () => (
+const Error = ({ message }) => (
   <div className='message is-danger'>
     <div className='message-body'>
-      An error has occurred
+      {message || 'An error has occurred'}
     </div>
   </div>
 )
+
+Error.propTypes = {
+  message: PropTypes.string
+}
+
+export default Error

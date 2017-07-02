@@ -1,4 +1,6 @@
 import { makeApiRequest } from 'store/util'
+import { push } from 'react-router-redux'
+import { HIDE_MODAL } from '../appReducers/ui'
 
 export const API_FAILURE = 'API_FAILURE'
 
@@ -6,7 +8,9 @@ export const middleware = ({ dispatch, getState }) => {
   return next => action => {
     const {
       request,
-      types
+      types,
+      params,
+      hideModalOnSuccess
     } = action
 
     if (!request) {
@@ -20,18 +24,34 @@ export const middleware = ({ dispatch, getState }) => {
 
     const [requestType, successType, failureType] = types
 
-    dispatch({ type: requestType })
+    dispatch({ type: requestType, params })
     return makeApiRequest(request)
       .then(res => {
         if (res.error) {
-          dispatch({ type: failureType, payload: { errorMessage: 'An error has occurred', detail: res.error } })
+          dispatch({ type: failureType, params, payload: { errorMessage: 'An error has occurred', detail: res.error } })
         } else {
-          dispatch({ type: successType, payload: res })
+          try {
+            dispatch({ type: successType, params, payload: res })
+
+            if (hideModalOnSuccess) {
+              dispatch({ type: HIDE_MODAL })
+            }
+
+            request.callback && request.callback(null, res)
+          } catch (ex) {
+            console.error(ex)
+          }
         }
       })
       .catch(ex => {
-        dispatch({ type: failureType, payload: { errorMessage: 'An error has occurred', detail: ex } })
-        dispatch({ type: API_FAILURE, payload: { ...ex } })
+        dispatch({ type: failureType, params, payload: { errorMessage: 'An error has occurred', detail: ex } })
+        if (ex.response) {
+          switch (ex.response.status) {
+            case 401: dispatch(push('/login'))
+          }
+        }
+
+        request.callback && request.callback(ex)
       })
   }
 }

@@ -1,14 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import _ from 'lodash'
 import moment from 'moment'
-import Loading from 'components/Loading'
 import { API_BASE, makeApiRequest } from 'store/util'
+import { actions as mediaActions } from 'store/appReducers/media'
 
 class MediaPicker extends React.Component {
   static propTypes = {
     input: PropTypes.object.isRequired,
-    options: PropTypes.object
+    media: PropTypes.object.isRequired,
+    listMedia: PropTypes.func.isRequired
   }
 
   static alias = 'mediaPicker'
@@ -26,6 +28,10 @@ class MediaPicker extends React.Component {
 
   componentWillMount() {
     this.handleReloadMediaDetail(this.props.input.value)
+
+    if (!this.props.media.list.loaded && !this.props.media.list.loading) {
+      this.props.listMedia()
+    }
   }
 
   handleShowModal = () => {
@@ -34,14 +40,6 @@ class MediaPicker extends React.Component {
       loading: true,
       selection: this.props.input.value
     })
-
-    makeApiRequest({ url: '/media/list', method: 'GET' })
-      .then(media => {
-        this.setState({
-          loading: false,
-          media
-        })
-      })
   }
 
   handleHideModal = () => {
@@ -104,7 +102,7 @@ class MediaPicker extends React.Component {
           <div className='media-content'>
             <p><strong>{this.state.mediaDetail.fileName}</strong></p>
             <p><small>{this.state.mediaDetail.contentType}</small></p>
-            <p><small>{moment(this.state.mediaDetail.created).fromNow()}</small></p>
+            <p><small>{moment.utc(this.state.mediaDetail.created).fromNow()}</small></p>
           </div>
         </div>
       )
@@ -130,28 +128,26 @@ class MediaPicker extends React.Component {
           <button type='button' className='delete' onClick={this.handleHideModal} />
         </header>
         <section className='modal-card-body'>
-          {this.state.loading ? <Loading /> : (
-            <div className='columns is-multiline'>
-              {_(this.state.media).sortBy('created').reverse().map(ent => (
-                <div key={ent.id} className='column is-4'>
-                  <div
-                    className={'card ' + (this.state.selection === ent.id ? 'is-selected' : '')}
-                    onClick={() => this.handleSelect(ent.id)}>
-                    <figure className='card-image'>
-                      <span className='image is-4by3'>
-                        <img src={`${API_BASE}/media?id=${ent.id}&width=256&height=192`} />
-                      </span>
-                    </figure>
-                    <div className='card-content'>
-                      <p className='filename' title={ent.fileName}><strong>{ent.fileName}</strong></p>
-                      <p><small>{ent.contentType}</small></p>
-                      <p><small>{moment(ent.created).fromNow()}</small></p>
-                    </div>
+          <div className='columns is-multiline'>
+            {_(this.props.media.list.items).sortBy('created').reverse().map(ent => (
+              <div key={ent.id} className='column is-4'>
+                <div
+                  className={'card ' + (this.state.selection === ent.id ? 'is-selected' : '')}
+                  onClick={() => this.handleSelect(ent.id)}>
+                  <figure className='card-image'>
+                    <span className='image is-4by3'>
+                      <img src={`${API_BASE}/media?id=${ent.id}&width=256&height=192`} />
+                    </span>
+                  </figure>
+                  <div className='card-content'>
+                    <p className='filename' title={ent.fileName}><strong>{ent.fileName}</strong></p>
+                    <p><small>{ent.contentType}</small></p>
+                    <p><small>{moment.utc(ent.created).fromNow()}</small></p>
                   </div>
                 </div>
-              )).value()}
-            </div>
-          )}
+              </div>
+            )).value()}
+          </div>
         </section>
         <footer className='modal-card-foot'>
           <button type='button' className='button is-primary' onClick={this.handleCommit}>Select</button>
@@ -168,7 +164,10 @@ class MediaPicker extends React.Component {
         <div className='level-left' />
         <div className='level-right'>
           <button type='button' className='level-item button is-small' onClick={this.handleClear}>Clear</button>
-          <button type='button' className='level-item button is-primary is-small' onClick={this.handleShowModal}>Select media</button>
+          <button
+            type='button'
+            className='level-item button is-primary is-small'
+            onClick={this.handleShowModal}>Select media</button>
         </div>
       </div>
       {this.state.showModal && this.modal}
@@ -176,4 +175,12 @@ class MediaPicker extends React.Component {
   }
 }
 
-export default MediaPicker
+const mapStateToProps = (state) => ({
+  media: state.media,
+})
+
+const mapDispatchToProps = {
+  ...mediaActions
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MediaPicker)

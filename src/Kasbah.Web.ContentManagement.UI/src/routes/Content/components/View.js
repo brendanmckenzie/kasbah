@@ -1,45 +1,31 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import ContentTree from './ContentTree/index.js'
+import { Route, Switch } from 'react-router'
+import ContentTree from 'components/ContentTree'
+import ContentDetail from './ContentDetail'
+import CreateButton from './CreateButton'
 
-class View extends React.Component {
-  static propTypes = {
-    children: PropTypes.node,
-    listTypes: PropTypes.object.isRequired,
-    listTypesRequest: PropTypes.func.isRequired
-  }
-
-  static childContextTypes = {
-    listTypes: PropTypes.object.isRequired
-  }
-
-  getChildContext() {
-    return {
-      listTypes: this.props.listTypes
-    }
-  }
-
-  componentWillMount() {
-    this.props.listTypesRequest()
-  }
-
-  render() {
-    return (
-      <div className='section'>
-        <div className='container'>
-          <div className='columns'>
-            <div className='column is-2'>
-              <ContentTree
-                {...this.props} />
-            </div>
-            <div className='column'>
-              {this.props.children}
-            </div>
+const View = () => (
+  <div className='section'>
+    <div className='container'>
+      <div className='columns'>
+        <div className='column is-2'>
+          <div className='field'>
+            <Switch>
+              <Route exact path='/content' render={props => <ContentTree context='browser' />} />
+              <Route exact path='/content/:id'
+                render={props => <ContentTree context='browser' selected={props.match.params.id} />} />
+            </Switch>
+          </div>
+          <div className='field'>
+            <CreateButton className='button is-primary is-fullwidth is-small' />
           </div>
         </div>
+        <div className='column'>
+          <Route exact path='/content/:id' component={ContentDetail} />
+        </div>
       </div>
-    )
-  }
-}
+    </div>
+  </div>
+)
 
 export default View

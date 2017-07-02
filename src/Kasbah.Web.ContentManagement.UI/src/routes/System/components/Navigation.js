@@ -1,12 +1,12 @@
 import React from 'react'
-import { Link } from 'react-router'
+import { NavLink } from 'react-router-dom'
 
 export const Navigation = () => (
   <div className='menu'>
     <span className='menu-label'>Sections</span>
     <ul className='menu-list'>
       <li className='menu-item'>
-        <Link activeClassName='is-active' to='/system/sites'>Sites</Link>
+        <NavLink activeClassName='is-active' to='/system/sites'>Sites</NavLink>
       </li>
     </ul>
   </div>

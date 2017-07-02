@@ -63,7 +63,7 @@ namespace Kasbah.Security
         public async Task<IEnumerable<User>> ListUsersAsync()
             => await _userProvider.ListUsersAsync();
 
-        public async Task<User> UpdateUserAsync(Guid id, string username, string password, string name = null, string email = null)
+        public async Task<User> PutUserAsync(Guid id, string username, string password, string name = null, string email = null)
         {
             var user = await GetUserAsync(id);
             if (!String.Equals(user.Username, username))
@@ -77,7 +77,12 @@ namespace Kasbah.Security
 
             await _userProvider.UpdateUserAsync(id, username, string.IsNullOrEmpty(password) ? null : EncryptPassword(password), name, email);
 
-            return await GetUserAsync(id);
+            var ret = await GetUserAsync(id);
+
+            // TODO: handle this in the provider
+            ret.Password = null;
+
+            return ret;
         }
 
         public async Task InitialiseAsync()

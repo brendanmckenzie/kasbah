@@ -1,14 +1,16 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import moment from 'moment'
 import _ from 'lodash'
-import { Link } from 'react-router'
+import { NavLink } from 'react-router-dom'
 import Loading from 'components/Loading'
 import { makeApiRequest } from 'store/util'
 
 class NodePickerMulti extends React.Component {
   static propTypes = {
     input: PropTypes.object.isRequired,
+    content: PropTypes.object.isRequired,
     type: PropTypes.string
   }
 
@@ -24,10 +26,6 @@ class NodePickerMulti extends React.Component {
       selection: [],
       nodeDetail: {}
     }
-  }
-
-  componentWillMount() {
-    this.handleReloadNodeDetail(this.props.input.value)
   }
 
   handleRefresh = () => {
@@ -73,24 +71,7 @@ class NodePickerMulti extends React.Component {
 
     onChange(this.state.selection)
 
-    this.handleReloadNodeDetail(this.state.selection)
-
     this.handleHideModal()
-  }
-
-  handleReloadNodeDetail = (value) => {
-    if (!value) { return }
-
-    Promise.all(value.map(ent => makeApiRequest({ url: `/content/node/${ent}`, method: 'GET' })))
-      .then(res => {
-        let detail = {}
-        res.forEach(ent => {
-          detail[ent.id] = ent
-        })
-        this.setState({
-          nodeDetail: detail
-        })
-      })
   }
 
   handleClear = () => {
@@ -103,13 +84,15 @@ class NodePickerMulti extends React.Component {
   }
 
   renderNode(id) {
-    if (this.state.nodeDetail[id]) {
-      const item = this.state.nodeDetail[id]
+    const { content: { tree: { nodes } } } = this.props
+    const item = nodes.find(ent => ent.id === id)
+
+    if (item) {
       return (
         <div className='level'>
           <div className='level-left'>
             <div className='level-item'>
-              <p><Link to={`/content/${id}`}>{item.displayName}</Link></p>
+              <p><NavLink to={`/content/${id}`}>{item.displayName}</NavLink></p>
               <p><small>{item.alias}</small></p>
             </div>
           </div>
@@ -122,7 +105,7 @@ class NodePickerMulti extends React.Component {
       )
     } else {
       return (
-        <Link to={`/content/${id}`}>{id}</Link>
+        <NavLink to={`/content/${id}`}>{id}</NavLink>
       )
     }
   }
@@ -161,7 +144,7 @@ class NodePickerMulti extends React.Component {
                   onClick={() => this.handleSelect(ent.id)}>
                   <div className='card-content'>
                     <p><strong>{ent.displayName}</strong> <small>{ent.alias}</small></p>
-                    <p><small>{moment(ent.modified).fromNow()}</small></p>
+                    <p><small>{moment.utc(ent.modified).fromNow()}</small></p>
                   </div>
                 </div>
               </div>
@@ -183,7 +166,10 @@ class NodePickerMulti extends React.Component {
         <div className='level-left' />
         <div className='level-right'>
           <button type='button' className='level-item button is-small' onClick={this.handleClear}>Clear</button>
-          <button type='button' className='level-item button is-small' onClick={this.handleShowModal}>Select nodes</button>
+          <button
+            type='button'
+            className='level-item button is-small'
+            onClick={this.handleShowModal}>Select nodes</button>
         </div>
       </div>
       {this.modal}
@@ -191,4 +177,8 @@ class NodePickerMulti extends React.Component {
   }
 }
 
-export default NodePickerMulti
+const mapStateToProps = (state) => ({
+  content: state.content
+})
+
+export default connect(mapStateToProps)(NodePickerMulti)

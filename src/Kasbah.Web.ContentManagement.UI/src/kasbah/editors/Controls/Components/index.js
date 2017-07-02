@@ -46,11 +46,7 @@ class Components extends React.Component {
   handleRemoveArea = (area) => {
     const { input: { value, onChange } } = this.props
 
-    // TODO: immutability...
-    const newValue = { ...value }
-    delete newValue[area]
-
-    onChange(newValue)
+    onChange(_.omit(value, area))
   }
 
   render() {
@@ -69,7 +65,12 @@ class Components extends React.Component {
         <div className='level'>
           <div className='level-left' />
           <div className='level-right'>
-            <button type='button' className='level-tiem button is-small is-primary' onClick={this.handleAddArea}>Add area</button>
+            <button
+              type='button'
+              className='level-tiem button is-small is-primary'
+              onClick={this.handleAddArea}>
+              Add area
+            </button>
           </div>
         </div>
       </div>

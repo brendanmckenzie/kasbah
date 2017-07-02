@@ -159,7 +159,10 @@ class AreaComponent extends React.Component {
                 </button>
               </div>
             </div>
-            <button type='button' className='level-item button is-small is-primary' onClick={this.handleToggleModal(true)}>
+            <button
+              type='button'
+              className='level-item button is-small is-primary'
+              onClick={this.handleToggleModal(true)}>
               {component ? `Edit: ${component.alias}` : 'Select control'}
             </button>
           </div>

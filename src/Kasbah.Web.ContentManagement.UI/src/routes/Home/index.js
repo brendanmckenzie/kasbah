@@ -1,11 +1,14 @@
-import { injectReducer } from 'store/reducers'
+import { connect } from 'react-redux'
+import { actions as contentActions } from 'store/appReducers/content'
 
-export default (store) => ({
-  getComponent (nextState, cb) {
-    require.ensure([], (require) => {
-      injectReducer(store, { key: 'listLatestUpdates', reducer: require('./modules/listLatestUpdates').reducer })
+import View from './components/View'
 
-      cb(null, require('./container').default)
-    }, 'homeRoute')
-  }
+const mapDispatchToProps = {
+  ...contentActions
+}
+
+const mapStateToProps = (state) => ({
+  content: state.content
 })
+
+export default connect(mapStateToProps, mapDispatchToProps)(View)
