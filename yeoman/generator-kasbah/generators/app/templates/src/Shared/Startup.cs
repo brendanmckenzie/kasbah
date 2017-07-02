@@ -12,11 +12,10 @@ namespace <%= namespace %>
     {
         public static IServiceCollection Add<%= namespace %>Web(this IServiceCollection services)
         {
-            services.AddSingleton(new Kasbah.DataAccess.Npgsql.NpgsqlSettings
+            services.AddKasbahNpgsql(settings =>
             {
-                ConnectionString = Environment.GetEnvironmentVariable("KASBAH_DB")
+                settings.ConnectionString = Environment.GetEnvironmentVariable("KASBAH_DB");
             });
-            services.AddTransient<Kasbah.Content.IContentProvider, Kasbah.DataAccess.Npgsql.ContentProvider>();
 
             // TODO: You'll probably want to change this...
             services.AddSingleton(new Kasbah.Media.LocalStorageMediaProviderSettings
@@ -36,7 +35,7 @@ namespace <%= namespace %>
             services.AddTransient<IMediaStorageProvider, Kasbah.Media.S3.S3MediaProvider>();
             */
 
-            services.AddTransient<IKasbahWebRegistration, WebRegistration>();
+            services.AddTransient<KasbahWebRegistration, WebRegistration>();
 
             services.AddDistributedRedisCache(options =>
             {

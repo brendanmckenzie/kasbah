@@ -4,9 +4,9 @@ using <%= namespace %>.Models;
 
 namespace <%= namespace %>
 {
-    public class WebRegistration : IKasbahWebRegistration
+    public class WebRegistration : KasbahWebRegistration
     {
-        public void RegisterSites(SiteRegistry siteRegistry)
+        public override void RegisterSites(SiteRegistry siteRegistry)
         {
             siteRegistry.RegisterSite(config =>
             {
@@ -15,7 +15,7 @@ namespace <%= namespace %>
                 config.ContentRoot = new[] { "sites", "<%= alias %>", "home" };
             });
         }
-        public void RegisterTypes(TypeRegistry typeRegistry)
+        public override void RegisterTypes(TypeRegistry typeRegistry)
         {
             typeRegistry.Register<WebRoot>();
             typeRegistry.Register<HomePage>(config =>
