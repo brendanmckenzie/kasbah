@@ -28,6 +28,9 @@ export const MOVE_NODE_FAILURE = 'MOVE_NODE_FAILURE'
 export const CREATE_NODE = 'CREATE_NODE'
 export const CREATE_NODE_SUCCESS = 'CREATE_NODE_SUCCESS'
 export const CREATE_NODE_FAILURE = 'CREATE_NODE_FAILURE'
+export const LIST_COMPONENTS = 'LIST_COMPONENTS'
+export const LIST_COMPONENTS_SUCCESS = 'LIST_COMPONENTS_SUCCESS'
+export const LIST_COMPONENTS_FAILURE = 'LIST_COMPONENTS_FAILURE'
 
 export const TOGGLE_NODE = 'TOGGLE_NODE'
 export const SELECT_NODE = 'SELECT_NODE'
@@ -178,6 +181,17 @@ export const actions = {
         }
       }
     })
+  },
+  listComponents: () => {
+    const types = [LIST_COMPONENTS, LIST_COMPONENTS_SUCCESS, LIST_COMPONENTS_FAILURE]
+
+    return {
+      types,
+      request: {
+        url: '/content/components',
+        method: 'GET'
+      }
+    }
   }
 }
 
@@ -199,7 +213,12 @@ const initialState = {
   },
   nodeState: {},
   detail: {},
-  selection: {}
+  selection: {},
+  components: {
+    loading: false,
+    loaded: false,
+    list: []
+  }
 }
 
 const actionHandlers = {
@@ -348,6 +367,14 @@ const actionHandlers = {
         ...state.tree.nodes,
         { id: payload, ...node }
       ]
+    }
+  }),
+  [LIST_COMPONENTS_SUCCESS]: (state, { payload }) => ({
+    ...state,
+    components: {
+      loaded: true,
+      loading: false,
+      list: payload
     }
   })
 }

@@ -31,7 +31,7 @@ class AreaComponent extends React.Component {
     area: PropTypes.string.isRequired,
     parent: PropTypes.string.isRequired,
     input: PropTypes.object.isRequired,
-    components: PropTypes.array.isRequired
+    content: PropTypes.object.isRequired
   }
 
   constructor() {
@@ -58,13 +58,18 @@ class AreaComponent extends React.Component {
 
   handleToggleModal = (showModal) => () => this.setState({ showModal })
 
+  get component() {
+    const { ent, content: { components: { list } } } = this.props
+
+    return list.find(cmp => cmp.alias === ent.Control)
+  }
+
   get modal() {
     if (!this.state.showModal) {
       return null
     }
 
-    const { ent, index, components, area, parent } = this.props
-    const component = components.find(cmp => cmp.alias === ent.Control)
+    const { index, content: { components: { list } }, area, parent } = this.props
 
     return (
       <div className='modal is-active'>
@@ -87,7 +92,7 @@ class AreaComponent extends React.Component {
                     <span className='select is-fullwidth'>
                       <Field name={`${parent}.${area}[${index}].Control`} component='select'>
                         <option value={null}>Select</option>
-                        {components.map(cmp => (<option key={cmp.alias} value={cmp.alias}>{cmp.alias}</option>))}
+                        {list.map(cmp => (<option key={cmp.alias} value={cmp.alias}>{cmp.alias}</option>))}
                       </Field>
                     </span>
                   </div>
@@ -108,11 +113,11 @@ class AreaComponent extends React.Component {
             </div>
             <hr />
 
-            {component && (<div className='field'>
+            {this.component && (<div className='field'>
               <Field
                 name={`${parent}.${area}[${index}].Properties`}
                 component={Nested}
-                options={component.properties} />
+                options={this.component.properties} />
             </div>)}
           </section>
           <footer className='modal-card-foot'>
@@ -124,15 +129,14 @@ class AreaComponent extends React.Component {
   }
 
   render() {
-    const { ent, components } = this.props
-    const component = components.find(cmp => cmp.alias === ent.Control)
+    const { ent } = this.props
 
     return (
       <div>
         <div className='level'>
           <div className='level-left'>
             {ent.Hint && <span className='level-item'>{ent.Hint}</span>}
-            {component && <span className='level-item'>{component.alias}</span>}
+            {this.component && <span className='level-item'>{this.component.alias}</span>}
           </div>
           <div className='level-right'>
             <button type='button' className='level-item button is-small is-warning' onClick={this.handleRemove}>
@@ -163,7 +167,7 @@ class AreaComponent extends React.Component {
               type='button'
               className='level-item button is-small is-primary'
               onClick={this.handleToggleModal(true)}>
-              {component ? `Edit: ${component.alias}` : 'Select control'}
+              {this.component ? `Edit: ${this.component.alias}` : 'Select control'}
             </button>
           </div>
         </div>

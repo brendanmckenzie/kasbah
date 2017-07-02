@@ -39,6 +39,7 @@ export const actions = {
     // TODO: this operates entirely outside the scope of redux
     const checkRefresh = () => {
       if (!localStorage.accessTokenExpires || !localStorage.user) {
+        dispatch(push('/login'))
         return
       }
 
@@ -88,7 +89,8 @@ const actionHandlers = {
   [LOGIN_REQUEST_SUCCESS]: (state, { payload }) => ({
     ...state,
     authenticating: false,
-    user: payload
+    user: payload,
+    ready: true
   }),
   [LOGIN_REQUEST_FAILURE]: (state, { error }) => ({
     ...state,

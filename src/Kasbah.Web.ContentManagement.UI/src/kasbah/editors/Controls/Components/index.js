@@ -1,34 +1,23 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import _ from 'lodash'
-import Loading from 'components/Loading'
-import { makeApiRequest } from 'store/util'
+import { actions as contentActions } from 'store/appReducers/content'
 import Area from './Area'
 
 class Components extends React.Component {
   static propTypes = {
-    input: PropTypes.object.isRequired
+    input: PropTypes.object.isRequired,
+    content: PropTypes.object.isRequired,
+    listComponents: PropTypes.func.isRequired
   }
 
   static alias = 'kasbah_web:components'
 
-  constructor() {
-    super()
-
-    this.state = { loading: true }
-  }
-
   componentWillMount() {
-    makeApiRequest({
-      url: '/content/components',
-      method: 'GET'
-    })
-      .then(components => {
-        this.setState({
-          loading: false,
-          components
-        })
-      })
+    if (!this.props.content.components.loaded && !this.props.content.components.loading) {
+      this.props.listComponents()
+    }
   }
 
   handleAddArea = () => {
@@ -50,10 +39,6 @@ class Components extends React.Component {
   }
 
   render() {
-    if (this.state.loading) {
-      return <Loading />
-    }
-
     const { input: { value, name } } = this.props
     return (
       <div>
@@ -78,4 +63,12 @@ class Components extends React.Component {
   }
 }
 
-export default Components
+const mapStateToProps = (state) => ({
+  content: state.content
+})
+
+const mapDispatchToProps = {
+  ...contentActions
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Components)
