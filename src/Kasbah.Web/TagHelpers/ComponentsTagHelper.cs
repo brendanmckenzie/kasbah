@@ -61,7 +61,7 @@ namespace Kasbah.Web.TagHelpers
 
                 if (content is IPresentable presentable)
                 {
-                    if (presentable.Components.ContainsKey(Area))
+                    if (presentable.Components?.ContainsKey(Area) == true)
                     {
                         _viewComponentHelper.Contextualize(ViewContext);
 
@@ -77,7 +77,7 @@ namespace Kasbah.Web.TagHelpers
                             }
                             else
                             {
-                                return await _viewComponentHelper.InvokeAsync(component.Control);
+                                return await _viewComponentHelper.InvokeAsync(component.Control, content);
                             }
                         }));
 

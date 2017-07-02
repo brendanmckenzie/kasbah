@@ -17,7 +17,7 @@ const View = () => (
             </Switch>
           </div>
           <div className='field'>
-            <CreateButton className='button is-primary is-fullwidth' />
+            <CreateButton className='button is-primary is-fullwidth is-small' />
           </div>
         </div>
         <div className='column'>

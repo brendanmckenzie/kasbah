@@ -38,7 +38,7 @@ namespace Kasbah.Content
             var type = Type.GetType(typeName);
             var typeInfo = type.GetTypeInfo();
 
-            var options = new ProxyGenerationOptions(new MethodSelectorHook());
+            var options = new ProxyGenerationOptions();
 
             var ret = _generator.CreateClassProxy(type, options, new KasbahPropertyInterceptor(MapPropertyAsync, data, context));
             if (data != null)
