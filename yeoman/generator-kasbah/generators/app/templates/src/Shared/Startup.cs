@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
-using Kasbah.DataAccess;
 using Kasbah.Media;
 using Kasbah.Web;
+using Kasbah.Provider.Npgsql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
