@@ -6,6 +6,7 @@ import Loading from 'components/Loading'
 import ContentEditorForm from 'forms/ContentEditorForm'
 import SideBar from './SideBar'
 import Breadcrumbs from './Breadcrumbs'
+import { Columns, Column, Field } from 'components/Layout'
 
 class ContentDetail extends React.Component {
   static propTypes = {
@@ -45,12 +46,12 @@ class ContentDetail extends React.Component {
     return (
       <div>
         <h2 className='subtitle'>{detail.node.displayName}</h2>
-        <div className='field'>
+        <Field>
           <Breadcrumbs id={params.id} content={this.props.content} />
-        </div>
+        </Field>
 
-        <div className='columns'>
-          <div className='column'>
+        <Columns>
+          <Column>
             {detail.type.fields.length === 0
               ? <p>This content type does not define any editable fields.</p>
               : <ContentEditorForm
@@ -58,11 +59,11 @@ class ContentDetail extends React.Component {
                 type={detail.type}
                 loading={detail.saving}
                 onSubmit={this.handleSave} />}
-          </div>
-          <div className='column is-3'>
+          </Column>
+          <Column className='is-3'>
             <SideBar {...detail} />
-          </div>
-        </div>
+          </Column>
+        </Columns>
       </div>
     )
   }

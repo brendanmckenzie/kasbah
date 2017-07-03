@@ -1,13 +1,14 @@
 import React from 'react'
 import UserList from './UserList'
+import { Section, Container } from 'components/Layout'
 
 export const View = () => (
-  <div className='section'>
-    <div className='container'>
+  <Section>
+    <Container>
       <h1 className='title'>Security</h1>
       <UserList />
-    </div>
-  </div>
+    </Container>
+  </Section>
 )
 
 export default View

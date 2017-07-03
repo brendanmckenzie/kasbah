@@ -1,13 +1,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import LoginForm from 'forms/LoginForm'
+import { Container, Columns, Column } from 'components/Layout'
 
 const View = ({ login, auth }) => (
   <div className='hero is-fullheight'>
     <div className='hero-body'>
-      <div className='container'>
-        <div className='columns'>
-          <div className='column is-4 is-offset-4'>
+      <Container>
+        <Columns>
+          <Column className='is-4 is-offset-4'>
             <div className='notification is-primary'>
               <p className='heading'>Content authoring and marketing platform</p>
               <div className='level'>
@@ -20,9 +21,9 @@ const View = ({ login, auth }) => (
               </div>
             </div>
             <LoginForm onSubmit={login} loading={auth.authenticating} errorMessage={auth.error} />
-          </div>
-        </div>
-      </div>
+          </Column>
+        </Columns>
+      </Container>
     </div>
   </div>
 )

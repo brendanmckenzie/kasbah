@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Loading from 'components/Loading'
 import MediaItem from './MediaItem'
+import { Columns } from 'components/Layout'
 
 const MediaList = ({ media }) => {
   if (media.loading) {
@@ -9,11 +10,11 @@ const MediaList = ({ media }) => {
   }
 
   return (
-    <div className='columns is-multiline'>
+    <Columns className='is-multiline'>
       {media.list.items.map((ent, index) => (
         <MediaItem key={ent.id} item={ent} />
       ))}
-    </div>
+    </Columns>
   )
 }
 

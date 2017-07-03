@@ -1,10 +1,11 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import Content from './Content'
+import { Section, Container } from 'components/Layout'
 
 export const View = (props) => (
-  <div className='section'>
-    <div className='container'>
+  <Section>
+    <Container>
       <div className='tile is-ancestor'>
         <div className='tile is-vertical is-8'>
           <div className='tile'>
@@ -31,8 +32,8 @@ export const View = (props) => (
           <Content {...props} />
         </div>
       </div>
-    </div>
-  </div>
+    </Container>
+  </Section>
 )
 
 export default View

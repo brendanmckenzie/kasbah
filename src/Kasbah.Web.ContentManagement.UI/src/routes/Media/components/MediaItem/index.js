@@ -4,6 +4,7 @@ import moment from 'moment'
 import { API_BASE } from 'store/util'
 import DeleteButton from './DeleteButton'
 import EditButton from './EditButton'
+import { Column } from 'components/Layout'
 
 class MediaItem extends React.Component {
   static propTypes = {
@@ -14,7 +15,7 @@ class MediaItem extends React.Component {
     const { item } = this.props
 
     return (
-      <div className='column is-4'>
+      <Column className='is-4'>
         <div className='media'>
           <figure className='media-left'>
             <span className='image is-64x64'>
@@ -36,7 +37,7 @@ class MediaItem extends React.Component {
           </div>
         </div>
         {this.modal}
-      </div>
+      </Column>
     )
   }
 }

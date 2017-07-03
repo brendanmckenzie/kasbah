@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import Dropzone from 'react-dropzone'
 import Loading from 'components/Loading'
 import MediaList from './MediaList'
+import { Section, Container } from 'components/Layout'
 
 class View extends React.Component {
   static propTypes = {
@@ -43,13 +44,13 @@ class View extends React.Component {
 
   render() {
     return (
-      <div className='section'>
-        <div className='container'>
+      <Section>
+        <Container>
           {this.upload}
           <hr />
           <MediaList media={this.props.media} />
-        </div>
-      </div>
+        </Container>
+      </Section>
     )
   }
 }

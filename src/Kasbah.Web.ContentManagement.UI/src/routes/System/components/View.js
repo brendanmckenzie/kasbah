@@ -2,23 +2,24 @@ import React from 'react'
 import { Route, Switch } from 'react-router'
 import Navigation from './Navigation'
 import Sites from './Sites'
+import { Section, Container, Columns, Column } from 'components/Layout'
 
 export const View = () => (
-  <div className='section'>
-    <div className='container'>
+  <Section>
+    <Container>
       <h1 className='title'>System</h1>
-      <div className='columns'>
-        <div className='column is-2'>
+      <Columns>
+        <Column className='is-2'>
           <Navigation />
-        </div>
-        <div className='column'>
+        </Column>
+        <Column>
           <Switch>
             <Route exact path='/system/sites' component={Sites} />
           </Switch>
-        </div>
-      </div>
-    </div>
-  </div>
+        </Column>
+      </Columns>
+    </Container>
+  </Section>
 )
 
 export default View

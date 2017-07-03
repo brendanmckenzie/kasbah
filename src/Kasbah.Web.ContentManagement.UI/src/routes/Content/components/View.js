@@ -1,31 +1,38 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import { Route, Switch } from 'react-router'
 import ContentTree from 'components/ContentTree'
 import ContentDetail from './ContentDetail'
 import CreateButton from './CreateButton'
+import { Section, Container, Columns, Column, Field } from 'components/Layout'
+
+const renderBrowser = ({ match }) => <ContentTree context='browser' selected={match && match.params.id} />
+
+renderBrowser.propTypes = {
+  match: PropTypes.object
+}
 
 const View = () => (
-  <div className='section'>
-    <div className='container'>
-      <div className='columns'>
-        <div className='column is-2'>
-          <div className='field'>
+  <Section>
+    <Container>
+      <Columns>
+        <Column className='is-2'>
+          <Field>
             <Switch>
-              <Route exact path='/content' render={props => <ContentTree context='browser' />} />
-              <Route exact path='/content/:id'
-                render={props => <ContentTree context='browser' selected={props.match.params.id} />} />
+              <Route exact path='/content' render={renderBrowser} />
+              <Route exact path='/content/:id' render={renderBrowser} />
             </Switch>
-          </div>
-          <div className='field'>
+          </Field>
+          <Field>
             <CreateButton className='button is-primary is-fullwidth is-small' />
-          </div>
-        </div>
-        <div className='column'>
+          </Field>
+        </Column>
+        <Column>
           <Route exact path='/content/:id' component={ContentDetail} />
-        </div>
-      </div>
-    </div>
-  </div>
+        </Column>
+      </Columns>
+    </Container>
+  </Section>
 )
 
 export default View
