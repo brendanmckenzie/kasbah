@@ -132,18 +132,18 @@ class AreaComponent extends React.Component {
     const { ent } = this.props
 
     return (
-      <div>
+      <div className='field'>
         <div className='level'>
           <div className='level-left'>
             {ent.Hint && <span className='level-item'>{ent.Hint}</span>}
             {this.component && <span className='level-item'>{this.component.alias}</span>}
           </div>
           <div className='level-right'>
-            <button type='button' className='level-item button is-small is-warning' onClick={this.handleRemove}>
-              <span className='icon is-small'>
-                <i className='fa fa-trash' />
-              </span>
-              <span>Remove component</span>
+            <button
+              type='button'
+              className='level-item button is-small is-primary'
+              onClick={this.handleToggleModal(true)}>
+              {this.component ? `Edit: ${this.component.alias}` : 'Select control'}
             </button>
             <div className='level-item has-addons'>
               <div className='control'>
@@ -151,7 +151,6 @@ class AreaComponent extends React.Component {
                   <span className='icon is-small'>
                     <i className='fa fa-long-arrow-up' />
                   </span>
-                  <span>Move up</span>
                 </button>
               </div>
               <div className='control'>
@@ -159,19 +158,16 @@ class AreaComponent extends React.Component {
                   <span className='icon is-small'>
                     <i className='fa fa-long-arrow-down' />
                   </span>
-                  <span>Move down</span>
                 </button>
               </div>
             </div>
-            <button
-              type='button'
-              className='level-item button is-small is-primary'
-              onClick={this.handleToggleModal(true)}>
-              {this.component ? `Edit: ${this.component.alias}` : 'Select control'}
+            <button type='button' className='level-item button is-small is-warning' onClick={this.handleRemove}>
+              <span className='icon is-small'>
+                <i className='fa fa-trash' />
+              </span>
             </button>
           </div>
         </div>
-        <hr />
         {this.modal}
       </div>
     )

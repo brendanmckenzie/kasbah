@@ -31,6 +31,9 @@ class Area extends React.Component {
             <code className='subtitle level-item'>{area}</code>
           </div>
           <div className='level-right'>
+            <button type='button' className='level-item button is-small is-primary' onClick={this.handleAddComponent}>
+              <span>Add component</span>
+            </button>
             <ItemButton
               type='button'
               className='level-item button is-small is-warning'
@@ -39,11 +42,7 @@ class Area extends React.Component {
               <span className='icon is-small'>
                 <i className='fa fa-trash' />
               </span>
-              <span>Remove area</span>
             </ItemButton>
-            <button type='button' className='level-item button is-small is-primary' onClick={this.handleAddComponent}>
-              <span>Add component</span>
-            </button>
           </div>
         </div>
 

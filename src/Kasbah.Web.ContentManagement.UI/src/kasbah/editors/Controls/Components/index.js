@@ -42,7 +42,7 @@ class Components extends React.Component {
     const { input: { value, name } } = this.props
     return (
       <div>
-        <ul>
+        <ul className='field'>
           {_.keys(value).map(area => <Area
             key={area} parent={name} area={area}
             onDelete={this.handleRemoveArea} {...this.props} />)}
