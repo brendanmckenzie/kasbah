@@ -9,15 +9,25 @@ Docker is the easiest way to run the services required to power Kasbah.
 ## Requirements
 
  * Kasbah uses PostgreSQL as its datastore.
-    * Run a local development instance using docker by executing: `docker run -d -p '5432:5432' postgres`
  * Kasbah uses Redis for its caching layer.
-    * Run a local development instance using docker by executing: `docker run -d -p '6379:6379' redis`
+
+### Quick start
+
+These ports in these commands coincide with the configuration that comes with the below yeoman generator.
+
+ 1. Start the pre-configured Kasbah pgsql database
+
+    docker run --name kasbah_db -p '5532:5432' kasbah/db
+
+ 2. Start redis
+
+    docker run --name kasbah_cache -p '6379:6379' redis
 
 ## Installation
 
 The fastest way to get started with Kasbah is to use the Yeoman generator.
 
-    npm install -g yeoman generator-kasbah
+    npm install -g yo generator-kasbah
     yo kasbah
 
 Follow the prompts and you'll have the code ready to build a Kasbah based web application.
