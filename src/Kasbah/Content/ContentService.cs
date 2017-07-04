@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Logging;
 using Kasbah.Content.Events;
 using Kasbah.Content.Models;
 using Kasbah.Extensions;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Logging;
 
 namespace Kasbah.Content
 {
@@ -20,7 +20,10 @@ namespace Kasbah.Content
         readonly EventBus _eventBus;
         readonly IKasbahQueryProviderFactory _queryProviderFactory;
 
-        public ContentService() { } // TODO: find out how to not need this. it's here because of unit tests
+        public ContentService()
+        {
+            // TODO: find out how to not need this. it's here because of unit tests
+        }
 
         public ContentService(ILoggerFactory loggerFactory, IContentProvider contentProvider, TypeRegistry typeRegistry, EventBus eventBus, IKasbahQueryProviderFactory queryProviderFactory, IDistributedCache cache = null)
         {
@@ -31,8 +34,6 @@ namespace Kasbah.Content
             _cache = cache;
             _queryProviderFactory = queryProviderFactory;
         }
-
-        #region Public methods
 
         public async Task<Guid> CreateNodeAsync(Guid? parent, string alias, string type, string displayName = null)
         {
@@ -124,7 +125,6 @@ namespace Kasbah.Content
                     .Concat(_typeRegistry.ListTypes()
                         .Where(ent => typeObj.GetTypeInfo().IsAssignableFrom(Type.GetType(ent.Alias)))
                         .Select(ent => ent.Alias));
-
             }
 
             return await _contentProvider.GetNodesByType(typesToQuery);
@@ -157,20 +157,18 @@ namespace Kasbah.Content
             where TItem : IItem
             => new KasbahQueryable<TItem>(_queryProviderFactory.CreateProvider(typeof(TItem)));
 
-        #endregion
-
-        #region Private methods
-
         async Task CheckCanCreateNodeAsync(Guid? parent, string alias, string type)
         {
             if (string.IsNullOrEmpty(type))
             {
                 throw new ArgumentNullException(nameof(type));
             }
+
             if (_typeRegistry.GetType(type) == null)
             {
                 throw new InvalidOperationException($"Unknown type {type}. Did you register it with the {nameof(TypeRegistry)}?");
             }
+
             if (string.IsNullOrEmpty(alias))
             {
                 throw new ArgumentNullException(nameof(alias));
@@ -178,9 +176,10 @@ namespace Kasbah.Content
 
             // TODO: make this more efficient, create a GetChildByAlias() function or something
             var tree = await DescribeTreeAsync();
-            if (tree.Any(ent => ent.Alias == alias && ent.Parent == parent)) { throw new InvalidOperationException($"Node with alias {alias} already exists under {parent}"); }
+            if (tree.Any(ent => ent.Alias == alias && ent.Parent == parent))
+            {
+                throw new InvalidOperationException($"Node with alias {alias} already exists under {parent}");
+            }
         }
-
-        #endregion
     }
 }

@@ -83,7 +83,10 @@ namespace Kasbah.Content
 
         public async Task<object> MapPropertyAsync(object source, PropertyInfo property, TypeMapperContext context)
         {
-            if (source == null) { return null; }
+            if (source == null)
+            {
+                return null;
+            }
 
             var sourceType = source.GetType();
 

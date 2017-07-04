@@ -6,10 +6,10 @@ using System.Text;
 using System.Threading.Tasks;
 using ImageSharp;
 using ImageSharp.Processing;
-using SixLabors.Primitives;
 using Kasbah.Media.Models;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using SixLabors.Primitives;
 
 namespace Kasbah.Media
 {
@@ -135,24 +135,5 @@ namespace Kasbah.Media
 
             return new Size(sourceWidth, sourceHeight);
         }
-    }
-
-    public class GetMediaRequest
-    {
-        public Guid Id { get; set; }
-        public int? Width { get; set; }
-        public int? Height { get; set; }
-
-        internal string Hash
-            => Convert.ToBase64String(Encoding.UTF8.GetBytes($"Id={Id}&Width={Width}&Height={Height}"));
-
-        public bool IsEmpty
-            => (!Width.HasValue && !Height.HasValue);
-    }
-
-    public class GetMediaResponse
-    {
-        public Stream Stream { get; set; }
-        public MediaItem Item { get; set; }
     }
 }

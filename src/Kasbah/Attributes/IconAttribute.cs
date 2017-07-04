@@ -9,9 +9,10 @@ namespace Kasbah.Content.Attributes
         {
             this.Icon = icon;
             this.Colour = colour;
-
         }
+
         public string Icon { get; private set; }
+
         public string Colour { get; private set; }
     }
 }

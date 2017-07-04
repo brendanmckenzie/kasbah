@@ -32,7 +32,7 @@ namespace Kasbah.Content
             => _types.AsEnumerable();
 
         public TypeDefinition GetType(string type)
-            => _types.SingleOrDefault(ent => String.Equals(ent.Alias.Split(',').First(), type.Split(',').First()));
+            => _types.SingleOrDefault(ent => string.Equals(ent.Alias.Split(',').First(), type.Split(',').First()));
 
         public IEnumerable<TypeDefinition> GetTypesThatImplement(Type type)
             => _types.Where(ent => type.IsAssignableFrom(Type.GetType(ent.Alias)));
@@ -40,20 +40,5 @@ namespace Kasbah.Content
         public IEnumerable<TypeDefinition> GetTypesThatImplement<TType>()
             where TType : IItem
             => GetTypesThatImplement(typeof(TType));
-    }
-
-    public static class TypeRegistryExtensions
-    {
-        public static TypeRegistry Register<T>(this TypeRegistry registry, Action<TypeDefinitionBuilder> configure = null)
-            where T : Item
-        {
-            var builder = new TypeDefinitionBuilder<T>();
-
-            configure?.Invoke(builder);
-
-            registry.RegisterType(builder.Build());
-
-            return registry;
-        }
     }
 }

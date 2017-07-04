@@ -8,8 +8,8 @@ namespace Kasbah.Content.Attributes
         public FieldEditorAttribute(string editor)
         {
             this.Editor = editor;
-
         }
+
         public string Editor { get; set; }
     }
 }
