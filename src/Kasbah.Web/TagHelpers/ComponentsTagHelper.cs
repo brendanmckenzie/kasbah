@@ -16,12 +16,6 @@ namespace Kasbah.Web.TagHelpers
     [HtmlTargetElement("components")]
     public class ComponentsTagHelper : TagHelper
     {
-        [HtmlAttributeName("area")]
-        public string Area { get; set; }
-
-        [ViewContext]
-        public ViewContext ViewContext { get; set; }
-
         readonly ILogger _log;
         readonly DefaultViewComponentHelper _viewComponentHelper;
         readonly ContentService _contentService;
@@ -34,6 +28,12 @@ namespace Kasbah.Web.TagHelpers
             _contentService = contentService;
             _componentRegistry = componentRegistry;
         }
+
+        [HtmlAttributeName("area")]
+        public string Area { get; set; }
+
+        [ViewContext]
+        public ViewContext ViewContext { get; set; }
 
         public async override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {

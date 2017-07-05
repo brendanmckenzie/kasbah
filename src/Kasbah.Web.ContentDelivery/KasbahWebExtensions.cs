@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Kasbah.Web.ContentDelivery
 {
-    public static class KasbahExtensions
+    public static class KasbahWebExtensions
     {
         public static IServiceCollection AddKasbahPublic(this IServiceCollection services)
         {
@@ -18,7 +18,7 @@ namespace Kasbah.Web.ContentDelivery
 
             services
                 .AddMvc()
-                .AddApplicationPart(typeof(KasbahExtensions).GetTypeInfo().Assembly);
+                .AddApplicationPart(typeof(KasbahWebExtensions).GetTypeInfo().Assembly);
 
             services.AddKasbah();
             services.AddKasbahWeb();

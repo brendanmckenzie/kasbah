@@ -21,15 +21,18 @@ namespace Kasbah.Web.ContentManagement.Controllers
             _mediaService = mediaService;
         }
 
-        [Route("list"), HttpGet]
+        [Route("list")]
+        [HttpGet]
         public async Task<IEnumerable<MediaItem>> List()
             => await _mediaService.ListMediaAsync();
 
-        [Route("upload"), HttpPost]
+        [Route("upload")]
+        [HttpPost]
         public async Task<IEnumerable<Guid>> Upload(IEnumerable<IFormFile> files)
             => await Task.WhenAll(files.Concat(Request.Form.Files).Select(async ent => await _mediaService.CreateMediaAsync(ent.OpenReadStream(), ent.FileName, ent.ContentType)));
 
-        [Route("{id}"), HttpDelete]
+        [Route("{id}")]
+        [HttpDelete]
         public async Task<bool> DeleteAsync(Guid id)
         {
             await _mediaService.DeleteMediaItemAsync(id);
@@ -37,7 +40,10 @@ namespace Kasbah.Web.ContentManagement.Controllers
             return true;
         }
 
-        [Route(""), HttpGet, AllowAnonymous, ResponseCache(Duration = 3600)]
+        [Route("")]
+        [HttpGet]
+        [AllowAnonymous]
+        [ResponseCache(Duration = 3600)]
         public async Task<FileResult> GetMedia([FromQuery] GetMediaRequest request)
         {
             var media = await _mediaService.GetMedia(request);
@@ -45,11 +51,13 @@ namespace Kasbah.Web.ContentManagement.Controllers
             return new FileStreamResult(media.Stream, media.Item.ContentType);
         }
 
-        [Route("{id}/meta"), HttpGet]
+        [Route("{id}/meta")]
+        [HttpGet]
         public async Task<MediaItem> GetMediaMeta(Guid id)
             => await _mediaService.GetMediaItemAsync(id);
 
-        [Route(""), HttpPut]
+        [Route("")]
+        [HttpPut]
         public async Task<MediaItem> PutMediaAsync([FromBody] MediaItem item)
             => await _mediaService.PutMediaAsync(item);
     }

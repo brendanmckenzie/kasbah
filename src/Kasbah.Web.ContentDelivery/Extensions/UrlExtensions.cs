@@ -10,10 +10,13 @@ namespace Kasbah.Web.ContentDelivery.Extensions
     {
         public static PathString ItemUrl(this IUrlHelper urlHelper, Item item, bool absolute = false)
         {
-            if (item == null) { return null; }
+            if (item == null)
+            {
+                return null;
+            }
 
             var kasbahWebContext = urlHelper.ActionContext.RouteData.Values["kasbahWebContext"] as KasbahWebContext;
-            var site = kasbahWebContext.SiteRegistry.GetSiteByNode(item.Node);
+            var site = kasbahWebContext.Site;
 
             var relativePath = string.Join("/", item.Node.Taxonomy.Aliases.Skip(site.ContentRoot.Count()));
 
@@ -27,16 +30,19 @@ namespace Kasbah.Web.ContentDelivery.Extensions
 
         public static PathString MediaUrlAsync(this IUrlHelper urlHelper, MediaItem mediaItem, bool absolute = false)
         {
-            if (mediaItem == null) { return null; }
+            if (mediaItem == null)
+            {
+                return null;
+            }
 
             var kasbahWebContext = urlHelper.ActionContext.RouteData.Values["kasbahWebContext"] as KasbahWebContext;
-            // var site = kasbahWebContext.SiteRegistry.GetSiteByNode(item.Node);
 
+            var site = kasbahWebContext.Site;
             var relativePath = $"media/{mediaItem.Id}";
 
             if (absolute)
             {
-                // return $"{(site.UseSsl ? "https" : "http")}://{site.DefaultDomain}/{relativePath}";
+                return $"{(site.UseSsl ? "https" : "http")}://{site.DefaultDomain}/{relativePath}";
             }
 
             return "/" + relativePath;

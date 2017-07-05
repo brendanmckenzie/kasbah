@@ -14,7 +14,9 @@ namespace Kasbah.Web.ContentDelivery.Controllers
             _mediaService = mediaService;
         }
 
-        [Route(""), HttpGet, ResponseCache(Duration = 3600)]
+        [Route("")]
+        [HttpGet]
+        [ResponseCache(Duration = 3600)]
         public async Task<FileResult> GetMedia([FromQuery] GetMediaRequest request)
         {
             var media = await _mediaService.GetMedia(request);

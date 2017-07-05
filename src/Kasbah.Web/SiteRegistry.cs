@@ -34,16 +34,4 @@ namespace Kasbah.Web
             return _sites.FirstOrDefault(ent => ent.ContentRoot.SequenceEqual(taxonomy.Take(ent.ContentRoot.Count())));
         }
     }
-
-    public static class SiteRegistryExtensions
-    {
-        public static void RegisterSite(this SiteRegistry siteRegistry, Action<Site> config)
-        {
-            var site = new Site();
-
-            config?.Invoke(site);
-
-            siteRegistry.RegisterSite(site);
-        }
-    }
 }

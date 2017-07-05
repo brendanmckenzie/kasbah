@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Kasbah.Web.ContentManagement
 {
-    public static class KasbahExtensions
+    public static class KasbahWebExtensions
     {
         public static IServiceCollection AddKasbahAdmin(this IServiceCollection services)
         {
@@ -18,7 +18,7 @@ namespace Kasbah.Web.ContentManagement
 
             services
                 .AddMvc()
-                .AddApplicationPart(typeof(KasbahExtensions).GetTypeInfo().Assembly);
+                .AddApplicationPart(typeof(KasbahWebExtensions).GetTypeInfo().Assembly);
 
             return services;
         }

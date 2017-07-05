@@ -4,12 +4,10 @@ namespace Kasbah.Web.ContentDelivery.Controllers
 {
     public class DefaultContentController : Controller
     {
-        #region Public Methods
-
         public ActionResult RenderContent()
         {
             var content = RouteData.Values["content"];
-            var viewName = (RouteData.Values["view"] as string);
+            var viewName = RouteData.Values["view"] as string;
             if (string.IsNullOrEmpty(viewName))
             {
                 viewName = nameof(RenderContent);
@@ -17,7 +15,5 @@ namespace Kasbah.Web.ContentDelivery.Controllers
 
             return View(viewName, content);
         }
-
-        #endregion
     }
 }

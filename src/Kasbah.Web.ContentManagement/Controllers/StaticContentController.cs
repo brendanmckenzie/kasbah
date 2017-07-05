@@ -8,7 +8,16 @@ namespace Kasbah.Web.ContentManagement.Controllers
 {
     public class StaticContentController : Controller
     {
-        #region Public Methods
+        static IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase)
+        {
+            { ".js", "application/x-javascript" },
+            { ".html", "text/html" },
+            { ".txt", "text/plain" },
+            { ".css", "text/css" },
+            { ".ico", "image/x-icon" },
+            { ".eot", "application/octet-stream" },
+            { ".ttf", "application/octet-stream" },
+        };
 
         public static string GetMimeType(string extension)
         {
@@ -42,27 +51,9 @@ namespace Kasbah.Web.ContentManagement.Controllers
                 path = "index.html";
                 data = MapPathToResource(path);
             }
+
             return new FileContentResult(data, GetMimeType(path.Split('.').Last()));
         }
-
-        #endregion
-
-        #region Private Fields
-
-        private static IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase)
-        {
-            { ".js", "application/x-javascript" },
-            { ".html", "text/html" },
-            { ".txt", "text/plain" },
-            { ".css", "text/css" },
-            { ".ico", "image/x-icon" },
-            { ".eot", "application/octet-stream" },
-            { ".ttf", "application/octet-stream" },
-        };
-
-        #endregion
-
-        #region Private Methods
 
         static byte[] MapPathToResource(string path)
         {
@@ -85,7 +76,5 @@ namespace Kasbah.Web.ContentManagement.Controllers
 
             return null;
         }
-
-        #endregion
     }
 }

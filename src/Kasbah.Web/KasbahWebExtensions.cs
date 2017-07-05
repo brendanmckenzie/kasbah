@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Kasbah.Web
 {
-    public static class KasbahExtensions
+    public static class KasbahWebExtensions
     {
         public static IServiceCollection AddKasbahWeb(this IServiceCollection services)
         {
