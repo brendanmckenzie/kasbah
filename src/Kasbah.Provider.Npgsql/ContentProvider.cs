@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Kasbah.Content;
-using Npgsql;
-using Dapper;
-using Kasbah.Content.Models;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using System.Linq;
+using System.Threading.Tasks;
+using Dapper;
+using Kasbah.Content;
+using Kasbah.Content.Models;
+using Newtonsoft.Json;
+using Npgsql;
 
 namespace Kasbah.Provider.Npgsql
 {
@@ -61,12 +61,7 @@ from
 
             using (var connection = GetConnection())
             {
-                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, (node, taxonomy) =>
-                {
-                    node.Taxonomy = taxonomy;
-
-                    return node;
-                }, splitOn: "Ids");
+                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeTaxonomyMapper, splitOn: "Ids");
             }
         }
 
@@ -92,12 +87,7 @@ where
 
             using (var connection = GetConnection())
             {
-                var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, (node, taxonomy) =>
-                {
-                    node.Taxonomy = taxonomy;
-
-                    return node;
-                }, new { id }, splitOn: "Ids");
+                var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeTaxonomyMapper, new { id }, splitOn: "Ids");
 
                 return ret.SingleOrDefault();
             }
@@ -125,12 +115,7 @@ where
 
             using (var connection = GetConnection())
             {
-                var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, (node, taxonomy) =>
-                {
-                    node.Taxonomy = taxonomy;
-
-                    return node;
-                }, new { aliases = aliases.ToArray() }, splitOn: "Ids");
+                var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeTaxonomyMapper, new { aliases = aliases.ToArray() }, splitOn: "Ids");
 
                 return ret.SingleOrDefault();
             }
@@ -158,12 +143,7 @@ where
 
             using (var connection = GetConnection())
             {
-                var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, (node, taxonomy) =>
-                {
-                    node.Taxonomy = taxonomy;
-
-                    return node;
-                }, new { ids = ids.ToArray() }, splitOn: "Ids");
+                var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeTaxonomyMapper, new { ids = ids.ToArray() }, splitOn: "Ids");
 
                 return ret.SingleOrDefault();
             }
@@ -191,12 +171,7 @@ where
 
             using (var connection = GetConnection())
             {
-                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, (node, taxonomy) =>
-                {
-                    node.Taxonomy = taxonomy;
-
-                    return node;
-                }, new { types = types.ToArray() }, splitOn: "Ids");
+                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeTaxonomyMapper, new { types = types.ToArray() }, splitOn: "Ids");
             }
         }
 
@@ -208,7 +183,10 @@ where
             {
                 var json = await connection.QueryFirstOrDefaultAsync<string>(Sql, new { id, version });
 
-                if (json == null) { return null; }
+                if (json == null)
+                {
+                    return null;
+                }
 
                 return JsonConvert.DeserializeObject<IDictionary<string, object>>(json);
             }
@@ -269,6 +247,7 @@ where
         public async Task DeleteNodeAsync(Guid id)
         {
             var node = await GetNodeAsync(id);
+
             // TODO: this shouldn't be required
             var taxoIndex = node.Taxonomy.Aliases.Count();
 
@@ -304,12 +283,7 @@ limit {take}";
 
             using (var connection = GetConnection())
             {
-                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(sql, (node, taxonomy) =>
-                {
-                    node.Taxonomy = taxonomy;
-
-                    return node;
-                }, splitOn: "Ids");
+                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(sql, NodeTaxonomyMapper, splitOn: "Ids");
             }
         }
 
@@ -344,17 +318,17 @@ limit {take}";
         {
             var currentNode = await GetNodeAsync(node.Id);
 
-            if (!String.Equals(currentNode.Alias, node.Alias))
+            if (!string.Equals(currentNode.Alias, node.Alias))
             {
                 await UpdateNodeAliasAsync(node.Id, node.Alias);
             }
 
-            if (!String.Equals(currentNode.Type, node.Type))
+            if (!string.Equals(currentNode.Type, node.Type))
             {
                 await ChangeNodeTypeAsync(node.Id, node.Type);
             }
 
-            if (!String.Equals(currentNode.DisplayName, node.DisplayName))
+            if (!string.Equals(currentNode.DisplayName, node.DisplayName))
             {
                 const string Sql = @"update node set display_name = :DisplayName, modified_at = now() where id = :Id";
                 using (var connection = GetConnection())
@@ -362,6 +336,13 @@ limit {take}";
                     await connection.ExecuteAsync(Sql, node);
                 }
             }
+
+            return node;
+        }
+
+        static Node NodeTaxonomyMapper(Node node, NodeTaxonomy taxonomy)
+        {
+            node.Taxonomy = taxonomy;
 
             return node;
         }

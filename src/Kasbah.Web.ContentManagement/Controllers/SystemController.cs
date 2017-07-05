@@ -21,7 +21,6 @@ namespace Kasbah.Web.ContentManagement.Controllers
             _externalModules = externalModules ?? Enumerable.Empty<ExternalModule>();
         }
 
-
         [Route("external-modules/list"), HttpGet, AllowAnonymous]
         public IEnumerable<ExternalModule> ListExternalModules()
             => _externalModules;

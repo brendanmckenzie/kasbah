@@ -1,10 +1,10 @@
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Dapper;
 using Kasbah.Media;
 using Kasbah.Media.Models;
 using Npgsql;
-using Dapper;
 
 namespace Kasbah.Provider.Npgsql
 {

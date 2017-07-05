@@ -49,14 +49,15 @@ namespace Kasbah.Web.ContentManagement.Controllers
 
         #region Private Fields
 
-        private static IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase) {
-            {".js", "application/x-javascript"},
-            {".html", "text/html"},
-            {".txt", "text/plain"},
-            {".css", "text/css"},
-            {".ico", "image/x-icon"},
-            {".eot", "application/octet-stream"},
-            {".ttf", "application/octet-stream"},
+        private static IDictionary<string, string> _mappings = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase)
+        {
+            { ".js", "application/x-javascript" },
+            { ".html", "text/html" },
+            { ".txt", "text/plain" },
+            { ".css", "text/css" },
+            { ".ico", "image/x-icon" },
+            { ".eot", "application/octet-stream" },
+            { ".ttf", "application/octet-stream" },
         };
 
         #endregion

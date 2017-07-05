@@ -23,7 +23,7 @@ namespace Kasbah.Web
             => _components.AsEnumerable();
 
         public ComponentDefinition GetByAlias(string alias)
-            => _components.FirstOrDefault(ent => String.Equals(ent.Alias, alias));
+            => _components.FirstOrDefault(ent => string.Equals(ent.Alias, alias));
     }
 
     public static class ComponentRegistryExtensions

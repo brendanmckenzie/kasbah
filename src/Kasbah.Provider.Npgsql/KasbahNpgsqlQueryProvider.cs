@@ -1,16 +1,16 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using Npgsql;
 using Dapper;
 using Kasbah.Content;
-using Newtonsoft.Json;
-using System.Collections;
 using Kasbah.Content.Models;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Npgsql;
 
 namespace Kasbah.Provider.Npgsql
 {
@@ -86,23 +86,27 @@ where ");
                     });
 
                 sql.Append($"({string.Join(" or ", typeWhere.Select(ent => ent.Statement))}) and ");
+
                 // TODO: this still isn't the greatest
                 foreach (var type in typeWhere)
                 {
                     parameters.Add(type.Key, type.Value);
                 }
             }
+
             sql.Append(string.IsNullOrEmpty(res.WhereClause) ? "1=1" : res.WhereClause);
             if (res.Take.HasValue)
             {
                 sql.Append(" limit ");
                 sql.Append(res.Take);
             }
+
             if (res.Skip.HasValue)
             {
                 sql.Append(" offset ");
                 sql.Append(res.Skip);
             }
+
             sql.Append(';');
 
             _log.LogDebug($"{nameof(Execute)}: {sql}");
@@ -135,76 +139,5 @@ where ");
 
         public TResult Execute<TResult>(Expression expression)
             => (TResult)Execute(expression);
-    }
-
-    class QueryResult
-    {
-        public Node Node { get; set; }
-        public string Json { get; set; }
-    }
-
-    internal static class IQueryableExtensions
-    {
-        public static string GetQueryText(this IQueryProvider provider, Expression expression)
-        {
-            return expression.ToString();
-        }
-    }
-
-    internal static class TypeSystem
-    {
-        internal static Type GetElementType(Type type)
-        {
-
-            var ienum = FindIEnumerable(type);
-
-            if (ienum == null) return type;
-
-            return ienum.GetGenericArguments()[0];
-
-        }
-
-        private static Type FindIEnumerable(Type type)
-        {
-            var typeInfo = type.GetTypeInfo();
-
-            if (type == null || type == typeof(string))
-                return null;
-
-            if (type.IsArray)
-                return typeof(IEnumerable<>).MakeGenericType(type.GetElementType());
-
-            if (typeInfo.IsGenericType)
-            {
-                foreach (Type arg in type.GetGenericArguments())
-                {
-                    var ienum = typeof(IEnumerable<>).MakeGenericType(arg);
-
-                    if (ienum.IsAssignableFrom(type))
-                    {
-                        return ienum;
-                    }
-                }
-            }
-
-            var ifaces = type.GetInterfaces();
-
-            if (ifaces.Any())
-            {
-                foreach (var iface in ifaces)
-                {
-                    var ienum = FindIEnumerable(iface);
-
-                    if (ienum != null) return ienum;
-                }
-            }
-
-            if (typeInfo.BaseType != null && typeInfo.BaseType != typeof(object))
-            {
-                return FindIEnumerable(typeInfo.BaseType);
-            }
-
-            return null;
-        }
     }
 }

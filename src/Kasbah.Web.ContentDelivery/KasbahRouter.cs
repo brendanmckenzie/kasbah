@@ -16,7 +16,6 @@ namespace Kasbah.Web.ContentDelivery
         readonly KasbahWebApplication _kasbahWebApplication;
         readonly TypeMapper _typeMapper;
 
-
         public KasbahRouter(ILoggerFactory loggerFactory, ContentService contentService, TypeRegistry typeRegistry, KasbahWebApplication kasbahWebApplication, TypeMapper typeMapper)
         {
             _log = loggerFactory.CreateLogger<KasbahRouter>();

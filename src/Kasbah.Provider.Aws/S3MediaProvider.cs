@@ -5,8 +5,8 @@ using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Microsoft.Extensions.Caching.Distributed;
 using Kasbah.Media;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Kasbah.Provider.Aws
 {

@@ -49,7 +49,6 @@ namespace Kasbah.Web.ContentManagement.Providers
             }
         }
 
-
         public override async Task ValidateTokenRequest(ValidateTokenRequestContext context)
         {
             if (!context.Request.IsPasswordGrantType() && !context.Request.IsRefreshTokenGrantType())

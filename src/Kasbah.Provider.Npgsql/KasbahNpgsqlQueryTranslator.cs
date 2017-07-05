@@ -8,35 +8,29 @@ using Kasbah.Content.Models;
 
 namespace Kasbah.Provider.Npgsql
 {
-    public class TranslateResponse
+    internal enum Clause
     {
-        public string WhereClause = "";
-        public string OrderByClause = "";
-        public long? Skip = null;
-        public long? Take = null;
-        public IDictionary<string, object> Parameters { get; internal set; }
+        Unknown,
+        Where,
+        Skip,
+        Take,
+        OrderBy
     }
 
-    public class KasbahNpgsqlQueryTranslator : ExpressionVisitor
+    internal class KasbahNpgsqlQueryTranslator : ExpressionVisitor
     {
-        enum Clause
-        {
-            Unknown,
-            Where,
-            Skip,
-            Take,
-            OrderBy
-        }
-
         readonly StringBuilder _whereClause = new StringBuilder();
         readonly IDictionary<string, object> _parameters = new Dictionary<string, object>();
 
         Clause _currentClause = Clause.Unknown;
-        long? _skip, _take;
+        long? _skip;
+        long? _take;
 
-        internal KasbahNpgsqlQueryTranslator() { }
+        public KasbahNpgsqlQueryTranslator()
+        {
+        }
 
-        internal TranslateResponse Translate(Expression expression)
+        public TranslateResponse Translate(Expression expression)
         {
             this.Visit(expression);
 
@@ -49,17 +43,18 @@ namespace Kasbah.Provider.Npgsql
             };
         }
 
-        private static Expression StripQuotes(Expression e)
-        {
-            while (e.NodeType == ExpressionType.Quote)
-            {
-                e = ((UnaryExpression)e).Operand;
-            }
-            return e;
-        }
-
         protected override Expression VisitMethodCall(MethodCallExpression m)
         {
+            Func<Expression, Expression> stripQuotes = (e) =>
+            {
+                while (e.NodeType == ExpressionType.Quote)
+                {
+                    e = ((UnaryExpression)e).Operand;
+                }
+
+                return e;
+            };
+
             if (m.Method.DeclaringType.FullName == "System.Linq.Queryable")
             {
                 switch (m.Method.Name)
@@ -68,14 +63,14 @@ namespace Kasbah.Provider.Npgsql
                         {
                             _currentClause = Clause.Where;
 
-                            LambdaExpression lambda = (LambdaExpression)StripQuotes(m.Arguments[1]);
+                            LambdaExpression lambda = (LambdaExpression)stripQuotes(m.Arguments[1]);
 
                             this.Visit(lambda.Body);
 
                             // TODO: find a way to Visit(m.Arguments[0]) without causing a StakcOverflow
-
                             return m;
                         }
+
                     case "Skip":
                         {
                             _currentClause = Clause.Skip;
@@ -85,6 +80,7 @@ namespace Kasbah.Provider.Npgsql
 
                             return m;
                         }
+
                     case "Take":
                         {
                             _currentClause = Clause.Take;
@@ -103,11 +99,11 @@ namespace Kasbah.Provider.Npgsql
                     case "Contains":
                         {
                             // TODO: generate a SQL `like` statement from this
-
                             return m;
                         }
                 }
             }
+
             throw new NotSupportedException($"The method '{m.Method.Name}' on '{m.Method.DeclaringType.FullName}' is not supported");
         }
 
@@ -125,8 +121,10 @@ namespace Kasbah.Provider.Npgsql
                         default:
                             throw new NotSupportedException($"The unary operator '{u.NodeType}' is not supported");
                     }
+
                     break;
             }
+
             return u;
         }
 
@@ -168,10 +166,12 @@ namespace Kasbah.Provider.Npgsql
                         default:
                             throw new NotSupportedException($"The binary operator '{b.NodeType}' is not supported");
                     }
+
                     this.Visit(b.Right);
                     _whereClause.Append(")");
                     break;
             }
+
             return b;
         }
 
@@ -200,6 +200,7 @@ namespace Kasbah.Provider.Npgsql
                                 {
                                     throw new NotSupportedException($"The constant for '{c.Value}' is not supported");
                                 }
+
                             case TypeCode.Boolean:
                             case TypeCode.String:
                             case TypeCode.Int16:
@@ -218,6 +219,7 @@ namespace Kasbah.Provider.Npgsql
                                 }
                         }
                     }
+
                     break;
                 case Clause.Skip:
                     switch (Type.GetTypeCode(c.Value.GetType()))
@@ -228,6 +230,7 @@ namespace Kasbah.Provider.Npgsql
                             _skip = Convert.ToInt64(c.Value);
                             break;
                     }
+
                     break;
                 case Clause.Take:
                     switch (Type.GetTypeCode(c.Value.GetType()))
@@ -238,11 +241,12 @@ namespace Kasbah.Provider.Npgsql
                             _take = Convert.ToInt64(c.Value);
                             break;
                     }
+
                     break;
             }
+
             return c;
         }
-
 
         protected override Expression VisitMember(MemberExpression m)
         {
@@ -251,6 +255,7 @@ namespace Kasbah.Provider.Npgsql
                 _whereClause.Append($"nc.content->>'{m.Member.Name}'");
                 return m;
             }
+
             throw new NotSupportedException($"The member '{m.Member.Name}' is not supported");
         }
     }
