@@ -6,6 +6,8 @@ namespace Kasbah.Web.Models
     {
         public string Alias { get; set; }
 
+        public string Area { get; set; }
+
         public IEnumerable<string> Domains { get; set; }
 
         public IEnumerable<string> ContentRoot { get; set; }
