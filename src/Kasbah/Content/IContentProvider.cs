@@ -36,5 +36,7 @@ namespace Kasbah.Content
         Task MoveNodeAsync(Guid id, Guid? parent);
 
         Task<Node> PutNodeAsync(Node node);
+
+        Task<IEnumerable<Node>> ListNodesByParentAsync(Guid? parent);
     }
 }

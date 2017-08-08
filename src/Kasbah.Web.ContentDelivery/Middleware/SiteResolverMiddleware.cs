@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using Kasbah.Content;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -10,6 +11,7 @@ namespace Kasbah.Web.ContentDelivery.Middleware
         readonly RequestDelegate _next;
         readonly ILogger _log;
         readonly SiteRegistry _siteRegistry;
+        readonly ContentService _contentService;
 
         public SiteResolverMiddleware(RequestDelegate next, ILoggerFactory loggerFactory, SiteRegistry siteRegistry)
         {
@@ -28,6 +30,8 @@ namespace Kasbah.Web.ContentDelivery.Middleware
             if (kasbahWebContext.Site != null)
             {
                 _log.LogDebug($"Site matched: {kasbahWebContext.Site.Alias}");
+
+                kasbahWebContext.SiteNode = await _contentService.GetNodeByTaxonomy(kasbahWebContext.Site.ContentRoot);
             }
 
             await _next.Invoke(context);

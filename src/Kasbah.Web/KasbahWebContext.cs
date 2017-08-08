@@ -23,6 +23,7 @@ namespace Kasbah.Web
         public Guid RequestId { get; set; } = Guid.NewGuid();
 
         public Site Site { get; set; }
+        public Node SiteNode { get; set; }
 
         public Node Node { get; set; }
 

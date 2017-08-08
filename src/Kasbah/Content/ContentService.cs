@@ -99,10 +99,8 @@ namespace Kasbah.Content
             throw await Task.FromResult(new NotImplementedException());
         }
 
-        public async Task<IEnumerable<Node>> GetChildrenAsync(Guid? parent)
-        {
-            throw await Task.FromResult(new NotImplementedException());
-        }
+        public async Task<IEnumerable<Node>> ListNodesByParentAsync(Guid? parent)
+            => await _contentProvider.ListNodesByParentAsync(parent);
 
         public async Task InitialiseAsync()
         {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Kasbah.Content.Models
 {
@@ -21,5 +22,7 @@ namespace Kasbah.Content.Models
         public DateTime Created { get; set; }
 
         public DateTime Modified { get; set; }
+
+        public Lazy<IEnumerable<Node>> Children { get; set; }
     }
 }

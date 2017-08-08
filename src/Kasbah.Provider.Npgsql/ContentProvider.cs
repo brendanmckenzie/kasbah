@@ -61,7 +61,7 @@ from
 
             using (var connection = GetConnection())
             {
-                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeTaxonomyMapper, splitOn: "Ids");
+                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeMapper, splitOn: "Ids");
             }
         }
 
@@ -87,7 +87,7 @@ where
 
             using (var connection = GetConnection())
             {
-                var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeTaxonomyMapper, new { id }, splitOn: "Ids");
+                var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeMapper, new { id }, splitOn: "Ids");
 
                 return ret.SingleOrDefault();
             }
@@ -115,7 +115,7 @@ where
 
             using (var connection = GetConnection())
             {
-                var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeTaxonomyMapper, new { aliases = aliases.ToArray() }, splitOn: "Ids");
+                var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeMapper, new { aliases = aliases.ToArray() }, splitOn: "Ids");
 
                 return ret.SingleOrDefault();
             }
@@ -143,7 +143,7 @@ where
 
             using (var connection = GetConnection())
             {
-                var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeTaxonomyMapper, new { ids = ids.ToArray() }, splitOn: "Ids");
+                var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeMapper, new { ids = ids.ToArray() }, splitOn: "Ids");
 
                 return ret.SingleOrDefault();
             }
@@ -171,7 +171,7 @@ where
 
             using (var connection = GetConnection())
             {
-                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeTaxonomyMapper, new { types = types.ToArray() }, splitOn: "Ids");
+                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeMapper, new { types = types.ToArray() }, splitOn: "Ids");
             }
         }
 
@@ -283,7 +283,7 @@ limit {take}";
 
             using (var connection = GetConnection())
             {
-                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(sql, NodeTaxonomyMapper, splitOn: "Ids");
+                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(sql, NodeMapper, splitOn: "Ids");
             }
         }
 
@@ -330,7 +330,7 @@ limit {take}";
 
             if (!string.Equals(currentNode.DisplayName, node.DisplayName))
             {
-                const string Sql = @"update node set display_name = :DisplayName, modified_at = now() where id = :Id";
+                const string Sql = @"update node set display_name = @DisplayName, modified_at = now() where id = @Id";
                 using (var connection = GetConnection())
                 {
                     await connection.ExecuteAsync(Sql, node);
@@ -340,9 +340,37 @@ limit {take}";
             return node;
         }
 
-        static Node NodeTaxonomyMapper(Node node, NodeTaxonomy taxonomy)
+        public async Task<IEnumerable<Node>> ListNodesByParentAsync(Guid? parent)
+        {
+            const string Sql = @"
+select
+    id as Id,
+    parent_id as Parent,
+    alias as Alias,
+    display_name as DisplayName,
+    type as Type,
+    published_version_id as PublishedVersion,
+    created_at as Created,
+    modified_at as Modified,
+    id_taxonomy as Ids,
+    alias_taxonomy as Aliases
+from
+    node
+where
+    (@parent is null and parent_id is null)
+    or (parent_id = @parent_id)
+";
+
+            using (var connection = GetConnection())
+            {
+                return await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeMapper, new { parent }, splitOn: "Ids");
+            }
+        }
+
+        Node NodeMapper(Node node, NodeTaxonomy taxonomy)
         {
             node.Taxonomy = taxonomy;
+            node.Children = new Lazy<IEnumerable<Node>>(() => ListNodesByParentAsync(node.Id).Result);
 
             return node;
         }
