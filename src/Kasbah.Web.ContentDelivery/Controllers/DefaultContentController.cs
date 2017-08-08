@@ -7,6 +7,7 @@ namespace Kasbah.Web.ContentDelivery.Controllers
         public ActionResult RenderContent()
         {
             var content = RouteData.Values["content"];
+            var area = RouteData.Values["area"] as string;
             var viewName = RouteData.Values["view"] as string;
             if (string.IsNullOrEmpty(viewName))
             {

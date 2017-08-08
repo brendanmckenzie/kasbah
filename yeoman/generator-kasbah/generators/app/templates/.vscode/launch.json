@@ -1,0 +1,37 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run CD",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceRoot}/src/<%= namespace %>.ContentDelivery/bin/Debug/netcoreapp1.1/<%= namespace %>.ContentDelivery.dll",
+            "args": [],
+            "cwd": "${workspaceRoot}/src/<%= namespace %>.ContentDelivery",
+            "externalConsole": false,
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "env": {
+                "KASBAH_ES": "http://localhost:9200",
+                "KASBAH_DB": "Server=localhost;Port=5532;Database=kasbah;User Id=kasbah;Password=kasbah;"
+            }
+        },
+        {
+            "name": "Run CM",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceRoot}/src/<%= namespace %>.ContentManagement/bin/Debug/netcoreapp1.1/<%= namespace %>.ContentManagement.dll",
+            "args": [],
+            "cwd": "${workspaceRoot}/src/<%= namespace %>.ContentManagement",
+            "externalConsole": false,
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "env": {
+                "KASBAH_ES": "http://localhost:9200",
+                "KASBAH_DB": "Server=localhost;Port=5532;Database=kasbah;User Id=kasbah;Password=kasbah;"
+            }
+        }
+    ]
+}

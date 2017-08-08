@@ -52,6 +52,11 @@ namespace Kasbah.Web.ContentDelivery
                     var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
                     var content = await _typeMapper.MapTypeAsync(data, node.Type, node);
 
+                    if (!string.IsNullOrEmpty(kasbahWebContext.Site.Area))
+                    {
+                        routeData.Values["area"] = kasbahWebContext.Site.Area;
+                    }
+
                     routeData.Values["controller"] = "DefaultContent";
                     routeData.Values["action"] = "RenderContent";
                     routeData.Values["content"] = content;

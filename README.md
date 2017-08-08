@@ -17,11 +17,11 @@ These ports in these commands coincide with the configuration that comes with th
 
  1. Start the pre-configured Kasbah pgsql database
 
-    docker run --name kasbah_db -p '5532:5432' kasbah/db
+    docker run -d --name kasbah_db -p '5532:5432' kasbah/db
 
  2. Start redis
 
-    docker run --name kasbah_cache -p '6379:6379' redis
+    docker run -d --name kasbah_cache -p '6379:6379' redis
 
 ## Installation
 
