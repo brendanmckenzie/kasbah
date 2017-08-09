@@ -13,11 +13,12 @@ namespace Kasbah.Web.ContentDelivery.Middleware
         readonly SiteRegistry _siteRegistry;
         readonly ContentService _contentService;
 
-        public SiteResolverMiddleware(RequestDelegate next, ILoggerFactory loggerFactory, SiteRegistry siteRegistry)
+        public SiteResolverMiddleware(RequestDelegate next, ILoggerFactory loggerFactory, SiteRegistry siteRegistry, ContentService contentService)
         {
             _next = next;
             _log = loggerFactory.CreateLogger<SiteResolverMiddleware>();
             _siteRegistry = siteRegistry;
+            _contentService = contentService;
         }
 
         public async Task Invoke(HttpContext context)
