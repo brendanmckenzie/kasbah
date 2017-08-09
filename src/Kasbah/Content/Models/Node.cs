@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Kasbah.Content.Models
 {
@@ -23,6 +24,7 @@ namespace Kasbah.Content.Models
 
         public DateTime Modified { get; set; }
 
+        [JsonIgnore]
         public Lazy<IEnumerable<Node>> Children { get; set; }
     }
 }

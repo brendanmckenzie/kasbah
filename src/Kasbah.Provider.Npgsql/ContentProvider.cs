@@ -358,7 +358,7 @@ from
     node
 where
     (@parent is null and parent_id is null)
-    or (parent_id = @parent_id)
+    or (parent_id = @parent)
 ";
 
             using (var connection = GetConnection())
