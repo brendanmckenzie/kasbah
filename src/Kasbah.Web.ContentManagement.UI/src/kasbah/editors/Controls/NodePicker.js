@@ -141,8 +141,9 @@ class NodePicker extends React.Component {
                   className={'card' + ((this.state.selection === ent.id) ? ' is-selected' : '')}
                   onClick={() => this.handleSelect(ent)}>
                   <div className='card-content'>
-                    <p><strong>{ent.displayName}</strong> <small>{ent.alias}</small></p>
+                    <p><strong>{ent.displayName}</strong> <small>{ent.alias}</small> <small>{_(_(ent.type.split(',')).first().split('.')).last()}</small></p>
                     <p><small>{moment.utc(ent.modified).fromNow()}</small></p>
+                    <p><small>{ent.taxonomy.aliases.join(' / ')}</small></p>
                   </div>
                 </div>
               </div>

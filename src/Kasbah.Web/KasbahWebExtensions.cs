@@ -25,6 +25,7 @@ namespace Kasbah.Web
             var siteRegistry = services.GetService<SiteRegistry>();
             var componentRegistry = services.GetService<ComponentRegistry>();
 
+            typeRegistry.Register<Item>();
             typeRegistry.Register<Folder>();
 
             var registration = services.GetService<KasbahWebRegistration>();
