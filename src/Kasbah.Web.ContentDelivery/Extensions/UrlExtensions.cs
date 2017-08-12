@@ -8,14 +8,13 @@ namespace Kasbah.Web.ContentDelivery.Extensions
 {
     public static class UrlExtensions
     {
-        public static PathString ItemUrl(this IUrlHelper urlHelper, Item item, bool absolute = false)
+        public static PathString ItemUrl(this KasbahWebContext kasbahWebContext, Item item, bool absolute = false)
         {
             if (item == null)
             {
                 return null;
             }
 
-            var kasbahWebContext = urlHelper.ActionContext.RouteData.Values["kasbahWebContext"] as KasbahWebContext;
             var site = kasbahWebContext.Site;
 
             var relativePath = string.Join("/", item.Node.Taxonomy.Aliases.Skip(site.ContentRoot.Count()));
@@ -26,6 +25,13 @@ namespace Kasbah.Web.ContentDelivery.Extensions
             }
 
             return "/" + relativePath;
+        }
+
+        public static PathString ItemUrl(this IUrlHelper urlHelper, Item item, bool absolute = false)
+        {
+            var kasbahWebContext = urlHelper.ActionContext.RouteData.Values["kasbahWebContext"] as KasbahWebContext;
+
+            return kasbahWebContext.ItemUrl(item, absolute);
         }
 
         public static PathString MediaUrlAsync(this IUrlHelper urlHelper, MediaItem mediaItem, bool absolute = false)

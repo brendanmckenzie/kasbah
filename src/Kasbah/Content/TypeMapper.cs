@@ -45,6 +45,7 @@ namespace Kasbah.Content
             {
                 var eagerLoadProperties = typeInfo.GetProperties()
                     .Where(prop => !typeof(IItem).IsAssignableFrom(prop.PropertyType) || (typeof(IItem).IsAssignableFrom(prop.PropertyType) && prop.GetMethod?.IsVirtual == false));
+
                 var values = await Task.WhenAll(eagerLoadProperties.Select(async prop =>
                 {
                     var key = prop.Name;
@@ -170,7 +171,8 @@ namespace Kasbah.Content
             if (Guid.TryParse((string)source, out id))
             {
                 var node = await _contentProvider.GetNodeAsync(id);
-                if (node.PublishedVersion.HasValue)
+                var type = _typeRegistry.GetType(node.Type);
+                if (node.PublishedVersion.HasValue || !type.Fields.Any())
                 {
                     try
                     {
