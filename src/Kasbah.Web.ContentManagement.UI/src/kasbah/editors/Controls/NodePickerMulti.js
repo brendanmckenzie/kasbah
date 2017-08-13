@@ -24,7 +24,8 @@ class NodePickerMulti extends React.Component {
       loading: true,
       nodes: [],
       selection: [],
-      nodeDetail: {}
+      nodeDetail: {},
+      search: ''
     }
   }
 
@@ -83,6 +84,12 @@ class NodePickerMulti extends React.Component {
     })
   }
 
+  handleSearchChange = (ev) => {
+    this.setState({
+      search: ev.target.value
+    })
+  }
+
   renderNode(id) {
     const { content: { tree: { nodes } } } = this.props
     const item = nodes.find(ent => ent.id === id)
@@ -124,6 +131,19 @@ class NodePickerMulti extends React.Component {
     </ul>)
   }
 
+  get filteredNodes() {
+    const filter = (ent) => {
+      if (!this.state.search) { return true }
+
+      const searchLower = this.state.search.toLowerCase()
+
+      return ent.alias.toLowerCase().indexOf(searchLower) !== -1 ||
+        (ent.displayName && ent.displayName.toLowerCase().indexOf(searchLower) !== -1) ||
+        ent.type.toLowerCase().indexOf(searchLower) !== -1
+    }
+    return _(this.state.nodes).filter(filter).sortBy('modified').reverse().value()
+  }
+
   get modal() {
     if (!this.state.showModal) { return null }
 
@@ -136,8 +156,13 @@ class NodePickerMulti extends React.Component {
           </span>
         </header>
         <section className='modal-card-body'>
+          <div className='field'>
+            <div className='control'>
+              <input type='search' className='input' onChange={this.handleSearchChange} value={this.state.search} />
+            </div>
+          </div>
           {this.state.loading ? <Loading /> : (
-            _(this.state.nodes).sortBy('modified').reverse().value().map(ent => (
+            this.filteredNodes.map(ent => (
               <div key={ent.id} className='field'>
                 <div
                   className={'card' + (this.state.selection.indexOf(ent.id) === -1 ? '' : ' is-selected')}

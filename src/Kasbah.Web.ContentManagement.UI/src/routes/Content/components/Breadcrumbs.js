@@ -11,15 +11,13 @@ const Breadcrumb = ({ content, id }) => {
 
   const { taxonomy } = detail.node
 
-  return (<ul className='breadcrumb'>
-    {taxonomy.aliases.map((ent, index) => (
-      <li key={index}>
-        {taxonomy.ids[index] === id
-          ? (<span>{ent}</span>)
-          : (<NavLink to={`/content/${taxonomy.ids[index]}`}>{ent}</NavLink>)}
-      </li>
-    ))}
-  </ul>)
+  return (<div className='breadcrumb'>
+    <ul>
+      {taxonomy.aliases.map((ent, index) =>
+        (<li key={index} className={taxonomy.ids[index] === id ? 'is-active' : ''}><NavLink to={`/content/${taxonomy.ids[index]}`}>{ent}</NavLink></li>)
+      )}
+    </ul>
+  </div>)
 }
 
 Breadcrumb.propTypes = {
