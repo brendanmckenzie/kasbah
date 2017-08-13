@@ -63,19 +63,17 @@ namespace Kasbah.Content
                 }
             }
 
-            if (ret is Item)
+            if (ret is Item item)
             {
-                var item = ret as Item;
-
                 if (item != null)
                 {
                     item.Node = node;
                     item.Id = node?.Id ?? Guid.Empty;
-                }
 
-                if (version.HasValue)
-                {
-                    (ret as Item).Version = version.Value;
+                    if (version.HasValue)
+                    {
+                        item.Version = version.Value;
+                    }
                 }
             }
 
@@ -123,7 +121,7 @@ namespace Kasbah.Content
             {
                 return await context.GetOrSetAsync($"{source}_linked", async () =>
                 {
-                    return await MapLinkedObjectAsync(source);
+                    return await MapLinkedObjectAsync(source, context);
                 });
             }
 
@@ -136,7 +134,7 @@ namespace Kasbah.Content
 
                 var entries = await Task.WhenAll((source as JArray).ToArray()
                     .Select(ent => ent.ToString())
-                    .Select(async id => await MapLinkedObjectAsync(id)));
+                    .Select(async id => await MapLinkedObjectAsync(id, context)));
 
                 foreach (var entry in entries)
                 {
@@ -165,10 +163,9 @@ namespace Kasbah.Content
             }
         }
 
-        async Task<object> MapLinkedObjectAsync(object source)
+        async Task<object> MapLinkedObjectAsync(object source, TypeMapperContext context)
         {
-            Guid id;
-            if (Guid.TryParse((string)source, out id))
+            if (Guid.TryParse((string)source, out Guid id))
             {
                 var node = await _contentProvider.GetNodeAsync(id);
                 var type = _typeRegistry.GetType(node.Type);
@@ -178,7 +175,7 @@ namespace Kasbah.Content
                     {
                         var data = await _contentProvider.GetRawDataAsync(node.Id, node.PublishedVersion);
 
-                        return await MapTypeAsync(data, node.Type, node);
+                        return await MapTypeAsync(data, node.Type, node, node.PublishedVersion, context);
                     }
                     catch
                     {

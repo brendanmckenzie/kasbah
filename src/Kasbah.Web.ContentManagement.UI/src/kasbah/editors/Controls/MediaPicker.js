@@ -5,6 +5,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import { API_BASE, makeApiRequest } from 'store/util'
 import { actions as mediaActions } from 'store/appReducers/media'
+import { createFilterFunc } from './Shared/search'
 
 class MediaPicker extends React.Component {
   static propTypes = {
@@ -22,7 +23,8 @@ class MediaPicker extends React.Component {
       showModal: false,
       loading: true,
       media: [],
-      selection: null
+      selection: null,
+      search: ''
     }
   }
 
@@ -84,6 +86,12 @@ class MediaPicker extends React.Component {
       })
   }
 
+  handleSearchChange = (ev) => {
+    this.setState({
+      search: ev.target.value
+    })
+  }
+
   get display() {
     const { input: { value } } = this.props
 
@@ -117,6 +125,13 @@ class MediaPicker extends React.Component {
     }
   }
 
+  get filteredMedia() {
+    const filterFunc = createFilterFunc(['fileName', 'contentType'])
+    const filter = (ent) => filterFunc(this.state.search, ent)
+
+    return _(this.props.media.list.items).filter(filter).sortBy('created').reverse().value()
+  }
+
   get modal() {
     return (<div className='modal is-active'>
       <div className='modal-background' />
@@ -128,8 +143,14 @@ class MediaPicker extends React.Component {
           <button type='button' className='delete' onClick={this.handleHideModal} />
         </header>
         <section className='modal-card-body'>
+          <div className='field'>
+            <div className='control'>
+              <input type='search' className='input' autoFocus
+                onChange={this.handleSearchChange} value={this.state.search} />
+            </div>
+          </div>
           <div className='columns is-multiline'>
-            {_(this.props.media.list.items).sortBy('created').reverse().map(ent => (
+            {this.filteredMedia.map(ent => (
               <div key={ent.id} className='column is-4'>
                 <div
                   className={'card ' + (this.state.selection === ent.id ? 'is-selected' : '')}
@@ -146,7 +167,7 @@ class MediaPicker extends React.Component {
                   </div>
                 </div>
               </div>
-            )).value()}
+            ))}
           </div>
         </section>
         <footer className='modal-card-foot'>

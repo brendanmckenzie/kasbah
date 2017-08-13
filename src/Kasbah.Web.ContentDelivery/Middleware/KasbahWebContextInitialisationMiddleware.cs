@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
 using Kasbah.Content;
-using Kasbah.Web.ContentDelivery.Extensions;
 using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -40,7 +39,7 @@ namespace Kasbah.Web.ContentDelivery.Middleware
                 SiteRegistry = _siteRegistry
             };
 
-            context.Items["kasbahWebContext"] = kasbahWebContext;
+            context.Items[KasbahWebContext.Key] = kasbahWebContext;
 
             await _next.Invoke(context);
         }

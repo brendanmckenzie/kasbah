@@ -4,7 +4,7 @@ using Kasbah.Media.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Kasbah.Web.ContentDelivery.Extensions
+namespace Kasbah.Web
 {
     public static class UrlExtensions
     {
@@ -29,7 +29,7 @@ namespace Kasbah.Web.ContentDelivery.Extensions
 
         public static PathString ItemUrl(this IUrlHelper urlHelper, Item item, bool absolute = false)
         {
-            var kasbahWebContext = urlHelper.ActionContext.RouteData.Values["kasbahWebContext"] as KasbahWebContext;
+            var kasbahWebContext = urlHelper.ActionContext.HttpContext.GetKasbahWebContext();
 
             return kasbahWebContext.ItemUrl(item, absolute);
         }
@@ -41,7 +41,7 @@ namespace Kasbah.Web.ContentDelivery.Extensions
                 return null;
             }
 
-            var kasbahWebContext = urlHelper.ActionContext.RouteData.Values["kasbahWebContext"] as KasbahWebContext;
+            var kasbahWebContext = urlHelper.ActionContext.HttpContext.GetKasbahWebContext();
 
             var site = kasbahWebContext.Site;
             var relativePath = $"media/{mediaItem.Id}";

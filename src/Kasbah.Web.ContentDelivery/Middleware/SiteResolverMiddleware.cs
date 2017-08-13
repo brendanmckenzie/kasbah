@@ -25,7 +25,7 @@ namespace Kasbah.Web.ContentDelivery.Middleware
         {
             _log.LogDebug($"Trying to match {context.Request.Host}.  Available sites: {string.Join(", ", _siteRegistry.ListSites().SelectMany(s => s.Domains))}");
 
-            var kasbahWebContext = context.Items["kasbahWebContext"] as KasbahWebContext;
+            var kasbahWebContext = context.GetKasbahWebContext();
 
             kasbahWebContext.Site = _siteRegistry.GetSiteByDomain(context.Request.Host.ToString());
             if (kasbahWebContext.Site != null)

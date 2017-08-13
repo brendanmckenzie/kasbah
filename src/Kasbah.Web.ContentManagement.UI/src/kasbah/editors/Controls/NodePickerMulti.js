@@ -6,6 +6,7 @@ import _ from 'lodash'
 import { NavLink } from 'react-router-dom'
 import Loading from 'components/Loading'
 import { makeApiRequest } from 'store/util'
+import { createFilterFunc } from './Shared/search'
 
 class NodePickerMulti extends React.Component {
   static propTypes = {
@@ -132,15 +133,9 @@ class NodePickerMulti extends React.Component {
   }
 
   get filteredNodes() {
-    const filter = (ent) => {
-      if (!this.state.search) { return true }
+    const filterFunc = createFilterFunc(['alias', 'displayName', 'type'])
+    const filter = (ent) => filterFunc(this.state.search, ent)
 
-      const searchLower = this.state.search.toLowerCase()
-
-      return ent.alias.toLowerCase().indexOf(searchLower) !== -1 ||
-        (ent.displayName && ent.displayName.toLowerCase().indexOf(searchLower) !== -1) ||
-        ent.type.toLowerCase().indexOf(searchLower) !== -1
-    }
     return _(this.state.nodes).filter(filter).sortBy('modified').reverse().value()
   }
 
@@ -158,7 +153,8 @@ class NodePickerMulti extends React.Component {
         <section className='modal-card-body'>
           <div className='field'>
             <div className='control'>
-              <input type='search' className='input' onChange={this.handleSearchChange} value={this.state.search} />
+              <input type='search' className='input' autoFocus
+                onChange={this.handleSearchChange} value={this.state.search} />
             </div>
           </div>
           {this.state.loading ? <Loading /> : (

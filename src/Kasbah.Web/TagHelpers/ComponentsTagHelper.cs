@@ -37,7 +37,7 @@ namespace Kasbah.Web.TagHelpers
 
         public async override Task ProcessAsync(TagHelperContext context, TagHelperOutput output)
         {
-            var kasbahWebContext = ViewContext.RouteData.Values["kasbahWebContext"] as KasbahWebContext;
+            var kasbahWebContext = ViewContext.HttpContext.GetKasbahWebContext();
 
             if (kasbahWebContext == null)
             {

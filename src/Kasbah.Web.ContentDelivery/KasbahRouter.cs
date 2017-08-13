@@ -35,7 +35,7 @@ namespace Kasbah.Web.ContentDelivery
 
             var routeData = new RouteData(context.RouteData);
 
-            var kasbahWebContext = (routeData.Values["kasbahWebContext"] = context.HttpContext.Items["kasbahWebContext"]) as KasbahWebContext;
+            var kasbahWebContext = context.HttpContext.GetKasbahWebContext();
 
             if (kasbahWebContext.Site != null)
             {

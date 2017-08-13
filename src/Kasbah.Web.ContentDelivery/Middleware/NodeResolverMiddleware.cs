@@ -22,7 +22,7 @@ namespace Kasbah.Web.ContentDelivery.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            var kasbahWebContext = context.Items["kasbahWebContext"] as KasbahWebContext;
+            var kasbahWebContext = context.GetKasbahWebContext();
 
             var site = kasbahWebContext.Site;
             if (site != null)
