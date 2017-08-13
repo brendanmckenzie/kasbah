@@ -69,8 +69,6 @@ class NodePicker extends React.Component {
 
     onChange(this.state.selection)
 
-    this.handleReloadNodeDetail(this.state.selection)
-
     this.handleHideModal()
   }
 
