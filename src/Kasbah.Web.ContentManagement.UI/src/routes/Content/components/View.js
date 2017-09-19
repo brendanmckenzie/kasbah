@@ -16,7 +16,7 @@ const View = () => (
   <Section>
     <Container>
       <Columns>
-        <Column className='is-2'>
+        <Column className='is-narrow'>
           <Field>
             <Switch>
               <Route exact path='/content' render={renderBrowser} />
