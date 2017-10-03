@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Kasbah.Content.Models;
 using Kasbah.Media.Models;
@@ -8,33 +9,45 @@ namespace Kasbah.Web
 {
     public static class UrlExtensions
     {
-        public static PathString ItemUrl(this KasbahWebContext kasbahWebContext, Item item, bool absolute = false)
+        public static Uri ItemUrl(this KasbahWebContext kasbahWebContext, Node node, bool absolute = false)
+        {
+            var site = kasbahWebContext.Site;
+
+            var relativePath = string.Join("/", node.Taxonomy.Aliases.Skip(site.ContentRoot.Count()));
+
+            if (absolute)
+            {
+                var builder = new UriBuilder
+                {
+                    Scheme = site.UseSsl ? "https" : "http",
+                    Host = site.DefaultDomain,
+                    Path = relativePath
+                };
+
+                return builder.Uri;
+            }
+
+            return new Uri($"/{relativePath}", UriKind.Relative);
+        }
+
+        public static Uri ItemUrl(this KasbahWebContext kasbahWebContext, Item item, bool absolute = false)
         {
             if (item == null)
             {
                 return null;
             }
 
-            var site = kasbahWebContext.Site;
-
-            var relativePath = string.Join("/", item.Node.Taxonomy.Aliases.Skip(site.ContentRoot.Count()));
-
-            if (absolute)
-            {
-                return $"{(site.UseSsl ? "https" : "http")}://{site.DefaultDomain}/{relativePath}";
-            }
-
-            return "/" + relativePath;
+            return ItemUrl(kasbahWebContext, item.Node, absolute);
         }
 
-        public static PathString ItemUrl(this IUrlHelper urlHelper, Item item, bool absolute = false)
+        public static Uri ItemUrl(this IUrlHelper urlHelper, Item item, bool absolute = false)
         {
             var kasbahWebContext = urlHelper.ActionContext.HttpContext.GetKasbahWebContext();
 
             return kasbahWebContext.ItemUrl(item, absolute);
         }
 
-        public static PathString MediaUrlAsync(this IUrlHelper urlHelper, MediaItem mediaItem, bool absolute = false)
+        public static Uri MediaUrlAsync(this IUrlHelper urlHelper, MediaItem mediaItem, bool absolute = false)
         {
             if (mediaItem == null)
             {
@@ -48,10 +61,17 @@ namespace Kasbah.Web
 
             if (absolute)
             {
-                return $"{(site.UseSsl ? "https" : "http")}://{site.DefaultDomain}/{relativePath}";
+                var builder = new UriBuilder
+                {
+                    Scheme = site.UseSsl ? "https" : "http",
+                    Host = site.DefaultDomain,
+                    Path = relativePath
+                };
+
+                return builder.Uri;
             }
 
-            return "/" + relativePath;
+            return new Uri($"/{relativePath}", UriKind.Relative);
         }
     }
 }
