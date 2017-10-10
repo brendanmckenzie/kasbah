@@ -14,23 +14,33 @@ namespace Kasbah.Web.ContentManagement.Controllers
 {
     [Authorize]
     [Route("content")]
-    public class ContentController
+    public class ContentController : Controller
     {
         readonly ContentService _contentService;
         readonly TypeRegistry _typeRegistry;
         readonly ComponentRegistry _componentRegistry;
+        readonly SiteRegistry _siteRegistry;
 
-        public ContentController(ContentService contentService, TypeRegistry typeRegistry, ComponentRegistry componentRegistry)
+        public ContentController(ContentService contentService, TypeRegistry typeRegistry, ComponentRegistry componentRegistry, SiteRegistry siteRegistry)
         {
             _contentService = contentService;
             _typeRegistry = typeRegistry;
             _componentRegistry = componentRegistry;
+            _siteRegistry = siteRegistry;
         }
 
         [Route("{id}/edit")]
         [HttpGet]
         public async Task<NodeDataForEditing> GetNodeDataForEditing(Guid id)
-            => await _contentService.GetNodeDataForEditingAsync(id);
+        {
+            var ret = await _contentService.GetNodeDataForEditingAsync(id);
+
+            var site = _siteRegistry.GetSiteByNode(ret.Node);
+
+            ret.Data["_url"] = site?.ItemUrl(ret.Node, true).ToString();
+
+            return ret;
+        }
 
         [Route("{id}")]
         [HttpPost]

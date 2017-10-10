@@ -77,7 +77,7 @@ namespace Kasbah.Content
         public async Task<NodeDataForEditing> GetNodeDataForEditingAsync(Guid id)
         {
             var node = await GetNodeAsync(id);
-            var data = await GetRawDataAsync(id);
+            var data = await GetRawDataAsync(id) ?? new Dictionary<string, object>();
             var type = _typeRegistry.GetType(node.Type);
 
             return new NodeDataForEditing

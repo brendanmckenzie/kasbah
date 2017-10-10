@@ -28,6 +28,11 @@ const Information = ({ node, type, data }) => (
       <span>{data ? data['_version'] : 'new'}</span>
     </p>
 
+    {data && data._url ? (<p>
+      <span className='heading'>Public address</span>
+      <span><a href={data['_url']} target='_blank'>{data['_url']}</a></span>
+    </p>) : null}
+
     <p>
       <span className='heading'>Created</span>
       <span>{moment.utc(node.created).fromNow()}</span>
