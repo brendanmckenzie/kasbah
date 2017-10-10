@@ -30,7 +30,7 @@ const Information = ({ node, type, data }) => (
 
     {data && data._url ? (<p>
       <span className='heading'>Public address</span>
-      <span><a href={data['_url']} target='_blank'>{data['_url']}</a></span>
+      <span><a className='online' href={data['_url']} title={data['_url']} target='_blank'>{data['_url']}</a></span>
     </p>) : null}
 
     <p>
