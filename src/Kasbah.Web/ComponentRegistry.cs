@@ -11,10 +11,14 @@ namespace Kasbah.Web
     {
         readonly ICollection<ComponentDefinition> _components;
 
-        public ComponentRegistry()
+        public ComponentRegistry(PropertyMapper propertyMapper)
         {
             _components = new List<ComponentDefinition>();
+
+            PropertyMapper = propertyMapper;
         }
+
+        internal PropertyMapper PropertyMapper { get; private set; }
 
         public void RegisterComponent(ComponentDefinition component)
             => _components.Add(component);

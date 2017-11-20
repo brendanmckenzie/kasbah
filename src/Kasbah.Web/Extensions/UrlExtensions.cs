@@ -12,8 +12,15 @@ namespace Kasbah.Web
     {
         public static Uri ItemUrl(this Site site, Node node, bool absolute = false)
         {
-            if (site == null) { throw new ArgumentNullException(nameof(site)); }
-            if (node == null) { throw new ArgumentNullException(nameof(node)); }
+            if (site == null)
+            {
+                throw new ArgumentNullException(nameof(site));
+            }
+
+            if (node == null)
+            {
+                throw new ArgumentNullException(nameof(node));
+            }
 
             var relativePath = string.Join("/", node.Taxonomy.Aliases.Skip(site.ContentRoot.Count()));
 

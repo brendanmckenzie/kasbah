@@ -8,7 +8,7 @@ namespace Kasbah.Content
         public static TypeRegistry Register<T>(this TypeRegistry registry, Action<TypeDefinitionBuilder> configure = null)
             where T : Item
         {
-            var builder = new TypeDefinitionBuilder<T>();
+            var builder = new TypeDefinitionBuilder<T>(registry.PropertyMapper);
 
             configure?.Invoke(builder);
 

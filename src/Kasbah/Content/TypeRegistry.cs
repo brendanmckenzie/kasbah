@@ -10,10 +10,14 @@ namespace Kasbah.Content
     {
         readonly ICollection<TypeDefinition> _types;
 
-        public TypeRegistry()
+        public TypeRegistry(PropertyMapper propertyMapper)
         {
             _types = new List<TypeDefinition>();
+
+            PropertyMapper = propertyMapper;
         }
+
+        internal PropertyMapper PropertyMapper { get; private set; }
 
         public void RegisterType(TypeDefinition type)
         {

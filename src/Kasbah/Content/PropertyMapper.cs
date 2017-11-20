@@ -15,7 +15,6 @@ namespace Kasbah.Content
         {
             { typeof(string), "text" },
             { typeof(DateTime), "date" },
-            { typeof(Media.Models.MediaItem), "mediaPicker" },
             { typeof(Enum), "enum" }
         };
 
@@ -31,7 +30,7 @@ namespace Kasbah.Content
             typeof(Enum)
         }).Distinct();
 
-        public static TypeDefinition.Field MapProperty(PropertyInfo property)
+        public TypeDefinition.Field MapProperty(PropertyInfo property)
         {
             var typeInfo = property.PropertyType.GetTypeInfo();
 

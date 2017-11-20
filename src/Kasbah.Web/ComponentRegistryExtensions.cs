@@ -12,7 +12,7 @@ namespace Kasbah.Web
         {
             var type = typeof(TComponent);
 
-            var builder = new TypeDefinitionBuilder<TProperties>();
+            var builder = new TypeDefinitionBuilder<TProperties>(componentRegistry.PropertyMapper);
 
             configure?.Invoke(builder);
 

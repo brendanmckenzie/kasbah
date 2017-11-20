@@ -24,13 +24,13 @@ namespace Kasbah.Content
         string _icon;
         string _iconColour;
 
-        public TypeDefinitionBuilder(Type type)
+        public TypeDefinitionBuilder(Type type, PropertyMapper propertyMapper)
         {
             _type = type;
             _typeInfo = type.GetTypeInfo();
             _fields = _typeInfo.GetProperties()
                 .Where(ent => !_reservedFields.Contains(ent.Name))
-                .Select(PropertyMapper.MapProperty)
+                .Select(propertyMapper.MapProperty)
                 .ToList();
             _options = new Dictionary<string, object>();
 

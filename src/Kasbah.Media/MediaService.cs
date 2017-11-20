@@ -28,13 +28,6 @@ namespace Kasbah.Media
             _cache = cache;
         }
 
-        public async Task InitialiseAsync()
-        {
-            _log.LogDebug($"Initialising {nameof(MediaService)}");
-
-            await Task.Delay(0);
-        }
-
         public async Task<Guid> CreateMediaAsync(Stream source, string fileName, string contentType)
         {
             var id = await _mediaStorageProvider.StoreMediaAsync(source);

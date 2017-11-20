@@ -2,8 +2,8 @@ namespace Kasbah.Content
 {
     public class TypeDefinitionBuilder<T> : TypeDefinitionBuilder
     {
-        public TypeDefinitionBuilder()
-            : base(typeof(T))
+        public TypeDefinitionBuilder(PropertyMapper propertyMapper)
+            : base(typeof(T), propertyMapper)
         {
         }
     }

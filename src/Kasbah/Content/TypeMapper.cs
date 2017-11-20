@@ -6,8 +6,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
 using Kasbah.Content.Models;
-using Kasbah.Media;
-using Kasbah.Media.Models;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 
@@ -18,14 +16,14 @@ namespace Kasbah.Content
         readonly ILogger _log;
         readonly IContentProvider _contentProvider;
         readonly TypeRegistry _typeRegistry;
-        readonly IMediaProvider _mediaProvider;
+        readonly IEnumerable<ITypeHandler> _typeHandlers;
         readonly ProxyGenerator _generator;
 
-        public TypeMapper(ILoggerFactory loggerFactory, IContentProvider contentProvider, IMediaProvider mediaProvider, TypeRegistry typeRegistry)
+        public TypeMapper(ILoggerFactory loggerFactory, IContentProvider contentProvider, IEnumerable<ITypeHandler> typeHandlers, TypeRegistry typeRegistry)
         {
             _log = loggerFactory.CreateLogger<TypeMapper>();
             _contentProvider = contentProvider;
-            _mediaProvider = mediaProvider;
+            _typeHandlers = typeHandlers;
             _typeRegistry = typeRegistry;
 
             _generator = new ProxyGenerator();
@@ -145,12 +143,13 @@ namespace Kasbah.Content
             }
 
             // Linked media
-            if (typeof(MediaItem).GetTypeInfo().IsAssignableFrom(property.PropertyType))
+            var handlers = _typeHandlers.Where(ent => ent.CanConvert(property.PropertyType));
+            if (handlers.Any())
             {
                 return await context.GetOrSetAsync($"{source}_media", async () =>
-                {
-                    return await MapLinkedMediaAsync(source);
-                });
+                    await handlers
+                        .Select(async ent => await ent.ConvertAsync(source))
+                        .FirstOrDefault(ent => ent != null));
             }
 
             try
@@ -182,25 +181,6 @@ namespace Kasbah.Content
                         _log.LogDebug($"Failed to map linked object {id}");
                         return null;
                     }
-                }
-            }
-
-            return null;
-        }
-
-        async Task<object> MapLinkedMediaAsync(object source)
-        {
-            Guid id;
-            if (Guid.TryParse((string)source, out id))
-            {
-                try
-                {
-                    return await _mediaProvider.GetMediaAsync(id);
-                }
-                catch
-                {
-                    _log.LogDebug($"Failed to map linked media {id}");
-                    return null;
                 }
             }
 
