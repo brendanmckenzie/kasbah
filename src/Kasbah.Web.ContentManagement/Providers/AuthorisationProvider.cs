@@ -4,8 +4,6 @@ using AspNet.Security.OpenIdConnect.Extensions;
 using AspNet.Security.OpenIdConnect.Primitives;
 using AspNet.Security.OpenIdConnect.Server;
 using Kasbah.Security;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kasbah.Web.ContentManagement.Providers
@@ -16,27 +14,29 @@ namespace Kasbah.Web.ContentManagement.Providers
         {
             if (context.Request.IsPasswordGrantType())
             {
-                var securityService = context.HttpContext.RequestServices.GetService<SecurityService>();
                 try
                 {
+                    var securityService = context.HttpContext.RequestServices.GetService<SecurityService>();
                     var user = await securityService.VerifyUserAsync(context.Request.Username, context.Request.Password);
 
-                    var identity = new ClaimsIdentity(context.Options.AuthenticationScheme);
-                    identity.AddClaim(ClaimTypes.Name, user.Username);
-                    identity.AddClaim(ClaimTypes.NameIdentifier, user.Id.ToString());
+                    var identity = new ClaimsIdentity(
+                        context.Scheme.Name,
+                        OpenIdConnectConstants.Claims.Name,
+                        OpenIdConnectConstants.Claims.Role);
 
-                    var ticket = new AuthenticationTicket(
-                        new ClaimsPrincipal(identity),
-                        new AuthenticationProperties(),
-                        context.Options.AuthenticationScheme);
+                    identity.AddClaim(
+                        OpenIdConnectConstants.Claims.Subject,
+                        user.Id.ToString(),
+                        OpenIdConnectConstants.Destinations.AccessToken,
+                        OpenIdConnectConstants.Destinations.IdentityToken);
 
-                    // Call SetScopes with the list of scopes you want to grant
-                    // (specify offline_access to issue a refresh token).
-                    ticket.SetScopes(
-                        OpenIdConnectConstants.Scopes.Profile,
-                        OpenIdConnectConstants.Scopes.OfflineAccess);
+                    identity.AddClaim(
+                        OpenIdConnectConstants.Claims.Name,
+                        user.Username,
+                        OpenIdConnectConstants.Destinations.AccessToken,
+                        OpenIdConnectConstants.Destinations.IdentityToken);
 
-                    context.Validate(ticket);
+                    context.Validate(new ClaimsPrincipal(identity));
                 }
                 catch (UserNotFoundException)
                 {
@@ -65,7 +65,7 @@ namespace Kasbah.Web.ContentManagement.Providers
                 context.Skip();
             }
 
-            await Task.Delay(0);
+            await Task.Yield();
         }
     }
 }

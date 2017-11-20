@@ -11,7 +11,13 @@ namespace Kasbah.Web.ContentManagement
     {
         public static IServiceCollection AddKasbahAdmin(this IServiceCollection services)
         {
-            services.AddAuthentication();
+            services.AddAuthentication().AddOpenIdConnectServer(options =>
+            {
+                options.SigningCredentials.AddEphemeralKey();
+                options.AllowInsecureHttp = true;
+                options.TokenEndpointPath = "/connect/token";
+                options.Provider = new AuthorisationProvider();
+            });
 
             services.AddKasbah();
             services.AddKasbahWeb();
@@ -25,15 +31,7 @@ namespace Kasbah.Web.ContentManagement
 
         public static IApplicationBuilder UseKasbahAdmin(this IApplicationBuilder app)
         {
-            app.UseOAuthValidation();
-
-            app.UseOpenIdConnectServer(options =>
-            {
-                options.SigningCredentials.AddEphemeralKey();
-                options.AllowInsecureHttp = true;
-                options.TokenEndpointPath = "/connect/token";
-                options.Provider = new AuthorisationProvider();
-            });
+            app.UseAuthentication();
 
             app.UseMvc();
 

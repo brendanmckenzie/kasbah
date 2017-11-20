@@ -25,8 +25,6 @@ namespace Kasbah.Web.ContentDelivery
 
             services.AddTransient<KasbahRouter>();
 
-            Jobs.Configure.RegisterJobs(services);
-
             return services;
         }
 
@@ -60,8 +58,6 @@ namespace Kasbah.Web.ContentDelivery
         {
             await services.InitialiseKasbahAsync();
             await services.InitialiseKasbahWebAsync();
-
-            await Jobs.Configure.ConfigureJobsAsync(services);
         }
     }
 }
