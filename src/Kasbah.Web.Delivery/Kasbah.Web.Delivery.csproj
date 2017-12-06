@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Kasbah\Kasbah.csproj" />
+    <ProjectReference Include="..\Kasbah.Web.Shared\Kasbah.Web.Shared.csproj" />
+    <ProjectReference Include="..\Kasbah.Web\Kasbah.Web.csproj" />
+  </ItemGroup>
+</Project>
