@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Kasbah.Content;
 using Kasbah.Content.Models;
-using Kasbah.Web.ContentManagement.ViewModels;
+using Kasbah.Web.Management.ViewModels;
 using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

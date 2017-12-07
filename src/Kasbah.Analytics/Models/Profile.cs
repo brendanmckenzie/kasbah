@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Kasbah.Analytics.Models
 {
     public class Profile

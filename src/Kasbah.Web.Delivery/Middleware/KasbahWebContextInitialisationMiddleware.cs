@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Kasbah.Content;
+using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 

@@ -49,7 +49,7 @@ namespace Kasbah.Web.EntryPoint
 
                 if (_mode.HasFlag(KasbahWebMode.Management))
                 {
-                    Kasbah.Web.Management.Startup.Configure(app, routes);
+                    Kasbah.Web.Management.Startup.Configure(app);
                 }
             });
 

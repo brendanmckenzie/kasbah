@@ -1,15 +1,16 @@
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Kasbah.Analytics.Extensions
 {
     public static class AnalyticsExtensions
     {
         public static IServiceCollection AddKasbahAnalytics(this IServiceCollection services)
         {
-            return services;
-        }
+            services.AddTransient<ManagementService>();
+            services.AddTransient<ReportingService>();
+            services.AddTransient<TrackingService>();
 
-        public static IApplicationBuilder UseKasbahAnalytics(this IApplicationBuilder app)
-        {
-            return app;
+            return services;
         }
     }
 }

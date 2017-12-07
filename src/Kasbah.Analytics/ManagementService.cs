@@ -1,3 +1,7 @@
+using System;
+using System.Threading.Tasks;
+using Kasbah.Analytics.Models;
+
 namespace Kasbah.Analytics
 {
     public class ManagementService
@@ -10,9 +14,9 @@ namespace Kasbah.Analytics
         }
 
         public async Task<Guid> CreateCampaignAsync(string name)
-            => _dataProvider.CreateCampaignAsync(name);
+            => await _dataProvider.CreateCampaignAsync(name);
 
         public async Task<Campaign> ListCampaignsAsync()
-            => _dataProvider.ListCampaignsAsync();
+            => await _dataProvider.ListCampaignsAsync();
     }
 }

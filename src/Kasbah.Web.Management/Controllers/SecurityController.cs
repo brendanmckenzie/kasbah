@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kasbah.Security;
 using Kasbah.Security.Models;
-using Kasbah.Web.ContentManagement.ViewModels;
+using Kasbah.Web.Management.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
