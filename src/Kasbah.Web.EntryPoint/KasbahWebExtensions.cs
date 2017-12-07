@@ -32,7 +32,7 @@ namespace Kasbah.Web.EntryPoint
 
             if (mode.HasFlag(KasbahWebMode.Management))
             {
-                mvcBuilder.AddApplicationPart(typeof(KasbahWebManagement).GetTypeInfo().Assembly);
+                Kasbah.Web.Management.Startup.ConfigureServices(services, mvcBuilder);
             }
 
             return services;
@@ -45,6 +45,11 @@ namespace Kasbah.Web.EntryPoint
                 if (_mode.HasFlag(KasbahWebMode.Delivery))
                 {
                     Kasbah.Web.Delivery.Startup.Configure(app, routes);
+                }
+
+                if (_mode.HasFlag(KasbahWebMode.Management))
+                {
+                    Kasbah.Web.Management.Startup.Configure(app, routes);
                 }
             });
 
