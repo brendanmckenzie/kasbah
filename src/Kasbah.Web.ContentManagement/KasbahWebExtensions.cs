@@ -45,7 +45,10 @@ namespace Kasbah.Web.ContentManagement
                     options.ApiSecret = "secret";
                 });
 
-            services.AddIdentityServer()
+            services.AddIdentityServer(options =>
+            {
+                options.IssuerUri = "http://localhost:5000";
+            })
                 .AddInMemoryClients(AuthClients)
                 .AddInMemoryApiResources(ApiResources)
                 .AddResourceOwnerValidator<UserResourceOwnerPasswordValidator>()
