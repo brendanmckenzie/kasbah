@@ -13,7 +13,8 @@ export const actions = {
     const req = {
       url: '/connect/token',
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'Basic d2ViOnNlY3JldA=='
       },
       rawBody: `grant_type=password&username=${request.username}&password=${request.password}`
     }
