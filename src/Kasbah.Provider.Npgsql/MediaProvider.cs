@@ -40,7 +40,7 @@ namespace Kasbah.Provider.Npgsql
             const string Sql = "select id as Id, file_name as FileName, content_type as ContentType, created_at as Created from media where id = @id";
             using (var connection = GetConnection())
             {
-                return await connection.QuerySingleAsync<MediaItem>(Sql, new { id });
+                return await connection.QuerySingleOrDefaultAsync<MediaItem>(Sql, new { id });
             }
         }
 
