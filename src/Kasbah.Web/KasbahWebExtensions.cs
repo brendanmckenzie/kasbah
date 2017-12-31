@@ -16,6 +16,8 @@ namespace Kasbah.Web
             services.AddSingleton<SiteRegistry>();
             services.AddSingleton<ComponentRegistry>();
 
+            services.AddKasbahMedia();
+
             return services;
         }
 
