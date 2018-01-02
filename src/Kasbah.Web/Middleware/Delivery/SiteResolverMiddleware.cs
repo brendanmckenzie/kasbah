@@ -4,7 +4,7 @@ using Kasbah.Content;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Kasbah.Web.Delivery.Middleware
+namespace Kasbah.Web.Middleware.Delivery
 {
     public class SiteResolverMiddleware
     {

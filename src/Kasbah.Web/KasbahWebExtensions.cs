@@ -7,8 +7,7 @@ using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.Models;
 using Kasbah.Content;
 using Kasbah.Content.Models;
-using Kasbah.Web.Delivery;
-using Kasbah.Web.Delivery.Middleware;
+using Kasbah.Web.Middleware.Delivery;
 using Kasbah.Web.Models;
 using Kasbah.Web.Security.Management;
 using Microsoft.AspNetCore.Builder;
@@ -50,21 +49,23 @@ namespace Kasbah.Web
 
         public static IServiceCollection AddKasbahWebDelivery(this IServiceCollection services)
         {
+            services.AddKasbahWeb();
+
             services.AddSingleton(new KasbahWebApplication());
-            services.AddTransient<KasbahRouter>();
+
+            services.AddNodeServices();
+            services.AddSpaPrerenderer();
 
             services.AddMvc()
-                .AddApplicationPart(typeof(KasbahWeb).GetTypeInfo().Assembly)
-                .ConfigureApplicationPartManager(p =>
-                {
-                    p.FeatureProviders.Add(new ControllerFeatureProvider(KasbahWebMode.Delivery));
-                });
+                .AddApplicationPart(typeof(KasbahWeb).GetTypeInfo().Assembly);
 
             return services;
         }
 
         public static IServiceCollection AddKasbahWebManagement(this IServiceCollection services)
         {
+            services.AddKasbahWeb();
+
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>
                 {
@@ -84,30 +85,19 @@ namespace Kasbah.Web
                 .AddDeveloperSigningCredential();
 
             services.AddMvc()
-                .AddApplicationPart(typeof(KasbahWeb).GetTypeInfo().Assembly)
-                .ConfigureApplicationPartManager(p =>
-                {
-                    p.FeatureProviders.Add(new ControllerFeatureProvider(KasbahWebMode.Management));
-                });
+                .AddApplicationPart(typeof(KasbahWeb).GetTypeInfo().Assembly);
 
             return services;
         }
 
         public static IApplicationBuilder UseKasbahWebDelivery(this IApplicationBuilder app)
         {
-            app.UseMvc(routes =>
-            {
-                app.UseMiddleware<KasbahWebContextInitialisationMiddleware>();
-                app.UseMiddleware<SiteResolverMiddleware>();
-                app.UseMiddleware<NodeResolverMiddleware>();
+            app.UseMiddleware<KasbahWebContextInitialisationMiddleware>();
+            app.UseMiddleware<SiteResolverMiddleware>();
+            app.UseMiddleware<NodeResolverMiddleware>();
+            app.UseMiddleware<KasbahRouterMiddleware>();
 
-                // TODO: See if it's possible to use middleware instead of a custom router
-                var kasbahRouter = app.ApplicationServices.GetService<KasbahRouter>();
-                routes.Routes.Add(kasbahRouter);
-                routes.MapRoute(
-                    name: "default",
-                    template: "{*path}");
-            });
+            app.UseMvc();
 
             InitialiseKasbahWeb(app.ApplicationServices);
 
