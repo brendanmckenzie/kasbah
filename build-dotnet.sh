@@ -18,5 +18,3 @@ dotnet pack src/Kasbah.Media $DOTNET_PACK_OPTS
 dotnet pack src/Kasbah.Provider.Npgsql $DOTNET_PACK_OPTS
 dotnet pack src/Kasbah.Provider.Aws $DOTNET_PACK_OPTS
 dotnet pack src/Kasbah.Web $DOTNET_PACK_OPTS
-dotnet pack src/Kasbah.Web.ContentDelivery $DOTNET_PACK_OPTS
-dotnet pack src/Kasbah.Web.ContentManagement $DOTNET_PACK_OPTS

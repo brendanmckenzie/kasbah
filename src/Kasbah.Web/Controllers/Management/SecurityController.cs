@@ -4,11 +4,11 @@ using System.Threading.Tasks;
 using IdentityServer4.AccessTokenValidation;
 using Kasbah.Security;
 using Kasbah.Security.Models;
-using Kasbah.Web.Management.ViewModels;
+using Kasbah.Web.ViewModels.Management;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Kasbah.Web.Management.Controllers
+namespace Kasbah.Web.Controllers.Management
 {
     [Authorize(AuthenticationSchemes = IdentityServerAuthenticationDefaults.AuthenticationScheme)]
     [Route("security")]

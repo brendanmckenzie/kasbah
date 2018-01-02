@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Kasbah.Web.Management.Controllers
+namespace Kasbah.Web.Controllers.Management
 {
     public class StaticContentController : Controller
     {

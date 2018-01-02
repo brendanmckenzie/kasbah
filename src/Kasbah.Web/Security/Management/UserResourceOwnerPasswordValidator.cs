@@ -6,7 +6,7 @@ using IdentityServer4.Validation;
 using Kasbah.Security;
 using Microsoft.Extensions.Logging;
 
-namespace Kasbah.Web.ContentManagement.Security
+namespace Kasbah.Web.Security.Management
 {
     public class UserResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {

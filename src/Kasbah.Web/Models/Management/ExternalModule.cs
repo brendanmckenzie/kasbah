@@ -1,4 +1,4 @@
-namespace Kasbah.Web.Management.Models
+namespace Kasbah.Web.Models.Management
 {
     public class ExternalModule
     {

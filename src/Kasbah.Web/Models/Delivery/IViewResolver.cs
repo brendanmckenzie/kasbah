@@ -1,4 +1,4 @@
-namespace Kasbah.Web.Delivery.Models
+namespace Kasbah.Web.Models.Delivery
 {
     public interface IViewResolver
     {

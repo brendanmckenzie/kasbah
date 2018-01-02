@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Kasbah.Content;
-using Kasbah.Web.Delivery.Models;
 using Kasbah.Web.Models;
+using Kasbah.Web.Models.Delivery;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Logging;
 

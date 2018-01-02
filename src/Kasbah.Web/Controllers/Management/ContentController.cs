@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using IdentityServer4.AccessTokenValidation;
 using Kasbah.Content;
 using Kasbah.Content.Models;
-using Kasbah.Web.Management.ViewModels;
 using Kasbah.Web.Models;
+using Kasbah.Web.ViewModels.Management;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 
-namespace Kasbah.Web.Management.Controllers
+namespace Kasbah.Web.Controllers.Management
 {
     [Authorize(AuthenticationSchemes = IdentityServerAuthenticationDefaults.AuthenticationScheme)]
     [Route("content")]

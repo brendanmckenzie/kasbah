@@ -1,4 +1,4 @@
-namespace Kasbah.Web.Management.ViewModels
+namespace Kasbah.Web.ViewModels.Management
 {
     public class GetNodesByTypeRequest
     {
