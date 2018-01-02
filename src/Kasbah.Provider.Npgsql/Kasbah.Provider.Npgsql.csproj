@@ -1,13 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="..\..\build\common.props" />
-
   <ItemGroup>
     <ProjectReference Include="../Kasbah/Kasbah.csproj" />
     <ProjectReference Include="../Kasbah.Media/Kasbah.Media.csproj" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="1.50.2" />
-    <PackageReference Include="Npgsql" Version="3.2.2" />
+    <PackageReference Include="Dapper" Version="1.50.4" />
+    <PackageReference Include="Npgsql" Version="3.2.6" />
   </ItemGroup>
 </Project>

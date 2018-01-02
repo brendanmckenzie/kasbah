@@ -18,7 +18,7 @@ build:dotnet:
     only:
         - master
     stage: build
-    image: microsoft/dotnet:1.1.1-sdk-1.0.0
+    image: microsoft/dotnet:2-sdk
     dependencies:
     - build:admin_ui
     script:

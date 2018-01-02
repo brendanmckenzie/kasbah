@@ -29,20 +29,27 @@ namespace Kasbah.Provider.Aws
             {
                 using (var client = GetClient())
                 {
-                    var ret = await client.GetObjectAsync(new GetObjectRequest
+                    try
                     {
-                        BucketName = _settings.BucketName,
-                        Key = id.ToString()
-                    });
+                        var ret = await client.GetObjectAsync(new GetObjectRequest
+                        {
+                            BucketName = _settings.BucketName,
+                            Key = id.ToString()
+                        });
 
-                    var stream = new MemoryStream();
-                    await ret.ResponseStream.CopyToAsync(stream);
+                        var stream = new MemoryStream();
+                        await ret.ResponseStream.CopyToAsync(stream);
 
-                    await _cache?.SetAsync(cacheKey, stream.ToArray());
+                        await _cache?.SetAsync(cacheKey, stream.ToArray());
 
-                    stream.Seek(0, SeekOrigin.Begin);
+                        stream.Seek(0, SeekOrigin.Begin);
 
-                    return stream;
+                        return stream;
+                    }
+                    catch (AmazonS3Exception ex) when (ex.ErrorCode == "NoSuchKey")
+                    {
+                        return null;
+                    }
                 }
             }
             else

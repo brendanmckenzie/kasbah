@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using IdentityServer4.AccessTokenValidation;
 using Kasbah.Content;
 using Kasbah.Content.Models;
 using Kasbah.Web.Management.ViewModels;
@@ -12,7 +13,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Kasbah.Web.Management.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = IdentityServerAuthenticationDefaults.AuthenticationScheme)]
     [Route("content")]
     public class ContentController : Controller
     {

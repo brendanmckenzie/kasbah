@@ -14,6 +14,7 @@ DOTNET_PACK_OPTS="-c Release -o $(pwd)/artifacts --version-suffix=$VERSION_SUFFI
 dotnet restore
 
 dotnet pack src/Kasbah $DOTNET_PACK_OPTS
+dotnet pack src/Kasbah.Media $DOTNET_PACK_OPTS
 dotnet pack src/Kasbah.Provider.Npgsql $DOTNET_PACK_OPTS
 dotnet pack src/Kasbah.Provider.Aws $DOTNET_PACK_OPTS
 dotnet pack src/Kasbah.Web $DOTNET_PACK_OPTS

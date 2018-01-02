@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using IdentityServer4.AccessTokenValidation;
 using Kasbah.Security;
 using Kasbah.Security.Models;
 using Kasbah.Web.Management.ViewModels;
@@ -9,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Kasbah.Web.Management.Controllers
 {
-    [Authorize]
+    [Authorize(AuthenticationSchemes = IdentityServerAuthenticationDefaults.AuthenticationScheme)]
     [Route("security")]
     public class SecurityController
     {

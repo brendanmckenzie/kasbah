@@ -4,7 +4,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Kasbah\Kasbah.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="1.1.0" />
-  </ItemGroup>
 </Project>

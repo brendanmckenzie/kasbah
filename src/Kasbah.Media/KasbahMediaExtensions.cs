@@ -1,3 +1,4 @@
+using Kasbah.Content;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kasbah.Media
@@ -7,7 +8,7 @@ namespace Kasbah.Media
         public static IServiceCollection AddKasbahMedia(this IServiceCollection services)
         {
             services.AddTransient<MediaService>();
-            services.AddSingleton<MediaTypeHandler>();
+            services.AddSingleton<ITypeHandler, MediaTypeHandler>();
 
             return services;
         }
