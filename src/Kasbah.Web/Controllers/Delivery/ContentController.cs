@@ -29,7 +29,7 @@ namespace Kasbah.Web.Controllers.Delivery
 
             var type = _typeRegistry.GetType(node.Type);
 
-            var data = await _contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
+            var data = await _contentService.GetRawDataAsync(node.Id, version ?? node.PublishedVersion);
             var content = await _typeMapper.MapTypeAsync(data, node.Type, node);
 
             return content;

@@ -7,6 +7,7 @@ using IdentityServer4.AccessTokenValidation;
 using IdentityServer4.Models;
 using Kasbah.Content;
 using Kasbah.Content.Models;
+using Kasbah.Media;
 using Kasbah.Web.Middleware.Delivery;
 using Kasbah.Web.Models;
 using Kasbah.Web.Security.Management;
@@ -40,6 +41,7 @@ namespace Kasbah.Web
         public static IServiceCollection AddKasbahWeb(this IServiceCollection services)
         {
             services.AddKasbah();
+            services.AddKasbahMedia();
 
             services.AddSingleton<SiteRegistry>();
             services.AddSingleton<ComponentRegistry>();

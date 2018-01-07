@@ -7,5 +7,10 @@ namespace Kasbah.Web.Models
         public string Control { get; set; }
 
         public IDictionary<string, object> Properties { get; set; }
+
+        public virtual object GetModel(KasbahWebContext context)
+        {
+            return null;
+        }
     }
 }
