@@ -8,7 +8,6 @@ namespace Kasbah.Web
     public static class ComponentRegistryExtensions
     {
         public static void RegisterComponent<TComponent, TProperties>(this ComponentRegistry componentRegistry, Action<TypeDefinitionBuilder> configure = null)
-            where TComponent : ViewComponent
         {
             var type = typeof(TComponent);
 

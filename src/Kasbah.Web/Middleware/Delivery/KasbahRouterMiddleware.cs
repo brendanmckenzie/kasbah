@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Kasbah.Web.Models;
@@ -44,11 +45,25 @@ namespace Kasbah.Web.Middleware.Delivery
                                 var component = _componentRegistry.GetByAlias(ent.Control);
                                 var properties = await kasbahWebContext.TypeMapper.MapTypeAsync(ent.Properties, component.Properties.Alias) as Component;
 
+                                object GetModel()
+                                {
+                                    var method = component.Control.GetMethod("GetModel");
+                                    if (method == null)
+                                    {
+                                        return null;
+                                    }
+                                    else
+                                    {
+                                        var instance = Activator.CreateInstance(component.Control);
+
+                                        return method.Invoke(instance, new object[] { properties, kasbahWebContext });
+                                    }
+                                };
+
                                 return new
                                 {
                                     alias = ent.Control,
-                                    properties,
-                                    model = properties.GetModel(kasbahWebContext)
+                                    model = GetModel()
                                 };
                             });
 
