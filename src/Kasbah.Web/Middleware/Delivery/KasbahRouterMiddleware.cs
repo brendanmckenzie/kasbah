@@ -45,25 +45,10 @@ namespace Kasbah.Web.Middleware.Delivery
                                 var component = _componentRegistry.GetByAlias(ent.Control);
                                 var properties = await kasbahWebContext.TypeMapper.MapTypeAsync(ent.Properties, component.Properties.Alias) as Component;
 
-                                object GetModel()
-                                {
-                                    var method = component.Control.GetMethod("GetModel");
-                                    if (method == null)
-                                    {
-                                        return null;
-                                    }
-                                    else
-                                    {
-                                        var instance = Activator.CreateInstance(component.Control);
-
-                                        return method.Invoke(instance, new object[] { properties, kasbahWebContext });
-                                    }
-                                };
-
                                 return new
                                 {
                                     alias = ent.Control,
-                                    model = GetModel()
+                                    model = GetModel(kasbahWebContext, properties, component)
                                 };
                             });
 
@@ -84,15 +69,22 @@ namespace Kasbah.Web.Middleware.Delivery
                             components = renderData.ToDictionary(ent => ent.key, ent => ent.components)
                         };
 
-                        var result = await _prerenderer.RenderToString("wwwroot/dist/kasbah-server", customDataParameter: model);
-
-                        if (!string.IsNullOrEmpty(result.RedirectUrl))
+                        if (context.Request.ContentType == "application/json")
                         {
-                            context.Response.Redirect(result.RedirectUrl, false);
+                            await context.Response.WriteJsonAsync(model);
                         }
                         else
                         {
-                            await context.Response.WriteHtmlAsync($"<!DOCTYPE html>{result.Html}");
+                            var result = await _prerenderer.RenderToString("wwwroot/dist/kasbah-server", customDataParameter: model);
+
+                            if (!string.IsNullOrEmpty(result.RedirectUrl))
+                            {
+                                context.Response.Redirect(result.RedirectUrl, false);
+                            }
+                            else
+                            {
+                                await context.Response.WriteHtmlAsync($"<!DOCTYPE html>{result.Html}");
+                            }
                         }
                     }
                     else
@@ -105,6 +97,21 @@ namespace Kasbah.Web.Middleware.Delivery
             }
 
             await _next.Invoke(context);
+        }
+
+        object GetModel(KasbahWebContext context, Component properties, ComponentDefinition component)
+        {
+            var method = component.Control.GetMethod("GetModel");
+            if (method == null)
+            {
+                return null;
+            }
+            else
+            {
+                var instance = Activator.CreateInstance(component.Control);
+
+                return method.Invoke(instance, new object[] { properties, context });
+            }
         }
     }
 }
