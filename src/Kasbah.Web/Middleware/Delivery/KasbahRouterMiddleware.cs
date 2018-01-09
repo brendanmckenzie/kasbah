@@ -48,12 +48,12 @@ namespace Kasbah.Web.Middleware.Delivery
                                 .Select(async ent =>
                                 {
                                     var component = _componentRegistry.GetByAlias(ent.Control);
-                                    var properties = await kasbahWebContext.TypeMapper.MapTypeAsync(ent.Properties, component.Properties.Alias) as Component;
+                                    var properties = ent.Properties == null ? null : await kasbahWebContext.TypeMapper.MapTypeAsync(ent.Properties, component.Properties.Alias) as Component;
 
                                     return new
                                     {
                                         alias = ent.Control,
-                                        model = GetModel(kasbahWebContext, properties, component)
+                                        model = await GetModelAsync(kasbahWebContext, properties, component)
                                     };
                                 });
 
@@ -110,18 +110,30 @@ namespace Kasbah.Web.Middleware.Delivery
             await _next.Invoke(context);
         }
 
-        object GetModel(KasbahWebContext context, Component properties, ComponentDefinition component)
+        async Task<object> GetModelAsync(KasbahWebContext context, Component properties, ComponentDefinition component)
         {
-            var method = component.Control.GetMethod("GetModel");
-            if (method == null)
-            {
-                return properties;
-            }
-            else
+            var asyncMethod = component.Control.GetMethod("GetModelAsync");
+            if (asyncMethod != null)
             {
                 var instance = Activator.CreateInstance(component.Control);
 
-                return method.Invoke(instance, new object[] { properties, context });
+                var task = (Task<object>)asyncMethod.Invoke(instance, new object[] { properties, context });
+
+                return await task;
+            }
+            else
+            {
+                var method = component.Control.GetMethod("GetModel");
+                if (method == null)
+                {
+                    return properties;
+                }
+                else
+                {
+                    var instance = Activator.CreateInstance(component.Control);
+
+                    return method.Invoke(instance, new object[] { properties, context });
+                }
             }
         }
     }

@@ -26,7 +26,6 @@ namespace Kasbah.Web
         }
 
         public static void RegisterComponent<TComponent>(this ComponentRegistry componentRegistry)
-            where TComponent : ViewComponent
         {
             var type = typeof(TComponent);
 
