@@ -37,7 +37,7 @@ namespace Kasbah.Web.Controllers.Management
         }
 
         [Route("/{*path}")]
-        public FileResult StaticContent(string path)
+        public ActionResult StaticContent(string path)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -54,7 +54,7 @@ namespace Kasbah.Web.Controllers.Management
 
             if (data == null)
             {
-                return null;
+                return NotFound();
             }
 
             return new FileContentResult(data, GetMimeType(path.Split('.').Last()));

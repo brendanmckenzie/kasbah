@@ -98,6 +98,7 @@ namespace Kasbah.Web
             app.UseMiddleware<SiteResolverMiddleware>();
             app.UseMiddleware<NodeResolverMiddleware>();
             app.UseMiddleware<KasbahRouterMiddleware>();
+            app.UseMiddleware<KasbahContentMiddleware>();
 
             app.UseMvc();
 

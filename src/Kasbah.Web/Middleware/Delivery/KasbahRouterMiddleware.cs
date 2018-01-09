@@ -14,14 +14,12 @@ namespace Kasbah.Web.Middleware.Delivery
     {
         readonly RequestDelegate _next;
         readonly ILogger _log;
-        readonly ISpaPrerenderer _prerenderer;
         readonly ComponentRegistry _componentRegistry;
 
-        public KasbahRouterMiddleware(RequestDelegate next, ILogger<KasbahRouterMiddleware> log, ISpaPrerenderer prerenderer, ComponentRegistry componentRegistry)
+        public KasbahRouterMiddleware(RequestDelegate next, ILogger<KasbahRouterMiddleware> log, ComponentRegistry componentRegistry)
         {
             _next = next;
             _log = log;
-            _prerenderer = prerenderer;
             _componentRegistry = componentRegistry;
         }
 
@@ -81,35 +79,12 @@ namespace Kasbah.Web.Middleware.Delivery
                             components = renderData.ToDictionary(ent => ent.key, ent => ent.components)
                         };
 
-                        if (context.Request.ContentType == "application/json")
-                        {
-                            var jsonSettings = new JsonSerializerSettings
-                            {
-                                ContractResolver = new CamelCasePropertyNamesContractResolver()
-                            };
-                            var json = JsonConvert.SerializeObject(model, jsonSettings);
-                            await context.Response.WriteJsonAsync(json);
-                        }
-                        else
-                        {
-                            var result = await _prerenderer.RenderToString("wwwroot/dist/kasbah-server", customDataParameter: model);
-
-                            if (!string.IsNullOrEmpty(result.RedirectUrl))
-                            {
-                                context.Response.Redirect(result.RedirectUrl, false);
-                            }
-                            else
-                            {
-                                await context.Response.WriteHtmlAsync($"<!DOCTYPE html>{result.Html}");
-                            }
-                        }
+                        context.Items["kasbah:model"] = model;
                     }
                     else
                     {
                         // handle situation where non-presentable node is trying to be routed
                     }
-
-                    return;
                 }
             }
 
