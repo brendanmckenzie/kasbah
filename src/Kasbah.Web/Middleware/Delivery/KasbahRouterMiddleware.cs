@@ -40,9 +40,15 @@ namespace Kasbah.Web.Middleware.Delivery
 
                     if (content is IPresentable presentable)
                     {
-                        var renderDataAsync = presentable.Components.Keys.AsParallel().Select(async key =>
+                        var instanceComponents = presentable.Components;
+                        var staticComponents = await presentable.ListStaticComponentsAsync(kasbahWebContext) ?? new ComponentCollection();
+                        var allComponents = instanceComponents.Concat(staticComponents)
+                            .ToDictionary(ent => ent.Key, ent => ent.Value);
+
+                        var renderDataAsync = allComponents.Keys.AsParallel().Select(async key =>
                         {
-                            var componentsAsync = presentable.Components[key]
+                            var componentList = allComponents[key];
+                            var componentsAsync = componentList
                                 .AsParallel()
                                 .AsOrdered()
                                 .Select(async ent =>
