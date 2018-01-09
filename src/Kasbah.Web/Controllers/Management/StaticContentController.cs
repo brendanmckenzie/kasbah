@@ -52,6 +52,11 @@ namespace Kasbah.Web.Controllers.Management
                 data = MapPathToResource(path);
             }
 
+            if (data == null)
+            {
+                return null;
+            }
+
             return new FileContentResult(data, GetMimeType(path.Split('.').Last()));
         }
 
