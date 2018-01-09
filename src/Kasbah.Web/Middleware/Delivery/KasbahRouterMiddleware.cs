@@ -5,6 +5,8 @@ using Kasbah.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.Prerendering;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Kasbah.Web.Middleware.Delivery
 {
@@ -40,17 +42,20 @@ namespace Kasbah.Web.Middleware.Delivery
                     {
                         var renderDataAsync = presentable.Components.Keys.AsParallel().Select(async key =>
                         {
-                            var componentsAsync = presentable.Components[key].AsParallel().Select(async ent =>
-                            {
-                                var component = _componentRegistry.GetByAlias(ent.Control);
-                                var properties = await kasbahWebContext.TypeMapper.MapTypeAsync(ent.Properties, component.Properties.Alias) as Component;
-
-                                return new
+                            var componentsAsync = presentable.Components[key]
+                                .AsParallel()
+                                .AsOrdered()
+                                .Select(async ent =>
                                 {
-                                    alias = ent.Control,
-                                    model = GetModel(kasbahWebContext, properties, component)
-                                };
-                            });
+                                    var component = _componentRegistry.GetByAlias(ent.Control);
+                                    var properties = await kasbahWebContext.TypeMapper.MapTypeAsync(ent.Properties, component.Properties.Alias) as Component;
+
+                                    return new
+                                    {
+                                        alias = ent.Control,
+                                        model = GetModel(kasbahWebContext, properties, component)
+                                    };
+                                });
 
                             return new
                             {
@@ -64,6 +69,7 @@ namespace Kasbah.Web.Middleware.Delivery
                         var model = new
                         {
                             node,
+                            content,
                             site = kasbahWebContext.Site,
                             siteNode = kasbahWebContext.SiteNode,
                             components = renderData.ToDictionary(ent => ent.key, ent => ent.components)
@@ -71,7 +77,12 @@ namespace Kasbah.Web.Middleware.Delivery
 
                         if (context.Request.ContentType == "application/json")
                         {
-                            await context.Response.WriteJsonAsync(model);
+                            var jsonSettings = new JsonSerializerSettings
+                            {
+                                ContractResolver = new CamelCasePropertyNamesContractResolver()
+                            };
+                            var json = JsonConvert.SerializeObject(model, jsonSettings);
+                            await context.Response.WriteJsonAsync(json);
                         }
                         else
                         {
@@ -104,7 +115,7 @@ namespace Kasbah.Web.Middleware.Delivery
             var method = component.Control.GetMethod("GetModel");
             if (method == null)
             {
-                return null;
+                return properties;
             }
             else
             {
