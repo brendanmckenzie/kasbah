@@ -2,7 +2,7 @@ set -e
 
 rm -rf src/Kasbah.Web/Management/Ui
 mkdir -p src/Kasbah.Web/Management/Ui
-cp -r src/Kasbah.Web.Management.UI/dist src/Kasbah.Web/Management/Ui
+cp -r src/Kasbah.Web.Management.UI/dist/* src/Kasbah.Web/Management/Ui
 
 if [ -z "$VERSION_SUFFIX" ]; then
     COMMIT_COUNT=$(git rev-list --all --count)
