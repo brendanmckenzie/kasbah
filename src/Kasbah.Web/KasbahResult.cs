@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Kasbah.Web.Middleware.Delivery;
+using Kasbah.Web.Models.Delivery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.Prerendering;
 
@@ -8,9 +9,9 @@ namespace Kasbah.Web
 {
     public class KasbahResult : ActionResult
     {
-        readonly object _model;
+        readonly RenderModel _model;
 
-        public KasbahResult(object model)
+        public KasbahResult(RenderModel model)
         {
             _model = model;
         }

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Kasbah.Web.Models;
+using Kasbah.Web.Models.Delivery;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.Prerendering;
 using Microsoft.Extensions.Logging;
@@ -54,10 +55,10 @@ namespace Kasbah.Web.Middleware.Delivery
                                     var component = _componentRegistry.GetByAlias(ent.Control);
                                     var properties = ent.Properties == null ? null : await kasbahWebContext.TypeMapper.MapTypeAsync(ent.Properties, component.Properties.Alias) as Component;
 
-                                    return new
+                                    return new RenderModel.Component
                                     {
-                                        alias = ent.Control,
-                                        model = await GetModelAsync(kasbahWebContext, properties, component)
+                                        Alias = ent.Control,
+                                        Model = await GetModelAsync(kasbahWebContext, properties, component)
                                     };
                                 });
 
@@ -70,13 +71,13 @@ namespace Kasbah.Web.Middleware.Delivery
 
                         var renderData = await Task.WhenAll(renderDataAsync);
 
-                        var model = new
+                        var model = new RenderModel
                         {
-                            node,
-                            content,
-                            site = kasbahWebContext.Site,
-                            siteNode = kasbahWebContext.SiteNode,
-                            components = renderData.ToDictionary(ent => ent.key, ent => ent.components)
+                            Node = node,
+                            Content = content,
+                            Site = kasbahWebContext.Site,
+                            SiteNode = kasbahWebContext.SiteNode,
+                            Components = new RenderModel.ComponentMap(renderData.ToDictionary(ent => ent.key, ent => ent.components.AsEnumerable()))
                         };
 
                         context.Items["kasbah:model"] = model;
