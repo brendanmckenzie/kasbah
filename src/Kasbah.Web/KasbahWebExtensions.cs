@@ -8,11 +8,13 @@ using IdentityServer4.Models;
 using Kasbah.Content;
 using Kasbah.Content.Models;
 using Kasbah.Media;
+using Kasbah.Web.Controllers.Management;
 using Kasbah.Web.Middleware.Delivery;
 using Kasbah.Web.Models;
 using Kasbah.Web.Security.Management;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kasbah.Web
@@ -59,7 +61,11 @@ namespace Kasbah.Web
             services.AddSpaPrerenderer();
 
             services.AddMvc()
-                .AddApplicationPart(typeof(KasbahWeb).GetTypeInfo().Assembly);
+                .AddApplicationPart(typeof(KasbahWeb).GetTypeInfo().Assembly)
+                .ConfigureApplicationPartManager(manager =>
+                {
+                    manager.FeatureProviders.Add(new DeliveryControllerFeatureProvider());
+                });
 
             return services;
         }
@@ -136,6 +142,21 @@ namespace Kasbah.Web
             registration.RegisterComponents(componentRegistry);
 
             services.InitialiseKasbahAsync().Wait();
+        }
+
+        public class DeliveryControllerFeatureProvider : IApplicationFeatureProvider<ControllerFeature>
+        {
+            public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
+            {
+                var remove = feature.Controllers
+                    .Where(ent => ent.FullName.StartsWith(typeof(StaticContentController).Namespace))
+                    .ToArray();
+
+                foreach (var ent in remove)
+                {
+                    feature.Controllers.Remove(ent);
+                }
+            }
         }
     }
 }
