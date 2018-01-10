@@ -13,7 +13,7 @@ build:admin_ui:
         - sh build-admin-ui.sh
     artifacts:
         paths:
-        - src/Kasbah.Web.ContentManagement.UI/dist/
+        - src/Kasbah.Web.Management.UI/dist/
 
 build:dotnet:
     only:
