@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Kasbah.Web.Controllers.Management
 {
@@ -18,6 +19,13 @@ namespace Kasbah.Web.Controllers.Management
             { ".eot", "application/octet-stream" },
             { ".ttf", "application/octet-stream" },
         };
+
+        readonly ILogger<StaticContentController> _logger;
+
+        public StaticContentController(ILogger<StaticContentController> logger)
+        {
+            _logger = logger;
+        }
 
         public static string GetMimeType(string extension)
         {
@@ -60,7 +68,7 @@ namespace Kasbah.Web.Controllers.Management
             return new FileContentResult(data, GetMimeType(path.Split('.').Last()));
         }
 
-        static byte[] MapPathToResource(string path)
+        byte[] MapPathToResource(string path)
         {
             var assembly = typeof(StaticContentController).GetTypeInfo().Assembly;
             const string Prefix = "Kasbah.Web.Management.Ui";
@@ -77,6 +85,12 @@ namespace Kasbah.Web.Controllers.Management
 
                     return buffer;
                 }
+            }
+            else
+            {
+                _logger.LogInformation($"Resource {resPath} not found");
+                _logger.LogInformation("Available resources");
+                _logger.LogInformation(string.Join(Environment.NewLine, resources));
             }
 
             return null;
