@@ -1,5 +1,5 @@
 set -e
 
-cd src/Kasbah.Web.ContentManagement.UI
+cd src/Kasbah.Web.Management.UI
 yarn
 yarn run build

@@ -63,7 +63,7 @@ namespace Kasbah.Web.Controllers.Management
         static byte[] MapPathToResource(string path)
         {
             var assembly = typeof(StaticContentController).GetTypeInfo().Assembly;
-            const string Prefix = "Kasbah.Web.ContentManagement.wwwroot";
+            const string Prefix = "Kasbah.Web.Management.Ui";
             var resources = assembly.GetManifestResourceNames();
             var resPath = $"{Prefix}.{path}".Replace("/", ".");
 

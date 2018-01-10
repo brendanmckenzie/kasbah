@@ -6,6 +6,7 @@ stages:
 build:admin_ui:
     only:
         - master
+        - version/3.0
     stage: build_ui
     image: kkarczmarczyk/node-yarn:6.9
     script:
@@ -17,6 +18,7 @@ build:admin_ui:
 build:dotnet:
     only:
         - master
+        - version/3.0
     stage: build
     image: microsoft/dotnet:2-sdk
     dependencies:
@@ -30,6 +32,7 @@ build:dotnet:
 deploy:
     only:
         - master
+        - version/3.0
     stage: deploy
     script:
         - sh deploy.sh
