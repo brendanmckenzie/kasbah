@@ -1,6 +1,7 @@
+using Kasbah.Analytics;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Kasbah.Analytics.Extensions
+namespace Kasbah
 {
     public static class AnalyticsExtensions
     {

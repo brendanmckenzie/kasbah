@@ -61,7 +61,7 @@ namespace Kasbah.Web
             services.AddSpaPrerenderer();
 
             services.AddMvc()
-                .AddApplicationPart(typeof(KasbahWeb).GetTypeInfo().Assembly)
+                .AddApplicationPart(typeof(KasbahWebExtensions).GetTypeInfo().Assembly)
                 .ConfigureApplicationPartManager(manager =>
                 {
                     manager.FeatureProviders.Add(new DeliveryControllerFeatureProvider());
@@ -93,7 +93,7 @@ namespace Kasbah.Web
                 .AddDeveloperSigningCredential();
 
             services.AddMvc()
-                .AddApplicationPart(typeof(KasbahWeb).GetTypeInfo().Assembly);
+                .AddApplicationPart(typeof(KasbahWebExtensions).GetTypeInfo().Assembly);
 
             return services;
         }

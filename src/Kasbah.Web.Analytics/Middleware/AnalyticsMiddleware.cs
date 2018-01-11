@@ -7,68 +7,55 @@ namespace Kasbah.Web.Analytics.Middleware
 {
     public class AnalyticsMiddleware
     {
-        public const string TrackingCookie = "__kastrk";
+        public const string TrackingCookie = "kasbah_session";
 
         readonly RequestDelegate _next;
         readonly ILogger _log;
 
-        public AnalyticsMiddleware(RequestDelegate next, ILoggerFactory loggerFactory)
+        public AnalyticsMiddleware(RequestDelegate next, ILogger<AnalyticsMiddleware> log)
         {
             _next = next;
-            _log = loggerFactory.CreateLogger<AnalyticsMiddleware>();
+            _log = log;
         }
 
         public async Task Invoke(HttpContext context)
         {
             EnsureTrackingCookie(context);
 
-            await CheckAndMergeProfilesAsync(context);
-
             await _next.Invoke(context);
         }
 
-        string GetTrackingCookieId(HttpContext context)
+        Guid GetTrackingCookieId(HttpContext context)
         {
             var query = context.Request.Query;
-            if (query.ContainsKey(TrackingCookie))
+            if (query.TryGetValue(TrackingCookie, out var queryValue)
+                && Guid.TryParse(queryValue, out var queryValueId))
             {
-                return query[TrackingCookie];
+                return queryValueId;
             }
 
             var cookies = context.Request.Cookies;
-            var cookieValue = default(string);
-            if (cookies.TryGetValue(TrackingCookie, out cookieValue))
+            if (cookies.TryGetValue(TrackingCookie, out var cookieValue)
+                && Guid.TryParse(cookieValue, out var cookieValueId))
             {
-                return cookieValue;
+                return cookieValueId;
             }
 
             if (context.Items.ContainsKey(TrackingCookie))
             {
-                return context.Items[TrackingCookie] as string;
+                return (Guid)context.Items[TrackingCookie];
             }
 
-            return Convert.ToBase64String(Guid.NewGuid().ToByteArray());
+            return Guid.NewGuid();
         }
 
         void EnsureTrackingCookie(HttpContext context)
         {
+            string IdToString(Guid id)
+                => Convert.ToBase64String(id.ToByteArray());
+
             context.Items["user:profile"] = GetTrackingCookieId(context);
-            context.Response.Cookies.Append(TrackingCookie, GetTrackingCookieId(context), new CookieOptions { Expires = DateTimeOffset.Now.AddYears(5) });
-        }
-
-        async Task CheckAndMergeProfilesAsync(HttpContext context)
-        {
-            var query = context.Request.Query;
-            var cookies = context.Request.Cookies;
-
-            if (cookies.ContainsKey(TrackingCookie) && query.ContainsKey(TrackingCookie))
-            {
-                if (cookies[TrackingCookie] != query[TrackingCookie])
-                {
-                    // merge profiles
-                    await Task.Delay(0);
-                }
-            }
+            context.Response.Cookies.Append(TrackingCookie, IdToString(GetTrackingCookieId(context)), new CookieOptions { Expires = DateTimeOffset.Now.AddYears(5) });
         }
     }
 }
