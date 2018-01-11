@@ -6,17 +6,22 @@ stages:
 build:admin_ui:
     only:
         - master
+        - version/3.0
     stage: build_ui
-    image: kkarczmarczyk/node-yarn:6.9
+    image: kkarczmarczyk/node-yarn:8.0
     script:
         - sh build-admin-ui.sh
     artifacts:
         paths:
-        - src/Kasbah.Web.ContentManagement.UI/dist/
+            - src/Kasbah.Web.Management.UI/dist/
+    cache:
+        paths:
+            - src/Kasbah.Web.Management.UI/node_modules/
 
 build:dotnet:
     only:
         - master
+        - version/3.0
     stage: build
     image: microsoft/dotnet:2-sdk
     dependencies:
@@ -30,6 +35,7 @@ build:dotnet:
 deploy:
     only:
         - master
+        - version/3.0
     stage: deploy
     script:
         - sh deploy.sh

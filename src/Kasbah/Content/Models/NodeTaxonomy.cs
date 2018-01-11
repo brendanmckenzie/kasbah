@@ -8,7 +8,5 @@ namespace Kasbah.Content.Models
         public IEnumerable<Guid> Ids { get; set; }
 
         public IEnumerable<string> Aliases { get; set; }
-
-        public int Length { get; set; }
     }
 }

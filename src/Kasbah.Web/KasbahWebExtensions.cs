@@ -1,27 +1,132 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using IdentityServer4.AccessTokenValidation;
+using IdentityServer4.Models;
 using Kasbah.Content;
 using Kasbah.Content.Models;
 using Kasbah.Media;
-using Kasbah.Security;
-using Kasbah.Web;
+using Kasbah.Web.Controllers.Management;
+using Kasbah.Web.Middleware.Delivery;
+using Kasbah.Web.Models;
+using Kasbah.Web.Security.Management;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kasbah.Web
 {
     public static class KasbahWebExtensions
     {
+        static readonly IEnumerable<Client> AuthClients = new[]
+        {
+            new Client
+            {
+                ClientId = "web",
+                AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                AllowedScopes = { "kasbah" },
+                ClientSecrets =
+                {
+                    new Secret("secret".Sha256())
+                }
+            }
+        };
+
+        static readonly IEnumerable<ApiResource> ApiResources = new[]
+        {
+            new ApiResource("kasbah", "Kasbah API")
+        };
+
         public static IServiceCollection AddKasbahWeb(this IServiceCollection services)
         {
+            services.AddKasbah();
+            services.AddKasbahMedia();
+
             services.AddSingleton<SiteRegistry>();
             services.AddSingleton<ComponentRegistry>();
-
-            services.AddKasbahMedia();
 
             return services;
         }
 
-        public static async Task InitialiseKasbahWebAsync(this IServiceProvider services)
+        public static IServiceCollection AddKasbahWebDelivery(this IServiceCollection services)
+        {
+            services.AddKasbahWeb();
+
+            services.AddSingleton(new KasbahWebApplication());
+
+            services.AddNodeServices();
+            services.AddSpaPrerenderer();
+
+            services.AddMvc()
+                .AddApplicationPart(typeof(KasbahWeb).GetTypeInfo().Assembly)
+                .ConfigureApplicationPartManager(manager =>
+                {
+                    manager.FeatureProviders.Add(new DeliveryControllerFeatureProvider());
+                });
+
+            return services;
+        }
+
+        public static IServiceCollection AddKasbahWebManagement(this IServiceCollection services)
+        {
+            services.AddKasbahWeb();
+
+            services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
+                .AddIdentityServerAuthentication(options =>
+                {
+                    options.RequireHttpsMetadata = false;
+                    options.Authority = "http://localhost:5000";
+                    options.ApiName = "kasbah";
+                    options.ApiSecret = "secret";
+                });
+
+            services.AddIdentityServer(options =>
+            {
+                options.IssuerUri = "http://localhost:5000";
+            })
+                .AddInMemoryClients(AuthClients)
+                .AddInMemoryApiResources(ApiResources)
+                .AddResourceOwnerValidator<UserResourceOwnerPasswordValidator>()
+                .AddDeveloperSigningCredential();
+
+            services.AddMvc()
+                .AddApplicationPart(typeof(KasbahWeb).GetTypeInfo().Assembly);
+
+            return services;
+        }
+
+        public static IApplicationBuilder UseKasbahWebDelivery(this IApplicationBuilder app)
+        {
+            app.UseMiddleware<KasbahWebContextInitialisationMiddleware>();
+            app.UseMiddleware<SiteResolverMiddleware>();
+            app.UseMiddleware<NodeResolverMiddleware>();
+            app.UseMiddleware<KasbahRouterMiddleware>();
+            app.UseMiddleware<KasbahContentMiddleware>();
+
+            app.UseMvc();
+
+            InitialiseKasbahWeb(app.ApplicationServices);
+
+            return app;
+        }
+
+        public static IApplicationBuilder UseKasbahWebManagement(this IApplicationBuilder app)
+        {
+            app.UseMvc(routes =>
+            {
+                app.UseAuthentication();
+                app.UseIdentityServer();
+            });
+
+            InitialiseKasbahWeb(app.ApplicationServices);
+
+            return app;
+        }
+
+        public static void InitialiseKasbahWeb(this IServiceProvider services)
         {
             var typeRegistry = services.GetService<TypeRegistry>();
             var siteRegistry = services.GetService<SiteRegistry>();
@@ -36,7 +141,22 @@ namespace Kasbah.Web
             registration.RegisterSites(siteRegistry);
             registration.RegisterComponents(componentRegistry);
 
-            await Task.Yield();
+            services.InitialiseKasbahAsync().Wait();
+        }
+
+        public class DeliveryControllerFeatureProvider : IApplicationFeatureProvider<ControllerFeature>
+        {
+            public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
+            {
+                var remove = feature.Controllers
+                    .Where(ent => ent.FullName.StartsWith(typeof(StaticContentController).Namespace))
+                    .ToArray();
+
+                foreach (var ent in remove)
+                {
+                    feature.Controllers.Remove(ent);
+                }
+            }
         }
     }
 }
