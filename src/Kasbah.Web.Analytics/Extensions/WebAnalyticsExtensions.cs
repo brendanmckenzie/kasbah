@@ -13,7 +13,7 @@ namespace Kasbah
             return services;
         }
 
-        public static IApplicationBuilder UseKasbahWebDelivery(this IApplicationBuilder app)
+        public static IApplicationBuilder UseKasbahWebAnalytics(this IApplicationBuilder app)
         {
             app.UseMiddleware<AnalyticsMiddleware>();
 

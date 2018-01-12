@@ -47,39 +47,22 @@ create table media (
   modified_at timestamp default now() not null
 );
 
-create table profile (
+create table session (
   id uuid primary key not null,
 
   attributes jsonb,
 
   created_at timestamp default now() not null,
-  modified_at timestamp default now() not null
+  last_activity_at timestamp default now() not null
 );
 
-create table campaign (
+create table session_activity (
   id uuid primary key not null,
-  name varchar(512) not null,
 
-  created_at timestamp default now() not null,
-  modified_at timestamp default now() not null
-);
+  session_id uuid references session ( id ),
 
-create table event (
-  id uuid primary key not null,
-  profile_id uuid not null references profile ( id ),
-  campaign_id uuid references campaign ( id ),
-
-  data jsonb,
-
-  created_at timestamp default now() not null
-);
-
-create table profile_attribute (
-  id uuid primary key not null,
-  profile_id uuid not null references profile ( id ),
-  alias varchar(512) not null,
-
-  data jsonb,
+  type varchar(128) not null,
+  attributes jsonb,
 
   created_at timestamp default now() not null
 );

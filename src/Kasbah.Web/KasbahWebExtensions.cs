@@ -98,12 +98,18 @@ namespace Kasbah.Web
             return services;
         }
 
-        public static IApplicationBuilder UseKasbahWebDelivery(this IApplicationBuilder app)
+        public static IApplicationBuilder UseKasbahWebDelivery(this IApplicationBuilder app, IEnumerable<Type> middleware = null)
         {
             app.UseMiddleware<KasbahWebContextInitialisationMiddleware>();
             app.UseMiddleware<SiteResolverMiddleware>();
             app.UseMiddleware<NodeResolverMiddleware>();
             app.UseMiddleware<KasbahRouterMiddleware>();
+
+            foreach (var ent in middleware ?? Enumerable.Empty<Type>())
+            {
+                app.UseMiddleware(ent);
+            }
+
             app.UseMiddleware<KasbahContentMiddleware>();
 
             app.UseMvc();

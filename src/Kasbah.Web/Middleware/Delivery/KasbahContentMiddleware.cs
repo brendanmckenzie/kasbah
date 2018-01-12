@@ -45,6 +45,8 @@ namespace Kasbah.Web.Middleware.Delivery
                 {
                     var result = await _prerenderer.RenderToString("wwwroot/dist/kasbah-server", customDataParameter: model);
 
+                    context.Response.StatusCode = 200;
+
                     if (!string.IsNullOrEmpty(result.RedirectUrl))
                     {
                         context.Response.Redirect(result.RedirectUrl, false);

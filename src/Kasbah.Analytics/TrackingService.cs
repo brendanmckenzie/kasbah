@@ -25,5 +25,8 @@ namespace Kasbah.Analytics
 
         public async Task CreateAttributeAsync(Guid profile, string alias, object data)
             => await _dataProvider.CreateAttributeAsync(profile, alias, data);
+
+        public async Task TrackSessionActivityAsync(Guid session, string type, object data)
+            => await _dataProvider.TrackSessionActivityAsync(session, type, data);
     }
 }

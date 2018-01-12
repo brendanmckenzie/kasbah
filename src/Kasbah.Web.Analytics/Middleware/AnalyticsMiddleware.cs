@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Kasbah.Analytics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -8,24 +9,63 @@ namespace Kasbah.Web.Analytics.Middleware
     public class AnalyticsMiddleware
     {
         public const string TrackingCookie = "kasbah_session";
+        public const string SessionKey = "kasbah:analytics:session";
 
         readonly RequestDelegate _next;
         readonly ILogger _log;
+        readonly SessionService _sessionService;
+        readonly TrackingService _trackingService;
 
-        public AnalyticsMiddleware(RequestDelegate next, ILogger<AnalyticsMiddleware> log)
+        public AnalyticsMiddleware(RequestDelegate next, ILogger<AnalyticsMiddleware> log, SessionService sessionService, TrackingService trackingService)
         {
             _next = next;
             _log = log;
+            _sessionService = sessionService;
+            _trackingService = trackingService;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            EnsureTrackingCookie(context);
+            await EnsureTrackingCookieAsync(context);
+            await TrackSessionActivityAsync(context);
 
             await _next.Invoke(context);
         }
 
-        Guid GetTrackingCookieId(HttpContext context)
+        async Task EnsureTrackingCookieAsync(HttpContext context)
+        {
+            var session = await GetTrackingCookieIdAsync(context);
+
+            string IdToString(Guid id)
+                => Convert.ToBase64String(id.ToByteArray());
+
+            context.Items[SessionKey] = await GetTrackingCookieIdAsync(context);
+
+            var options = new CookieOptions
+            {
+                Expires = DateTimeOffset.Now.AddYears(5)
+            };
+            context.Response.Cookies.Append(TrackingCookie, IdToString(session), options);
+        }
+
+        async Task TrackSessionActivityAsync(HttpContext context)
+        {
+            var session = (Guid)context.Items[SessionKey];
+            var kasbahWebContext = context.GetKasbahWebContext();
+
+            var data = new
+            {
+                url = $"{context.Request.Path}{context.Request.QueryString}",
+                site = kasbahWebContext.Site?.Alias,
+                node = kasbahWebContext.Node?.Id,
+                version = kasbahWebContext.Node?.PublishedVersion,
+                ip = context.Connection.RemoteIpAddress.ToString()
+            };
+
+            await _trackingService.TrackSessionActivityAsync(session, "request", data);
+        }
+
+        async Task<Guid> GetTrackingCookieIdAsync(HttpContext context)
         {
             var query = context.Request.Query;
             if (query.TryGetValue(TrackingCookie, out var queryValue)
@@ -35,10 +75,9 @@ namespace Kasbah.Web.Analytics.Middleware
             }
 
             var cookies = context.Request.Cookies;
-            if (cookies.TryGetValue(TrackingCookie, out var cookieValue)
-                && Guid.TryParse(cookieValue, out var cookieValueId))
+            if (cookies.TryGetValue(TrackingCookie, out var cookieValue))
             {
-                return cookieValueId;
+                return new Guid(Convert.FromBase64String(cookieValue));
             }
 
             if (context.Items.ContainsKey(TrackingCookie))
@@ -46,16 +85,11 @@ namespace Kasbah.Web.Analytics.Middleware
                 return (Guid)context.Items[TrackingCookie];
             }
 
-            return Guid.NewGuid();
-        }
+            var id = Guid.NewGuid();
 
-        void EnsureTrackingCookie(HttpContext context)
-        {
-            string IdToString(Guid id)
-                => Convert.ToBase64String(id.ToByteArray());
+            await _sessionService.CreateSessionAsync(id);
 
-            context.Items["user:profile"] = GetTrackingCookieId(context);
-            context.Response.Cookies.Append(TrackingCookie, IdToString(GetTrackingCookieId(context)), new CookieOptions { Expires = DateTimeOffset.Now.AddYears(5) });
+            return id;
         }
     }
 }
