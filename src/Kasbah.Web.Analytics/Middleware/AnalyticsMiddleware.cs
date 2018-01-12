@@ -55,7 +55,7 @@ namespace Kasbah.Web.Analytics.Middleware
                 site = kasbahWebContext.Site?.Alias,
                 node = kasbahWebContext.Node?.Id,
                 version = kasbahWebContext.Node?.PublishedVersion,
-                ip = context.Connection.RemoteIpAddress.ToString()
+                ip = RemoteIp(context)
             };
 
             await _trackingService.TrackSessionActivityAsync(session, "request", data);
@@ -86,6 +86,16 @@ namespace Kasbah.Web.Analytics.Middleware
             await _sessionService.CreateSessionAsync(id);
 
             return id;
+        }
+
+        string RemoteIp(HttpContext context)
+        {
+            if (context.Request.Headers.TryGetValue("X-Forwarded-For", out var ip))
+            {
+                return ip;
+            }
+
+            return context.Connection.RemoteIpAddress.ToString();
         }
     }
 }
