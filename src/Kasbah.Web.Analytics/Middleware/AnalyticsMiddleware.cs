@@ -41,11 +41,7 @@ namespace Kasbah.Web.Analytics.Middleware
 
             context.Items[SessionKey] = await GetTrackingCookieIdAsync(context);
 
-            var options = new CookieOptions
-            {
-                Expires = DateTimeOffset.Now.AddYears(5)
-            };
-            context.Response.Cookies.Append(TrackingCookie, IdToString(session), options);
+            context.Response.Cookies.Append(TrackingCookie, IdToString(session));
         }
 
         async Task TrackSessionActivityAsync(HttpContext context)
