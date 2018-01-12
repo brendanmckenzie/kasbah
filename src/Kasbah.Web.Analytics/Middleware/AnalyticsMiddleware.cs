@@ -49,13 +49,16 @@ namespace Kasbah.Web.Analytics.Middleware
             var session = (Guid)context.Items[SessionKey];
             var kasbahWebContext = context.GetKasbahWebContext();
 
+            var userAgent = context.Request.Headers.SafeGet("User-Agent", string.Empty);
+
             var data = new
             {
                 url = $"{context.Request.Path}{context.Request.QueryString}",
                 site = kasbahWebContext.Site?.Alias,
                 node = kasbahWebContext.Node?.Id,
                 version = kasbahWebContext.Node?.PublishedVersion,
-                ip = RemoteIp(context)
+                ip = RemoteIp(context),
+                userAgent
             };
 
             await _trackingService.TrackSessionActivityAsync(session, "request", data);
