@@ -17,14 +17,19 @@ namespace Kasbah.Web.ContentDelivery.Controllers
         }
 
         [HttpPost]
+        [Route("activity")]
+        public async Task TrackSessionActivityAsync([FromBody] TrackSessionActivityRequest ev)
+            => await _trackingService.TrackSessionActivityAsync(HttpContext.GetCurrentSessionId(), ev.Type, ev.Data);
+
+        [HttpPost]
         [Route("event")]
         public async Task TrackEventAsync([FromBody] TrackEventRequest ev)
-            => await _trackingService.TrackEventAsync(HttpContext.GetCurrentProfileId(), ev.Type, ev.Source, ev.Data);
+            => await _trackingService.TrackEventAsync(HttpContext.GetCurrentSessionId(), ev.Type, ev.Source, ev.Data);
 
         [HttpPost]
         [Route("campaign")]
         public async Task TrackCampaignAsync([FromBody] TriggerCampaignRequest ev)
-            => await _trackingService.TrackCampaignAsync(HttpContext.GetCurrentProfileId(), ev.Campaign);
+            => await _trackingService.TrackCampaignAsync(HttpContext.GetCurrentSessionId(), ev.Campaign);
 
         [HttpPost]
         [Route("attributes")]
@@ -32,7 +37,7 @@ namespace Kasbah.Web.ContentDelivery.Controllers
         {
             foreach (var key in ev.Attributes.Keys)
             {
-                await _trackingService.CreateAttributeAsync(HttpContext.GetCurrentProfileId(), key, ev.Attributes[key]);
+                await _trackingService.CreateAttributeAsync(HttpContext.GetCurrentSessionId(), key, ev.Attributes[key]);
             }
         }
     }

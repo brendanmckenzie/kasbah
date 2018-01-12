@@ -6,7 +6,7 @@ namespace Kasbah.Web.Analytics.Extensions
 {
     public static class HttpContextExtensions
     {
-        public static Guid GetCurrentProfileId(this HttpContext context)
+        public static Guid GetCurrentSessionId(this HttpContext context)
             => (Guid)context.Items[AnalyticsMiddleware.SessionKey];
     }
 }

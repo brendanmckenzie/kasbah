@@ -51,7 +51,7 @@ namespace Kasbah.Web
             return services;
         }
 
-        public static IServiceCollection AddKasbahWebDelivery(this IServiceCollection services)
+        public static IServiceCollection AddKasbahWebDelivery(this IServiceCollection services, IEnumerable<Assembly> applicationParts = null)
         {
             services.AddKasbahWeb();
 
@@ -60,12 +60,22 @@ namespace Kasbah.Web
             services.AddNodeServices();
             services.AddSpaPrerenderer();
 
-            services.AddMvc()
-                .AddApplicationPart(typeof(KasbahWebExtensions).GetTypeInfo().Assembly)
-                .ConfigureApplicationPartManager(manager =>
+            var mvcBuilder = services.AddMvc();
+
+            mvcBuilder.AddApplicationPart(typeof(KasbahWebExtensions).GetTypeInfo().Assembly);
+
+            if (applicationParts != null)
+            {
+                foreach (var ent in applicationParts)
                 {
-                    manager.FeatureProviders.Add(new DeliveryControllerFeatureProvider());
-                });
+                    mvcBuilder.AddApplicationPart(ent);
+                }
+            }
+
+            mvcBuilder.ConfigureApplicationPartManager(manager =>
+            {
+                manager.FeatureProviders.Add(new DeliveryControllerFeatureProvider());
+            });
 
             return services;
         }
@@ -92,8 +102,9 @@ namespace Kasbah.Web
                 .AddResourceOwnerValidator<UserResourceOwnerPasswordValidator>()
                 .AddDeveloperSigningCredential();
 
-            services.AddMvc()
-                .AddApplicationPart(typeof(KasbahWebExtensions).GetTypeInfo().Assembly);
+            var mvcBuilder = services.AddMvc();
+
+            mvcBuilder.AddApplicationPart(typeof(KasbahWebExtensions).GetTypeInfo().Assembly);
 
             return services;
         }
