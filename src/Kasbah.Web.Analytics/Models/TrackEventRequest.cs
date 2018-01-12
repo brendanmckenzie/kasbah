@@ -8,6 +8,6 @@ namespace Kasbah.Web.Analytics.Models
 
         public string Source { get; set; }
 
-        public IDictionary<string, string> Data { get; set; }
+        public IDictionary<string, object> Data { get; set; }
     }
 }
