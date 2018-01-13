@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Kasbah.Analytics;
+using Kasbah.Analytics.Services;
 using Kasbah.Web.Analytics.Extensions;
 using Kasbah.Web.Analytics.Models;
 using Microsoft.AspNetCore.Mvc;

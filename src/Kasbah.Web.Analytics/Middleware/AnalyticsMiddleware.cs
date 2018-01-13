@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Kasbah.Analytics;
+using Kasbah.Analytics.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 

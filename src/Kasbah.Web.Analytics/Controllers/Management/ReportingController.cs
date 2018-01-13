@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kasbah.Analytics;
 using Kasbah.Analytics.Models;
+using Kasbah.Analytics.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Kasbah.Web.Analytics.Controllers.Management
