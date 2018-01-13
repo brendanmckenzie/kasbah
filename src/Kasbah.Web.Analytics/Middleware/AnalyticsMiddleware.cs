@@ -46,6 +46,12 @@ namespace Kasbah.Web.Analytics.Middleware
 
         async Task TrackSessionActivityAsync(HttpContext context)
         {
+            if (context.Request.Path.StartsWithSegments("/.analytics"))
+            {
+                // don't track activity to activity tracking endpoints
+                return;
+            }
+
             var session = (Guid)context.Items[SessionKey];
             var kasbahWebContext = context.GetKasbahWebContext();
 
