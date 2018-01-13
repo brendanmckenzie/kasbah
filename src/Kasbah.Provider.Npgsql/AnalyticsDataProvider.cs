@@ -37,7 +37,7 @@ namespace Kasbah.Provider.Npgsql
         {
             const string Sql = @"insert into session ( id ) values ( @id )";
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 await connection.ExecuteAsync(Sql, new { id });
             }
@@ -79,14 +79,14 @@ namespace Kasbah.Provider.Npgsql
 insert into session_activity ( id, session_id, type, attributes ) values ( @id, @session, @type, @data::jsonb );
 update session set last_activity_at = now() where id = @session;";
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 var id = Guid.NewGuid();
                 await connection.ExecuteAsync(Sql, new { id, session, type, data = JsonConvert.SerializeObject(data) });
             }
         }
 
-        public async Task<IEnumerable<ReportingData>> ListReportingData(string type, string interval, DateTime start, DateTime end)
+        public async Task<IEnumerable<ReportingData>> ListSessionActivityReportingAsync(string type, string interval, DateTime start, DateTime end)
         {
             const string Sql = @"
 select
@@ -102,14 +102,33 @@ group by
 order by
   date_trunc(@interval, created_at);";
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 var id = Guid.NewGuid();
                 return await connection.QueryAsync<ReportingData>(Sql, new { type, interval, start, end });
             }
         }
 
-        NpgsqlConnection GetConnection()
-            => new NpgsqlConnection(_settings.ConnectionString);
+        public async Task<IEnumerable<ReportingData>> ListSessionReportingAsync(string interval, DateTime start, DateTime end)
+        {
+            const string Sql = @"
+select
+  date_trunc(@interval, last_activity_at) as Period,
+  count(*) as ""Count""
+from
+  session
+where
+  last_activity_at between @start and @end
+group by
+  date_trunc(@interval, last_activity_at)
+order by
+  date_trunc(@interval, last_activity_at);";
+
+            using (var connection = _settings.GetConnection())
+            {
+                var id = Guid.NewGuid();
+                return await connection.QueryAsync<ReportingData>(Sql, new { interval, start, end });
+            }
+        }
     }
 }

@@ -4,7 +4,7 @@ using Kasbah.Web.Analytics.Extensions;
 using Kasbah.Web.Analytics.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Kasbah.Web.ContentDelivery.Controllers
+namespace Kasbah.Web.Analytics.Controllers.Delivery
 {
     [Route(".analytics/tracking")]
     public class AnalyticsController : Controller

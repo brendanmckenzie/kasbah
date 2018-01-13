@@ -9,6 +9,7 @@ import ContentRoute from './Content'
 import MediaRoute from './Media'
 import SecurityRoute from './Security'
 import SystemRoute from './System'
+import AnalyticsRoute from './Analytics'
 
 const checkAuth = (props) => {
   if (!props.auth.user) {
@@ -27,6 +28,7 @@ export default (
       <Route path='/media' component={checkAuthOnEnter(MediaRoute)} />
       <Route path='/security' component={checkAuthOnEnter(SecurityRoute)} />
       <Route path='/system' component={checkAuthOnEnter(SystemRoute)} />
+      <Route path='/analytics' component={checkAuthOnEnter(AnalyticsRoute)} />
     </CoreLayout>
   </Switch>
 )

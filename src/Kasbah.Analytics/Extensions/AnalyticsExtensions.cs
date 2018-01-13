@@ -1,4 +1,5 @@
 using Kasbah.Analytics;
+using Kasbah.Analytics.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kasbah

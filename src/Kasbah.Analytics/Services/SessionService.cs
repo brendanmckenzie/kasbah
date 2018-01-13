@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Kasbah.Analytics
+namespace Kasbah.Analytics.Services
 {
     public class SessionService
     {

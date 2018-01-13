@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Kasbah.Analytics.Models;
 
-namespace Kasbah.Analytics
+namespace Kasbah.Analytics.Services
 {
     public class ManagementService
     {

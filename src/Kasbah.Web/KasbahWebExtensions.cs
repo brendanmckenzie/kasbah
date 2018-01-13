@@ -64,12 +64,9 @@ namespace Kasbah.Web
 
             mvcBuilder.AddApplicationPart(typeof(KasbahWebExtensions).GetTypeInfo().Assembly);
 
-            if (applicationParts != null)
+            foreach (var ent in applicationParts ?? Enumerable.Empty<Assembly>())
             {
-                foreach (var ent in applicationParts)
-                {
-                    mvcBuilder.AddApplicationPart(ent);
-                }
+                mvcBuilder.AddApplicationPart(ent);
             }
 
             mvcBuilder.ConfigureApplicationPartManager(manager =>
@@ -80,7 +77,7 @@ namespace Kasbah.Web
             return services;
         }
 
-        public static IServiceCollection AddKasbahWebManagement(this IServiceCollection services)
+        public static IServiceCollection AddKasbahWebManagement(this IServiceCollection services, IEnumerable<Assembly> applicationParts = null)
         {
             services.AddKasbahWeb();
 
@@ -105,6 +102,11 @@ namespace Kasbah.Web
             var mvcBuilder = services.AddMvc();
 
             mvcBuilder.AddApplicationPart(typeof(KasbahWebExtensions).GetTypeInfo().Assembly);
+
+            foreach (var ent in applicationParts ?? Enumerable.Empty<Assembly>())
+            {
+                mvcBuilder.AddApplicationPart(ent);
+            }
 
             return services;
         }
