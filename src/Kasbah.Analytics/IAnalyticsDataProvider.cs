@@ -28,5 +28,7 @@ namespace Kasbah.Analytics
         Task<Guid> CreateCampaignAsync(string name);
 
         Task<Campaign> ListCampaignsAsync();
+
+        Task<IEnumerable<ReportingData>> ListReportingData(string type, string interval, DateTime start, DateTime end);
     }
 }

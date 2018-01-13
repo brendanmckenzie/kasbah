@@ -86,6 +86,29 @@ update session set last_activity_at = now() where id = @session;";
             }
         }
 
+        public async Task<IEnumerable<ReportingData>> ListReportingData(string type, string interval, DateTime start, DateTime end)
+        {
+            const string Sql = @"
+select
+  date_trunc(@interval, created_at) as Period,
+  count(*) as ""Count""
+from
+  session_activity
+where
+  type = @type
+  and created_at between @start and @end
+group by
+  date_trunc(@interval, created_at)
+order by
+  date_trunc(@interval, created_at);";
+
+            using (var connection = GetConnection())
+            {
+                var id = Guid.NewGuid();
+                return await connection.QueryAsync<ReportingData>(Sql, new { type, interval, start, end });
+            }
+        }
+
         NpgsqlConnection GetConnection()
             => new NpgsqlConnection(_settings.ConnectionString);
     }

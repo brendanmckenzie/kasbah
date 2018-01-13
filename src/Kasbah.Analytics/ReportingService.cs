@@ -25,5 +25,8 @@ namespace Kasbah.Analytics
 
         public async Task<Profile> GetProfileAsync(Guid id)
             => await _dataProvider.GetProfileAsync(id);
+
+        public async Task<IEnumerable<ReportingData>> ListReportingData(string type, string interval, DateTime start, DateTime end)
+            => await _dataProvider.ListReportingData(type, interval, start, end);
     }
 }
