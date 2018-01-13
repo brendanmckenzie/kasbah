@@ -56,6 +56,7 @@ namespace Kasbah.Web.Analytics.Middleware
             var kasbahWebContext = context.GetKasbahWebContext();
 
             var userAgent = context.Request.Headers.SafeGet("User-Agent", string.Empty);
+            var referrer = context.Request.Headers.SafeGet("Referer", string.Empty);
 
             var data = new
             {
@@ -64,7 +65,8 @@ namespace Kasbah.Web.Analytics.Middleware
                 node = kasbahWebContext.Node?.Id,
                 version = kasbahWebContext.Node?.PublishedVersion,
                 ip = RemoteIp(context),
-                userAgent
+                userAgent,
+                referrer
             };
 
             await _trackingService.TrackSessionActivityAsync(session, "request", data);
