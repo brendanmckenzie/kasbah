@@ -105,7 +105,7 @@ namespace Kasbah.Web.Analytics.Middleware
         {
             if (context.Request.Headers.TryGetValue("X-Forwarded-For", out var ip))
             {
-                return ip;
+                return ip.FirstOrDefault();
             }
 
             return context.Connection.RemoteIpAddress.ToString();

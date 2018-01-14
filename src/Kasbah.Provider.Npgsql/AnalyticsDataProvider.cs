@@ -167,8 +167,9 @@ select
 from
     session_activity
 where
-    @type is null
-    or type = @type
+    session_id = @session
+    and (@type is null
+    or type = @type)
 order by
     created_at desc
 limit
