@@ -27,5 +27,15 @@ namespace Kasbah.Web.Analytics.Controllers.Management
         [HttpGet]
         public async Task<IEnumerable<ReportingData>> ListSessionReportingAsync([FromQuery] string interval, [FromQuery] DateTime start, [FromQuery] DateTime end)
             => await _reportingService.ListSessionReportingAsync(interval, start, end);
+
+        [Route("sessions")]
+        [HttpGet]
+        public async Task<IEnumerable<Session>> ListSessionsAsync([FromQuery] int skip, [FromQuery] int take)
+            => await _reportingService.ListSessionsAsync(skip, take);
+
+        [Route("sessions/{session}")]
+        [HttpGet]
+        public async Task<IEnumerable<SessionActivity>> ListSessionActivityAsync([FromRoute] Guid session, [FromQuery] int skip, [FromQuery] int take, [FromQuery] string type = null)
+            => await _reportingService.ListSessionActivityAsync(session, skip, take, type);
     }
 }

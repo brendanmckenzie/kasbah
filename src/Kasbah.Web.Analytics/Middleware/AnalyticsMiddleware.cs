@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Kasbah.Analytics;
 using Kasbah.Analytics.Services;
@@ -56,8 +57,8 @@ namespace Kasbah.Web.Analytics.Middleware
             var session = (Guid)context.Items[SessionKey];
             var kasbahWebContext = context.GetKasbahWebContext();
 
-            var userAgent = context.Request.Headers.SafeGet("User-Agent", string.Empty);
-            var referrer = context.Request.Headers.SafeGet("Referer", string.Empty);
+            context.Request.Headers.TryGetValue("User-Agent", out var userAgent);
+            context.Request.Headers.TryGetValue("Referer", out var referrer);
 
             var data = new
             {
@@ -66,8 +67,8 @@ namespace Kasbah.Web.Analytics.Middleware
                 node = kasbahWebContext.Node?.Id,
                 version = kasbahWebContext.Node?.PublishedVersion,
                 ip = RemoteIp(context),
-                userAgent,
-                referrer
+                userAgent = userAgent.FirstOrDefault(),
+                referrer = referrer.FirstOrDefault()
             };
 
             await _trackingService.TrackSessionActivityAsync(session, "request", data);

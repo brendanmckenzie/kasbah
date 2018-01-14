@@ -32,5 +32,9 @@ namespace Kasbah.Analytics
         Task<IEnumerable<ReportingData>> ListSessionActivityReportingAsync(string type, string interval, DateTime start, DateTime end);
 
         Task<IEnumerable<ReportingData>> ListSessionReportingAsync(string interval, DateTime start, DateTime end);
+
+        Task<IEnumerable<Session>> ListSessionsAsync(int skip, int take);
+
+        Task<IEnumerable<SessionActivity>> ListSessionActivityAsync(Guid session, int skip, int take, string type = null);
     }
 }

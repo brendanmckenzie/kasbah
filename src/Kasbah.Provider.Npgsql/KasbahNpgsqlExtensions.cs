@@ -1,4 +1,5 @@
 using System;
+using Dapper;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Kasbah.Provider.Npgsql
@@ -7,6 +8,8 @@ namespace Kasbah.Provider.Npgsql
     {
         public static IServiceCollection AddKasbahNpgsql(this IServiceCollection services, Action<Provider.Npgsql.NpgsqlSettings> configure)
         {
+            SqlMapper.AddTypeHandler(new DictionaryTypeHandler());
+
             var settings = new Provider.Npgsql.NpgsqlSettings();
             configure(settings);
             services.AddSingleton(settings);

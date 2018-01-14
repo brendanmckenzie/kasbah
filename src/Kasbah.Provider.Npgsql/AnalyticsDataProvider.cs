@@ -130,5 +130,57 @@ order by
                 return await connection.QueryAsync<ReportingData>(Sql, new { interval, start, end });
             }
         }
+
+        public async Task<IEnumerable<Session>> ListSessionsAsync(int skip, int take)
+        {
+            const string Sql = @"
+select
+    id as Id,
+    attributes as Attributes,
+    created_at as Created,
+    last_activity_at as LastActivity
+from
+    session
+order by
+    last_activity_at desc
+limit
+    @take
+offset
+    @skip;";
+
+            using (var connection = _settings.GetConnection())
+            {
+                var id = Guid.NewGuid();
+                return await connection.QueryAsync<Session>(Sql, new { skip, take });
+            }
+        }
+
+        public async Task<IEnumerable<SessionActivity>> ListSessionActivityAsync(Guid session, int skip, int take, string type = null)
+        {
+            const string Sql = @"
+select
+    id as Id,
+    session_id as SessionId,
+    type as Type,
+    attributes as Attributes,
+    created_at as Created
+from
+    session_activity
+where
+    @type is null
+    or type = @type
+order by
+    created_at desc
+limit
+    @take
+offset
+    @skip;";
+
+            using (var connection = _settings.GetConnection())
+            {
+                var id = Guid.NewGuid();
+                return await connection.QueryAsync<SessionActivity>(Sql, new { session, skip, take, type });
+            }
+        }
     }
 }

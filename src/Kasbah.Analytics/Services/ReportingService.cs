@@ -31,5 +31,11 @@ namespace Kasbah.Analytics.Services
 
         public async Task<IEnumerable<ReportingData>> ListSessionReportingAsync(string interval, DateTime start, DateTime end)
             => await _dataProvider.ListSessionReportingAsync(interval, start, end);
+
+        public async Task<IEnumerable<Session>> ListSessionsAsync(int skip, int take)
+            => await _dataProvider.ListSessionsAsync(skip, take);
+
+        public async Task<IEnumerable<SessionActivity>> ListSessionActivityAsync(Guid session, int skip, int take, string type = null)
+            => await _dataProvider.ListSessionActivityAsync(session, skip, take, type);
     }
 }
