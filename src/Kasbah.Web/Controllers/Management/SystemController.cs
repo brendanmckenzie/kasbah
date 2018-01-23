@@ -21,9 +21,9 @@ namespace Kasbah.Web.Controllers.Management
             _externalModules = externalModules ?? Enumerable.Empty<ExternalModule>();
         }
 
-
         [Route("summary")]
         [HttpGet]
+        [AllowAnonymous]
         public SystemSummary Summary()
         {
             return new SystemSummary
