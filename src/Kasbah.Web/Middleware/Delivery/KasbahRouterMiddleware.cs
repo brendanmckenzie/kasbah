@@ -77,6 +77,7 @@ namespace Kasbah.Web.Middleware.Delivery
                             Content = content,
                             Site = kasbahWebContext.Site,
                             SiteNode = kasbahWebContext.SiteNode,
+                            Layout = presentable.Layout,
                             Components = new RenderModel.ComponentMap(renderData.ToDictionary(ent => ent.key, ent => ent.components.AsEnumerable()))
                         };
 

@@ -5,6 +5,8 @@ namespace Kasbah.Web.Models
 {
     public interface IPresentable
     {
+        string Layout { get; set; }
+
         // TODO: make these attributes apply to sub-classes
         [FieldEditor("kasbah_web:components")]
         ComponentCollection Components { get; set; }
