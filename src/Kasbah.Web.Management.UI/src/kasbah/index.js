@@ -1,17 +1,17 @@
 import { controls } from './editors/Controls'
-import { makeApiRequest, API_BASE } from 'store/util'
+import { makeApiRequest } from 'store/util'
 
 class Kasbah {
-  constructor() {
-    this.editors = {}
+  editors = {}
+  routes = []
+  store = {}
 
+  constructor() {
     for (var key in controls) {
       const control = controls[key]
 
       this.registerEditor(control.alias, control)
     }
-
-    this.loadModules()
   }
 
   getEditor(alias) {
@@ -30,33 +30,41 @@ class Kasbah {
   }
 
   loadModules() {
-    makeApiRequest({
+    return makeApiRequest({
       method: 'GET',
-      url: '/system/external-modules/list'
+      url: '/system/summary'
     })
       .then(res => {
-        res.forEach(ent => {
+        console.log('System summary', res)
+        res.externalModules.forEach(ent => {
           console.log(`Loading external modules: '${ent.name}'`)
 
           const el = document.createElement('script')
-          el.src = `${API_BASE}${ent.entryPoint}`
+          el.src = `/${ent.entryPoint}`
           el.async = true
           document.body.appendChild(el)
         })
       })
   }
 
-  registedExternalModule(module) {
-    if (module.controls) {
-      for (var key in module.controls) {
-        const control = module.controls[key]
+  registerModule(moduleDefinition) {
+    if (moduleDefinition.routes) {
+      this.routes = [
+        ...this.routes,
+        ...moduleDefinition.routes]
+    }
 
-        this.registerEditor(control.alias, control)
+    if (moduleDefinition.controls) {
+      this.editors = {
+        ...this.editors,
+        ...moduleDefinition.editors
       }
     }
   }
 }
 
 const kasbah = new Kasbah()
+
+window.kasbah = kasbah
 
 export default kasbah

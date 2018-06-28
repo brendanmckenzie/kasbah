@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Kasbah.Analytics.Models;
 
-namespace Kasbah.Analytics
+namespace Kasbah.Analytics.Services
 {
     public class ReportingService
     {
@@ -25,5 +25,17 @@ namespace Kasbah.Analytics
 
         public async Task<Profile> GetProfileAsync(Guid id)
             => await _dataProvider.GetProfileAsync(id);
+
+        public async Task<IEnumerable<ReportingData>> ListSessionActivityReportingAsync(string type, string interval, DateTime start, DateTime end)
+            => await _dataProvider.ListSessionActivityReportingAsync(type, interval, start, end);
+
+        public async Task<IEnumerable<ReportingData>> ListSessionReportingAsync(string interval, DateTime start, DateTime end)
+            => await _dataProvider.ListSessionReportingAsync(interval, start, end);
+
+        public async Task<IEnumerable<Session>> ListSessionsAsync(int skip, int take)
+            => await _dataProvider.ListSessionsAsync(skip, take);
+
+        public async Task<IEnumerable<SessionActivity>> ListSessionActivityAsync(Guid session, int skip, int take, string type = null)
+            => await _dataProvider.ListSessionActivityAsync(session, skip, take, type);
     }
 }

@@ -2,6 +2,7 @@
   <Import Project="..\..\build\common.props" />
 
   <ItemGroup>
-    <ProjectReference Include="../Kasbah/Kasbah.csproj" />
+    <ProjectReference Include="../Kasbah.Analytics/Kasbah.Analytics.csproj" />
+    <ProjectReference Include="../Kasbah.Web/Kasbah.Web.csproj" />
   </ItemGroup>
 </Project>

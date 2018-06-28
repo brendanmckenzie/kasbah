@@ -31,7 +31,7 @@ values
     (select id_taxonomy from node where id = @parent) || @id::uuid,
     (select alias_taxonomy from node where id = @parent) || @alias::varchar(512)
 );";
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 var id = Guid.NewGuid();
 
@@ -59,7 +59,7 @@ from
     node
 ";
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 return await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeMapper, splitOn: "Ids");
             }
@@ -85,7 +85,7 @@ where
     id = @id
 ";
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeMapper, new { id }, splitOn: "Ids");
 
@@ -113,7 +113,7 @@ where
     alias_taxonomy = @aliases::varchar(512)[]
 ";
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeMapper, new { aliases = aliases.ToArray() }, splitOn: "Ids");
 
@@ -141,7 +141,7 @@ where
     ids_taxonomy = @ids::uuid[]
 ";
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 var ret = await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeMapper, new { ids = ids.ToArray() }, splitOn: "Ids");
 
@@ -169,7 +169,7 @@ where
     type = any(@types)
 ";
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 return await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeMapper, new { types = types.ToArray() }, splitOn: "Ids");
             }
@@ -179,7 +179,7 @@ where
         {
             const string Sql = "select content from node_content where id = @id and ((@version is not null and version = @version) or (@version is null and version = (select max(version) from node_content where id = @id)));";
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 var json = await connection.QueryFirstOrDefaultAsync<string>(Sql, new { id, version });
 
@@ -196,7 +196,7 @@ where
         {
             const string Sql = "insert into node_content ( id, version, content ) values ( @id, (select coalesce(max(version), 0) + 1 from node_content where id = @id), @content::jsonb ) returning version;";
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
@@ -219,7 +219,7 @@ where
             var node = await GetNodeAsync(id);
             var taxoIndex = node.Taxonomy.Aliases.Count();
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
@@ -238,7 +238,7 @@ where
         public async Task ChangeNodeTypeAsync(Guid id, string type)
         {
             const string Sql = "update node set type = @type, modified_at = now() where id = @id";
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 await connection.ExecuteAsync(Sql, new { id, type });
             }
@@ -251,7 +251,7 @@ where
             // TODO: this shouldn't be required
             var taxoIndex = node.Taxonomy.Aliases.Count();
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 var deleteContentSql = $"delete from node_content where id in (select id from node where id_taxonomy[1:{taxoIndex}] = (select id_taxonomy from node where id = @id))";
                 var deleteNodesSql = $"delete from node where id_taxonomy[1:{taxoIndex}] = (select id_taxonomy from node where id = @id)";
@@ -281,7 +281,7 @@ order by
     modified_at desc
 limit {take}";
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 return await connection.QueryAsync<Node, NodeTaxonomy, Node>(sql, NodeMapper, splitOn: "Ids");
             }
@@ -292,7 +292,7 @@ limit {take}";
             var node = await GetNodeAsync(id);
             var taxoIndex = node.Taxonomy.Aliases.Count();
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
@@ -331,7 +331,7 @@ limit {take}";
             if (!string.Equals(currentNode.DisplayName, node.DisplayName))
             {
                 const string Sql = @"update node set display_name = @DisplayName, modified_at = now() where id = @Id";
-                using (var connection = GetConnection())
+                using (var connection = _settings.GetConnection())
                 {
                     await connection.ExecuteAsync(Sql, node);
                 }
@@ -361,7 +361,7 @@ where
     or (parent_id = @parent)
 ";
 
-            using (var connection = GetConnection())
+            using (var connection = _settings.GetConnection())
             {
                 return await connection.QueryAsync<Node, NodeTaxonomy, Node>(Sql, NodeMapper, new { parent }, splitOn: "Ids");
             }
@@ -373,11 +373,6 @@ where
             node.Children = new Lazy<IEnumerable<Node>>(() => ListNodesByParentAsync(node.Id).Result);
 
             return node;
-        }
-
-        NpgsqlConnection GetConnection()
-        {
-            return new NpgsqlConnection(_settings.ConnectionString);
         }
     }
 }

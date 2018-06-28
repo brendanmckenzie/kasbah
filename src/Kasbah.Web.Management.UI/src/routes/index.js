@@ -9,6 +9,9 @@ import ContentRoute from './Content'
 import MediaRoute from './Media'
 import SecurityRoute from './Security'
 import SystemRoute from './System'
+import AnalyticsRoute from './Analytics'
+
+import kasbah from '../kasbah'
 
 const checkAuth = (props) => {
   if (!props.auth.user) {
@@ -27,6 +30,9 @@ export default (
       <Route path='/media' component={checkAuthOnEnter(MediaRoute)} />
       <Route path='/security' component={checkAuthOnEnter(SecurityRoute)} />
       <Route path='/system' component={checkAuthOnEnter(SystemRoute)} />
+      <Route path='/analytics' component={checkAuthOnEnter(AnalyticsRoute)} />
+      {kasbah.routes.map(ent => <Route
+        key={ent.alias} path={ent.path} component={checkAuthOnEnter(ent.component)} />)}
     </CoreLayout>
   </Switch>
 )

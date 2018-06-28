@@ -51,7 +51,7 @@ namespace Kasbah.Web
             return services;
         }
 
-        public static IServiceCollection AddKasbahWebDelivery(this IServiceCollection services)
+        public static IServiceCollection AddKasbahWebDelivery(this IServiceCollection services, IEnumerable<Assembly> applicationParts = null)
         {
             services.AddKasbahWeb();
 
@@ -60,17 +60,24 @@ namespace Kasbah.Web
             services.AddNodeServices();
             services.AddSpaPrerenderer();
 
-            services.AddMvc()
-                .AddApplicationPart(typeof(KasbahWeb).GetTypeInfo().Assembly)
-                .ConfigureApplicationPartManager(manager =>
-                {
-                    manager.FeatureProviders.Add(new DeliveryControllerFeatureProvider());
-                });
+            var mvcBuilder = services.AddMvc();
+
+            mvcBuilder.AddApplicationPart(typeof(KasbahWebExtensions).GetTypeInfo().Assembly);
+
+            foreach (var ent in applicationParts ?? Enumerable.Empty<Assembly>())
+            {
+                mvcBuilder.AddApplicationPart(ent);
+            }
+
+            mvcBuilder.ConfigureApplicationPartManager(manager =>
+            {
+                manager.FeatureProviders.Add(new DeliveryControllerFeatureProvider());
+            });
 
             return services;
         }
 
-        public static IServiceCollection AddKasbahWebManagement(this IServiceCollection services)
+        public static IServiceCollection AddKasbahWebManagement(this IServiceCollection services, IEnumerable<Assembly> applicationParts = null)
         {
             services.AddKasbahWeb();
 
@@ -92,18 +99,30 @@ namespace Kasbah.Web
                 .AddResourceOwnerValidator<UserResourceOwnerPasswordValidator>()
                 .AddDeveloperSigningCredential();
 
-            services.AddMvc()
-                .AddApplicationPart(typeof(KasbahWeb).GetTypeInfo().Assembly);
+            var mvcBuilder = services.AddMvc();
+
+            mvcBuilder.AddApplicationPart(typeof(KasbahWebExtensions).GetTypeInfo().Assembly);
+
+            foreach (var ent in applicationParts ?? Enumerable.Empty<Assembly>())
+            {
+                mvcBuilder.AddApplicationPart(ent);
+            }
 
             return services;
         }
 
-        public static IApplicationBuilder UseKasbahWebDelivery(this IApplicationBuilder app)
+        public static IApplicationBuilder UseKasbahWebDelivery(this IApplicationBuilder app, IEnumerable<Type> middleware = null)
         {
             app.UseMiddleware<KasbahWebContextInitialisationMiddleware>();
             app.UseMiddleware<SiteResolverMiddleware>();
             app.UseMiddleware<NodeResolverMiddleware>();
             app.UseMiddleware<KasbahRouterMiddleware>();
+
+            foreach (var ent in middleware ?? Enumerable.Empty<Type>())
+            {
+                app.UseMiddleware(ent);
+            }
+
             app.UseMiddleware<KasbahContentMiddleware>();
 
             app.UseMvc();

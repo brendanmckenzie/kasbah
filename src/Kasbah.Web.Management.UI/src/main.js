@@ -1,10 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import createStore from './store/createStore'
+import kasbah from './kasbah'
 
 // Store Initialization
 // ------------------------------------
 const store = createStore(window.__INITIAL_STATE__)
+
+kasbah.store = store
 
 // Render Setup
 // ------------------------------------
@@ -14,10 +17,12 @@ let render = () => {
   const App = require('./containers/App').default
   const routes = require('./routes/index').default
 
-  ReactDOM.render(
-    <App store={store} routes={routes} />,
-    MOUNT_NODE
-  )
+  kasbah.loadModules().then(() => {
+    ReactDOM.render(
+      <App store={store} routes={routes} />,
+      MOUNT_NODE
+    )
+  })
 }
 
 // Development Tools
@@ -44,10 +49,10 @@ if (__DEV__) {
     module.hot.accept([
       './routes/index'
     ], () =>
-      setImmediate(() => {
-        ReactDOM.unmountComponentAtNode(MOUNT_NODE)
-        render()
-      })
+        setImmediate(() => {
+          ReactDOM.unmountComponentAtNode(MOUNT_NODE)
+          render()
+        })
     )
   }
 }

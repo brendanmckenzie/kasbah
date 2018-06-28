@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="../Kasbah/Kasbah.csproj" />
     <ProjectReference Include="../Kasbah.Media/Kasbah.Media.csproj" />
+    <ProjectReference Include="../Kasbah.Analytics/Kasbah.Analytics.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.4" />

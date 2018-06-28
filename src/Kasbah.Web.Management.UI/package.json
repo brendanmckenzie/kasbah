@@ -21,7 +21,8 @@
   "author": "Brendan McKenzie <brendan@mckenzie.io> (https://www.brendanmckenzie.com)",
   "license": "MIT",
   "dependencies": {
-    "bulma": "^0.5.1",
+    "bulma": "^0.6.2",
+    "chart.js": "^2.7.1",
     "compression": "^1.6.2",
     "express": "^4.14.0",
     "history": "^4.6.3",
@@ -30,6 +31,7 @@
     "promise": "^7.1.1",
     "prop-types": "^15.5.10",
     "react": "^15.5.4",
+    "react-chartjs-2": "^2.7.0",
     "react-dom": "^15.5.4",
     "react-dropzone": "^3.13.3",
     "react-redux": "^5.0.4",
