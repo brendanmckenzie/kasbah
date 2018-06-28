@@ -6,7 +6,7 @@
     <ProjectReference Include="../Kasbah.Analytics/Kasbah.Analytics.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="1.50.4" />
-    <PackageReference Include="Npgsql" Version="3.2.6" />
+    <PackageReference Include="Dapper" Version="1.50.5" />
+    <PackageReference Include="Npgsql" Version="4.0.0" />
   </ItemGroup>
 </Project>

@@ -8,11 +8,10 @@
     <EmbeddedResource Include="Management\Ui\**\*" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="IdentityServer4" Version="2.0.6" />
-    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.NodeServices" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="2.0.1" />
-    <PackageReference Include="System.Linq.Parallel" Version="4.3.0" />
+    <PackageReference Include="IdentityServer4" Version="2.2.0" />
+    <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="2.6.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.NodeServices" Version="2.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices" Version="2.1.1" />
   </ItemGroup>
 </Project>
