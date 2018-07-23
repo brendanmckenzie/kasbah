@@ -4,11 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ImageSharp;
-using ImageSharp.Processing;
 using Kasbah.Media.Models;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Processing.Transforms;
 using SixLabors.Primitives;
 
 namespace Kasbah.Media
@@ -69,23 +70,23 @@ namespace Kasbah.Media
                 if (cached == null)
                 {
                     var image = Image.Load(stream);
-                    var resized = image.Resize(new ResizeOptions
+                    image.Mutate(i => i.Resize(new ResizeOptions
                     {
                         Size = CalculateSize(image.Width, image.Height, request.Width, request.Height)
-                    });
+                    }));
 
                     responseStream = new MemoryStream();
                     switch (item.ContentType)
                     {
                         case "media/gif":
-                            resized.SaveAsGif(responseStream);
+                            image.SaveAsGif(responseStream);
                             break;
                         case "media/png":
-                            resized.SaveAsPng(responseStream);
+                            image.SaveAsPng(responseStream);
                             break;
                         case "media/jpeg":
                         default:
-                            resized.SaveAsJpeg(responseStream);
+                            image.SaveAsJpeg(responseStream);
                             break;
                     }
 
