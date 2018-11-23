@@ -80,6 +80,7 @@ namespace Kasbah.Web
         public static IServiceCollection AddKasbahWebManagement(this IServiceCollection services, IEnumerable<Assembly> applicationParts = null)
         {
             services.AddKasbahWeb();
+            services.AddMemoryCache();
 
             services.AddAuthentication(IdentityServerAuthenticationDefaults.AuthenticationScheme)
                 .AddIdentityServerAuthentication(options =>

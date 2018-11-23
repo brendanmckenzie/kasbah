@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Kasbah.Web.Middleware.Delivery;
 using Kasbah.Web.Models.Delivery;
@@ -28,29 +29,39 @@ namespace Kasbah.Web
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (context.HttpContext.Request.ContentType?.Equals("application/json") == true)
+            if (context.HttpContext.Request.Query.TryGetValue("ct", out var qs) && qs.Contains("json"))
             {
-                await new JsonResult(_model, KasbahContentMiddleware.JsonSettings).ExecuteResultAsync(context);
+                await ProcessJsonAsync(_model, context);
             }
             else
             {
-                var prerenderer = context.HttpContext.RequestServices.GetService(typeof(ISpaPrerenderer)) as ISpaPrerenderer;
-                var result = await prerenderer.RenderToString("wwwroot/dist/kasbah-server", customDataParameter: _model);
+                await ProcessDocumentAsync(_model, context);
+            }
+        }
 
-                if (!string.IsNullOrEmpty(result.RedirectUrl))
-                {
-                    await new RedirectResult(result.RedirectUrl).ExecuteResultAsync(context);
-                }
-                else
-                {
-                    var res = new ContentResult
-                    {
-                        Content = $"<!DOCTYPE html>{result.Html}",
-                        ContentType = "text/html"
-                    };
+        async Task ProcessJsonAsync(object model, ActionContext context)
+        {
+            await new JsonResult(_model, KasbahContentMiddleware.JsonSettings).ExecuteResultAsync(context);
+        }
 
-                    await res.ExecuteResultAsync(context);
-                }
+        async Task ProcessDocumentAsync(object model, ActionContext context)
+        {
+            var prerenderer = context.HttpContext.RequestServices.GetService(typeof(ISpaPrerenderer)) as ISpaPrerenderer;
+            var result = await prerenderer.RenderToString("wwwroot/dist/kasbah-server", customDataParameter: _model);
+
+            if (!string.IsNullOrEmpty(result.RedirectUrl))
+            {
+                await new RedirectResult(result.RedirectUrl).ExecuteResultAsync(context);
+            }
+            else
+            {
+                var res = new ContentResult
+                {
+                    Content = $"<!DOCTYPE html>{result.Html}",
+                    ContentType = "text/html"
+                };
+
+                await res.ExecuteResultAsync(context);
             }
         }
     }

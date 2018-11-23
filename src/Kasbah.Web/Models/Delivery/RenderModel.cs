@@ -5,6 +5,8 @@ namespace Kasbah.Web.Models.Delivery
 {
     public class RenderModel
     {
+        public string TraceIdentifier { get; set; }
+
         public Node Node { get; set; }
 
         public object Content { get; set; }

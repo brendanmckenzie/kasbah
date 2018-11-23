@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.SpaServices.Prerendering;
@@ -36,26 +37,39 @@ namespace Kasbah.Web.Middleware.Delivery
             }
             else
             {
-                if (context.Request.ContentType?.Equals("application/json") == true)
+                if (context.Request.Query.TryGetValue("ct", out var qs) && qs.Contains("json"))
                 {
-                    var json = JsonConvert.SerializeObject(model, JsonSettings);
-                    await context.Response.WriteJsonAsync(json);
+                    await ProcessJsonAsync(model, context.Response);
                 }
                 else
                 {
-                    var result = await _prerenderer.RenderToString("wwwroot/dist/kasbah-server", customDataParameter: model);
-
-                    context.Response.StatusCode = 200;
-
-                    if (!string.IsNullOrEmpty(result.RedirectUrl))
-                    {
-                        context.Response.Redirect(result.RedirectUrl, false);
-                    }
-                    else
-                    {
-                        await context.Response.WriteHtmlAsync($"<!DOCTYPE html>{result.Html}");
-                    }
+                    await ProcessDocumentAsync(model, context.Response);
                 }
+            }
+        }
+
+        async Task ProcessJsonAsync(object model, HttpResponse response)
+        {
+            var json = JsonConvert.SerializeObject(model, JsonSettings);
+
+            response.StatusCode = 200;
+
+            await response.WriteJsonAsync(json);
+        }
+
+        async Task ProcessDocumentAsync(object model, HttpResponse response)
+        {
+            var result = await _prerenderer.RenderToString("wwwroot/dist/kasbah-server", customDataParameter: model);
+
+            if (!string.IsNullOrEmpty(result.RedirectUrl))
+            {
+                response.Redirect(result.RedirectUrl, false);
+            }
+            else
+            {
+                response.StatusCode = 200;
+
+                await response.WriteHtmlAsync($"<!DOCTYPE html>{result.Html}");
             }
         }
     }

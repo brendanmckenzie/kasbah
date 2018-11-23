@@ -4,10 +4,8 @@ using System.Threading.Tasks;
 using Kasbah.Web.Models;
 using Kasbah.Web.Models.Delivery;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.SpaServices.Prerendering;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Kasbah.Web.Middleware.Delivery
 {
@@ -16,19 +14,28 @@ namespace Kasbah.Web.Middleware.Delivery
         readonly RequestDelegate _next;
         readonly ILogger _log;
         readonly ComponentRegistry _componentRegistry;
+        readonly IMemoryCache _cache;
 
-        public KasbahRouterMiddleware(RequestDelegate next, ILogger<KasbahRouterMiddleware> log, ComponentRegistry componentRegistry)
+        public KasbahRouterMiddleware(RequestDelegate next, ILogger<KasbahRouterMiddleware> log, ComponentRegistry componentRegistry, IMemoryCache cache)
         {
             _next = next;
             _log = log;
             _componentRegistry = componentRegistry;
+            _cache = cache;
         }
 
         public async Task Invoke(HttpContext context)
         {
             var kasbahWebContext = context.GetKasbahWebContext();
 
-            if (kasbahWebContext.Site != null)
+            if (context.Request.Query.TryGetValue("ti", out var traceIdentifier))
+            {
+                var model = _cache.Get($"model:{traceIdentifier.First()}");
+
+                context.Items["kasbah:model"] = model;
+            }
+
+            if (context.Items["kasbah:model"] == null && kasbahWebContext.Site != null)
             {
                 var node = kasbahWebContext.Node;
 
@@ -73,6 +80,7 @@ namespace Kasbah.Web.Middleware.Delivery
 
                         var model = new RenderModel
                         {
+                            TraceIdentifier = context.TraceIdentifier,
                             Node = node,
                             Content = content,
                             Site = kasbahWebContext.Site,
@@ -82,6 +90,8 @@ namespace Kasbah.Web.Middleware.Delivery
                         };
 
                         context.Items["kasbah:model"] = model;
+
+                        _cache.Set($"model:{context.TraceIdentifier}", model, TimeSpan.FromMinutes(5));
                     }
                     else
                     {
