@@ -117,11 +117,17 @@ namespace Kasbah.Web.Analytics.Middleware
                 var checks = new[]
                 {
                     "amazon",
-                    "baidu",
-                    "bing",
-                    "duckduckgo",
+                    "baiduspider",
+                    "bingbot",
+                    "duckduckbot",
+                    "facebookexternalhit",
+                    "facebot",
                     "googlebot",
+                    "ia_archiver",
+                    "slurp",
+                    "sogou",
                     "uptimerobot",
+                    "yandexbot",
                 };
 
                 return checks.Any(str => Regex.IsMatch(actualUserAgent, str, RegexOptions.IgnoreCase));
