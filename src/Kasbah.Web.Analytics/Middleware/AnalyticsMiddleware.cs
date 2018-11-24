@@ -117,6 +117,7 @@ namespace Kasbah.Web.Analytics.Middleware
                 // TODO: pull this from somewhere
                 var checks = new[]
                 {
+                    "ahrefsbot",
                     "amazon",
                     "baiduspider",
                     "bingbot",
