@@ -11,8 +11,6 @@ namespace Kasbah.Analytics
 
         Task TrackSessionActivityAsync(Guid session, string type, object data);
 
-        Task CreateSessionAsync(Guid id);
-
         Task CreateAttributeAsync(Guid profile, string alias, object data);
 
         Task<IEnumerable<Profile>> ListProfiles(int? skip, int? take, IEnumerable<string> attributes);
