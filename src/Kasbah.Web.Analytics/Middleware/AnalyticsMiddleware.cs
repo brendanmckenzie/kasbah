@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Kasbah.Analytics;
 using Kasbah.Analytics.Services;
@@ -26,8 +27,11 @@ namespace Kasbah.Web.Analytics.Middleware
 
         public async Task Invoke(HttpContext context)
         {
-            EnsureTrackingCookie(context);
-            await TrackSessionActivityAsync(context);
+            if (!CheckRequestIsBot(context))
+            {
+                EnsureTrackingCookie(context);
+                await TrackSessionActivityAsync(context);
+            }
 
             await _next.Invoke(context);
         }
@@ -36,12 +40,9 @@ namespace Kasbah.Web.Analytics.Middleware
         {
             var session = GetTrackingCookieId(context);
 
-            string IdToString(Guid id)
-                => Convert.ToBase64String(id.ToByteArray());
-
             context.Items[SessionKey] = session;
 
-            context.Response.Cookies.Append(TrackingCookie, IdToString(session));
+            context.Response.Cookies.Append(TrackingCookie, Convert.ToBase64String(session.ToByteArray()));
         }
 
         async Task TrackSessionActivityAsync(HttpContext context)
@@ -103,6 +104,30 @@ namespace Kasbah.Web.Analytics.Middleware
             }
 
             return context.Connection.RemoteIpAddress.ToString();
+        }
+
+        bool CheckRequestIsBot(HttpContext context)
+        {
+            // TODO: abstract this into provider interface to allow for extension
+            if (context.Request.Headers.TryGetValue("User-Agent", out var userAgent))
+            {
+                var actualUserAgent = userAgent.FirstOrDefault();
+
+                // TODO: pull this from somewhere
+                var checks = new[]
+                {
+                    "amazon",
+                    "baidu",
+                    "bing",
+                    "duckduckgo",
+                    "googlebot",
+                    "uptimerobot",
+                };
+
+                return checks.Any(str => Regex.IsMatch(actualUserAgent, str, RegexOptions.IgnoreCase));
+            }
+
+            return false;
         }
     }
 }
