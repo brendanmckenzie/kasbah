@@ -27,9 +27,10 @@ namespace Kasbah.Web.Analytics.Middleware
 
         public async Task Invoke(HttpContext context)
         {
+            EnsureTrackingCookie(context);
+
             if (!CheckRequestIsBot(context))
             {
-                EnsureTrackingCookie(context);
                 await TrackSessionActivityAsync(context);
             }
 
