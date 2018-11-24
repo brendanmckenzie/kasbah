@@ -104,7 +104,6 @@ order by
 
             using (var connection = _settings.GetConnection())
             {
-                var id = Guid.NewGuid();
                 return await connection.QueryAsync<ReportingData>(Sql, new { type, interval, start, end });
             }
         }
@@ -126,7 +125,6 @@ order by
 
             using (var connection = _settings.GetConnection())
             {
-                var id = Guid.NewGuid();
                 return await connection.QueryAsync<ReportingData>(Sql, new { interval, start, end });
             }
         }
@@ -150,7 +148,6 @@ offset
 
             using (var connection = _settings.GetConnection())
             {
-                var id = Guid.NewGuid();
                 return await connection.QueryAsync<Session>(Sql, new { skip, take });
             }
         }
@@ -179,7 +176,6 @@ offset
 
             using (var connection = _settings.GetConnection())
             {
-                var id = Guid.NewGuid();
                 return await connection.QueryAsync<SessionActivity>(Sql, new { session, skip, take, type });
             }
         }
