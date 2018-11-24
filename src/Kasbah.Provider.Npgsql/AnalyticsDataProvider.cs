@@ -33,16 +33,6 @@ namespace Kasbah.Provider.Npgsql
             throw new NotImplementedException();
         }
 
-        public async Task CreateSessionAsync(Guid id)
-        {
-            const string Sql = @"insert into session ( id ) values ( @id )";
-
-            using (var connection = _settings.GetConnection())
-            {
-                await connection.ExecuteAsync(Sql, new { id });
-            }
-        }
-
         public Task<Profile> GetProfileAsync(Guid id)
         {
             throw new NotImplementedException();
@@ -76,7 +66,7 @@ namespace Kasbah.Provider.Npgsql
         public async Task TrackSessionActivityAsync(Guid session, string type, object data)
         {
             const string Sql = @"
-insert into session ( id ) values ( @id ) on conflict ( id ) do update set last_activity_at = now();
+insert into session ( id ) values ( @session ) on conflict ( id ) do update set last_activity_at = now();
 insert into session_activity ( id, session_id, type, attributes ) values ( @id, @session, @type, @data::jsonb );";
 
             using (var connection = _settings.GetConnection())
