@@ -76,7 +76,7 @@ namespace Kasbah.Provider.Npgsql
         public async Task TrackSessionActivityAsync(Guid session, string type, object data)
         {
             const string Sql = @"
-insert into session ( id ) values ( @id ) on conflict do update set last_activity_at = now();
+insert into session ( id ) values ( @id ) on conflict ( id ) do update set last_activity_at = now();
 insert into session_activity ( id, session_id, type, attributes ) values ( @id, @session, @type, @data::jsonb );";
 
             using (var connection = _settings.GetConnection())
