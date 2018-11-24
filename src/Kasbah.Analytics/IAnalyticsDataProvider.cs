@@ -7,8 +7,6 @@ namespace Kasbah.Analytics
 {
     public interface IAnalyticsDataProvider
     {
-        Task<Guid> CreateProfileAsync();
-
         Task TrackEventAsync(Guid profile, string @event, string source, object data, string campaign, Guid? node, int? version);
 
         Task TrackSessionActivityAsync(Guid session, string type, object data);

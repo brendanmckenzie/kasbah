@@ -15,33 +15,31 @@ namespace Kasbah.Web.Analytics.Middleware
 
         readonly RequestDelegate _next;
         readonly ILogger _log;
-        readonly SessionService _sessionService;
         readonly TrackingService _trackingService;
 
-        public AnalyticsMiddleware(RequestDelegate next, ILogger<AnalyticsMiddleware> log, SessionService sessionService, TrackingService trackingService)
+        public AnalyticsMiddleware(RequestDelegate next, ILogger<AnalyticsMiddleware> log, TrackingService trackingService)
         {
             _next = next;
             _log = log;
-            _sessionService = sessionService;
             _trackingService = trackingService;
         }
 
         public async Task Invoke(HttpContext context)
         {
-            await EnsureTrackingCookieAsync(context);
+            EnsureTrackingCookie(context);
             await TrackSessionActivityAsync(context);
 
             await _next.Invoke(context);
         }
 
-        async Task EnsureTrackingCookieAsync(HttpContext context)
+        void EnsureTrackingCookie(HttpContext context)
         {
-            var session = await GetTrackingCookieIdAsync(context);
+            var session = GetTrackingCookieId(context);
 
             string IdToString(Guid id)
                 => Convert.ToBase64String(id.ToByteArray());
 
-            context.Items[SessionKey] = await GetTrackingCookieIdAsync(context);
+            context.Items[SessionKey] = session;
 
             context.Response.Cookies.Append(TrackingCookie, IdToString(session));
         }
@@ -74,7 +72,7 @@ namespace Kasbah.Web.Analytics.Middleware
             await _trackingService.TrackSessionActivityAsync(session, "request", data);
         }
 
-        async Task<Guid> GetTrackingCookieIdAsync(HttpContext context)
+        Guid GetTrackingCookieId(HttpContext context)
         {
             var query = context.Request.Query;
             if (query.TryGetValue(TrackingCookie, out var queryValue)
@@ -94,11 +92,7 @@ namespace Kasbah.Web.Analytics.Middleware
                 return (Guid)context.Items[TrackingCookie];
             }
 
-            var id = Guid.NewGuid();
-
-            await _sessionService.CreateSessionAsync(id);
-
-            return id;
+            return Guid.NewGuid();
         }
 
         string RemoteIp(HttpContext context)

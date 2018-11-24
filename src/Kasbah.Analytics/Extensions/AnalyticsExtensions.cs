@@ -1,4 +1,3 @@
-using Kasbah.Analytics;
 using Kasbah.Analytics.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,7 +10,6 @@ namespace Kasbah
             services.AddTransient<ManagementService>();
             services.AddTransient<ReportingService>();
             services.AddTransient<TrackingService>();
-            services.AddTransient<SessionService>();
 
             return services;
         }

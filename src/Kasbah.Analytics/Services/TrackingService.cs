@@ -14,9 +14,6 @@ namespace Kasbah.Analytics.Services
             _dataProvider = dataProvider;
         }
 
-        public async Task<Guid> CreateProfileAsync()
-            => await _dataProvider.CreateProfileAsync();
-
         public async Task TrackEventAsync(Guid profile, string @event, string source = null, object data = null, string campaign = null, Guid? node = null, int? version = null)
             => await _dataProvider.TrackEventAsync(profile, @event, source, data, campaign, node, version);
 
