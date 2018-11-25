@@ -6,7 +6,6 @@ stages:
 build:admin_ui:
     only:
         - master
-        - feature/analytics
     stage: build_ui
     image: kkarczmarczyk/node-yarn:8.0
     script:
@@ -21,7 +20,6 @@ build:admin_ui:
 build:dotnet:
     only:
         - master
-        - feature/analytics
     stage: build
     image: microsoft/dotnet:2-sdk
     dependencies:
@@ -35,7 +33,6 @@ build:dotnet:
 deploy:
     only:
         - master
-        - feature/analytics
     stage: deploy
     script:
         - sh deploy.sh

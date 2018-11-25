@@ -1,0 +1,29 @@
+pipelines:
+  default:
+    - step:
+        name: Build Admin (UI)
+        image: node:9
+        caches:
+          - kasbah-ui
+        script:
+          - sh build-admin-ui.sh
+        artifacts:
+          - src/Kasbah.Web/Management/Ui/**
+    - step:
+        name: Build .NET
+        image: microsoft/dotnet:2-sdk
+        caches:
+          - dotnetcore
+        script:
+          - sh build-dotnet.sh
+        artifacts:
+          - artifacts/**
+    - step:
+        name: Deploy (Production)
+        deployment: production
+        script:
+          - sh deploy.sh
+
+definitions:
+  caches:
+    kasbah-ui: lib/kasbah/src/Kasbah.Web.Management.UI/node_modules
