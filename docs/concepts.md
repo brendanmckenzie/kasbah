@@ -22,7 +22,11 @@ The `Kasbah.Web` series of packages extends on the core of Kasbah to provide thi
 
 Projects based on the Kasbah.Web implementation are offered modern React-based SPA functionality by default.
 
-Developers start by modeling their data, defining what websites are included in their solution (Kasbah.Web offers multi-site by default), then specifying what components are available.  Components are then written in React and are available to be placed in placeholders in predefined layouts.  See the [getting started](/quickstart.md) section for a more detailed explanation of creating web applications with Kasbah.
+Developers start by modeling their data, defining what websites are included in their solution (Kasbah.Web offers multi-site by default), then specifying what components are available.  Components are then written in React and are available to be placed in placeholders in predefined layouts.
+
+There are two parts to components - the backend and the frontend.  The backend is responsible for generating a simplified model that is passed to the frontend for display.  The idea is that the backend should pass only the information rqeuired by the frontend.  If a piece of content in Kasbah has a large number of fields, but the component rendering this content only requires a subset of these fields, the backend will be responsible for reducing the input model.  The backend is also responsible for applying any business logic to the model before passing it to the frontend.  By following this pattern there is a strong disconnect between the storage and processing of data, and the presentation of it.
+
+See the [getting started](/quickstart.md) section for a more detailed explanation of creating web applications with Kasbah.
 
 ### Segregated roles
 
