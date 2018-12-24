@@ -13,7 +13,7 @@ The only external software required to run Kasbah projects are -
 
 Using docker, you can initialise the required infrastructure with the following commands.
 
-```sh
+```shell
 docker run -d --name kasbah_db -p '5432:5432' postgres
 docker run -d --name kasbah_cache -p '6379:6379' redis
 ```

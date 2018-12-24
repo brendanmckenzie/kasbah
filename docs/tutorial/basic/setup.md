@@ -4,13 +4,13 @@ To work with Kasbah projects locally you'll need to have your environment config
 
 Once you have the infrastructure up and running, use the following command to initialise an empty Kasbah web project.
 
-```sh
+```shell
 dotnet new kasbah-web KasbahDemo.Blog
 ```
 
 This requires you to have the `kasbah-web` dotnet template installed; if you don't already have it, run the following command to install it.
 
-```sh
+```shell
 dotnet new -i Kasbah.Web.Template
 ```
 
