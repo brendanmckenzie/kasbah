@@ -6,6 +6,7 @@ using Kasbah.Web.Models.Delivery;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Kasbah.Web.Middleware.Delivery
 {
@@ -46,6 +47,8 @@ namespace Kasbah.Web.Middleware.Delivery
 
                     if (content is IPresentable presentable)
                     {
+                        // TODO: process Control tree for `BodyControl` and `HeadControl`
+
                         var instanceComponents = presentable.Components;
                         var staticComponents = await presentable.ListStaticComponentsAsync(kasbahWebContext) ?? new ComponentCollection();
                         var allComponents = instanceComponents.Concat(staticComponents)
@@ -95,7 +98,18 @@ namespace Kasbah.Web.Middleware.Delivery
                     }
                     else
                     {
-                        // handle situation where non-presentable node is trying to be routed
+                        context.Response.StatusCode = 400;
+                        if (context.Request.Headers.TryGetValue("Accept", out var accept) && accept.Contains("application/json"))
+                        {
+                            context.Response.Headers.Add("Content-Type", "application/json");
+                            await context.Response.WriteAsync(JsonConvert.SerializeObject(new { error = "Requested content cannot be rendered" }));
+                        }
+                        else
+                        {
+                            await context.Response.WriteAsync("Requested content cannot be rendered");
+                        }
+
+                        return;
                     }
                 }
             }
@@ -108,6 +122,7 @@ namespace Kasbah.Web.Middleware.Delivery
             var asyncMethod = component.Control.GetMethod("GetModelAsync");
             if (asyncMethod != null)
             {
+                // TODO: instantiate using the service locator
                 var instance = Activator.CreateInstance(component.Control);
 
                 var task = (Task<object>)asyncMethod.Invoke(instance, new object[] { properties, context });
