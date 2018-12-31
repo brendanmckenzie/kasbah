@@ -1,4 +1,3 @@
-![Kasbah logo](static/logo.png)
+<h1 class="title">KASBAH</h1>
 
-(font - ZCOOL QingKe HuangYou)
-
+The only CMS you'll need, maybe.

@@ -1,9 +1,9 @@
 - Introduction
 
-  - [Getting started with Kasbah](quickstart.md)
   - [Motivation](motivation.md)
   - [Core concepts](concepts.md)
   - [Ecosystem](ecosystem.md)
+  - [Getting started with Kasbah](quickstart.md)
   - [Examples](examples.md)
 
 - Basic Tutorial
