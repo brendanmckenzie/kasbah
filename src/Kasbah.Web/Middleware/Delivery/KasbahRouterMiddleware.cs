@@ -5,6 +5,7 @@ using Kasbah.Web.Models;
 using Kasbah.Web.Models.Delivery;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -16,13 +17,15 @@ namespace Kasbah.Web.Middleware.Delivery
         readonly ILogger _log;
         readonly ComponentRegistry _componentRegistry;
         readonly IMemoryCache _cache;
+        readonly IServiceProvider _serviceProvider;
 
-        public KasbahRouterMiddleware(RequestDelegate next, ILogger<KasbahRouterMiddleware> log, ComponentRegistry componentRegistry, IMemoryCache cache)
+        public KasbahRouterMiddleware(RequestDelegate next, ILogger<KasbahRouterMiddleware> log, ComponentRegistry componentRegistry, IMemoryCache cache, IServiceProvider serviceProvider)
         {
             _next = next;
             _log = log;
             _componentRegistry = componentRegistry;
             _cache = cache;
+            _serviceProvider = serviceProvider;
         }
 
         public async Task Invoke(HttpContext context)
@@ -122,8 +125,7 @@ namespace Kasbah.Web.Middleware.Delivery
             var asyncMethod = component.Control.GetMethod("GetModelAsync");
             if (asyncMethod != null)
             {
-                // TODO: instantiate using the service locator
-                var instance = Activator.CreateInstance(component.Control);
+                var instance = ActivatorUtilities.CreateInstance(_serviceProvider, component.Control);
 
                 var task = (Task<object>)asyncMethod.Invoke(instance, new object[] { properties, context });
 
@@ -138,7 +140,7 @@ namespace Kasbah.Web.Middleware.Delivery
                 }
                 else
                 {
-                    var instance = Activator.CreateInstance(component.Control);
+                    var instance = ActivatorUtilities.CreateInstance(_serviceProvider, component.Control);
 
                     return method.Invoke(instance, new object[] { properties, context });
                 }
