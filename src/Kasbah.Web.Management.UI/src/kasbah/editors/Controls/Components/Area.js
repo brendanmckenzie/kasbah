@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import ItemButton from 'components/ItemButton'
+import ItemButton from '../../../../components/ItemButton'
 import AreaComponent from './AreaComponent'
 
 class Area extends React.Component {

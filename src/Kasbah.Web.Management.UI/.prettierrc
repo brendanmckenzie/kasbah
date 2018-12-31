@@ -1,0 +1,17 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "": true,
+  "trailingComma": "es5",
+  "useTabs": false,
+  "printWidth": 120,
+  "arrowParens": "always",
+  "overrides": [
+    {
+      "files": "*.cs",
+      "options": {
+        "tabWidth": 4
+      }
+    }
+  ]
+}

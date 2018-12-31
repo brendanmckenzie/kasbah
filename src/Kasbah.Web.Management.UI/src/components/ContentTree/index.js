@@ -10,21 +10,21 @@ class ContentTree extends React.Component {
     describeTree: PropTypes.func.isRequired,
     listTypes: PropTypes.func.isRequired,
     content: PropTypes.object.isRequired,
-    context: PropTypes.string.isRequired,
+    contextName: PropTypes.string.isRequired,
     readOnly: PropTypes.bool,
     selected: PropTypes.string,
-    expandToNode: PropTypes.func.isRequired
+    expandToNode: PropTypes.func.isRequired,
   }
 
   static childContextTypes = {
     contextName: PropTypes.string.isRequired,
-    readOnly: PropTypes.bool
+    readOnly: PropTypes.bool,
   }
 
   getChildContext() {
     return {
-      contextName: this.props.context,
-      readOnly: this.props.readOnly
+      contextName: this.props.contextName,
+      readOnly: this.props.readOnly,
     }
   }
 
@@ -35,7 +35,6 @@ class ContentTree extends React.Component {
     if (!this.props.content.types.loaded) {
       this.props.listTypes()
     }
-
     if (this.props.selected) {
       this.props.expandToNode(this.props.context, this.props.selected)
     }
@@ -46,18 +45,19 @@ class ContentTree extends React.Component {
       return <Loading />
     }
 
-    return (
-      <NodeTree parent={null} />
-    )
+    return <NodeTree parent={null} />
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  content: state.content
+const mapStateToProps = (state) => ({
+  content: state.content,
 })
 
 const mapDispatchToProps = {
-  ...contentActions
+  ...contentActions,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ContentTree)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ContentTree)

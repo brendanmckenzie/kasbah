@@ -1,6 +1,4 @@
-export const API_BASE = __PROD__ ? '' : 'http://localhost:5000'
-
-const handleErrors = res => {
+const handleErrors = (res) => {
   if (res.ok) {
     return res
   }
@@ -13,17 +11,17 @@ const handleErrors = res => {
 
 export const makeApiRequest = (request) => {
   const user = localStorage.user ? JSON.parse(localStorage.user) : null
-  const authHeader = user ? { 'Authorization': `${user.token_type} ${user.access_token}` } : {}
+  const authHeader = user ? { Authorization: `${user.token_type} ${user.access_token}` } : {}
 
   const params = {
     method: request.method || 'POST',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
       ...authHeader,
-      ...(request.headers || {})
+      ...(request.headers || {}),
     },
-    body: request.rawBody ? request.rawBody : JSON.stringify(request.body)
+    body: request.rawBody ? request.rawBody : JSON.stringify(request.body),
   }
 
   // this is for multipart forms
@@ -35,9 +33,9 @@ export const makeApiRequest = (request) => {
     }
   }
 
-  const url = `${API_BASE}${request.url}`
+  const { url } = request
 
   return fetch(url, params)
     .then(handleErrors)
-    .then(res => res.json())
+    .then((res) => res.json())
 }

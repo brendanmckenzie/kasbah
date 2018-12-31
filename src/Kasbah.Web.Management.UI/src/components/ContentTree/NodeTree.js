@@ -14,7 +14,7 @@ NodeTree.propTypes = {
   content: PropTypes.object.isRequired
 }
 
-const mapStateToProps = (state, ownProps) => ({
+const mapStateToProps = (state) => ({
   content: state.content
 })
 

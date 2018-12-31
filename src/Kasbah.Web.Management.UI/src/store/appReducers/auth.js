@@ -1,6 +1,6 @@
 import moment from 'moment'
 import { push } from 'react-router-redux'
-import { makeApiRequest } from 'store/util'
+import { makeApiRequest } from '../util'
 
 export const LOGIN_REQUEST = 'LOGIN_REQUEST'
 export const LOGIN_REQUEST_SUCCESS = 'LOGIN_REQUEST_SUCCESS'
