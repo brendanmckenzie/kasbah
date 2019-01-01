@@ -22,7 +22,7 @@ namespace Kasbah.Provider.Npgsql
         public async Task<Guid> CreateNodeAsync(Guid? parent, string alias, string type, string displayName = null)
         {
             const string Sql = @"
-insert into node
+insert into kasbah.node
 ( id, parent_id, alias, type, display_name,
     id_taxonomy,
     alias_taxonomy )
@@ -56,7 +56,7 @@ select
     id_taxonomy as Ids,
     alias_taxonomy as Aliases
 from
-    node
+    kasbah.node
 ";
 
             using (var connection = _settings.GetConnection())
@@ -80,7 +80,7 @@ select
     id_taxonomy as Ids,
     alias_taxonomy as Aliases
 from
-    node
+    kasbah.node
 where
     id = @id
 ";
@@ -108,7 +108,7 @@ select
     id_taxonomy as Ids,
     alias_taxonomy as Aliases
 from
-    node
+    kasbah.node
 where
     alias_taxonomy = @aliases::varchar(512)[]
 ";
@@ -136,7 +136,7 @@ select
     id_taxonomy as Ids,
     alias_taxonomy as Aliases
 from
-    node
+    kasbah.node
 where
     ids_taxonomy = @ids::uuid[]
 ";
@@ -164,7 +164,7 @@ select
     id_taxonomy as Ids,
     alias_taxonomy as Aliases
 from
-    node
+    kasbah.node
 where
     type = any(@types)
 ";
@@ -177,7 +177,7 @@ where
 
         public async Task<IDictionary<string, object>> GetRawDataAsync(Guid id, long? version = default(long?))
         {
-            const string Sql = "select content from node_content where id = @id and ((@version is not null and version = @version) or (@version is null and version = (select max(version) from node_content where id = @id)));";
+            const string Sql = "select content from kasbah.node_content where id = @id and ((@version is not null and version = @version) or (@version is null and version = (select max(version) from kasbah.node_content where id = @id)));";
 
             using (var connection = _settings.GetConnection())
             {
@@ -194,7 +194,7 @@ where
 
         public async Task UpdateDataAsync(Guid id, IDictionary<string, object> data, bool publish)
         {
-            const string Sql = "insert into node_content ( id, version, content ) values ( @id, (select coalesce(max(version), 0) + 1 from node_content where id = @id), @content::jsonb ) returning version;";
+            const string Sql = "insert into kasbah.node_content ( id, version, content ) values ( @id, (select coalesce(max(version), 0) + 1 from kasbah.node_content where id = @id), @content::jsonb ) returning version;";
 
             using (var connection = _settings.GetConnection())
             {
@@ -205,7 +205,7 @@ where
 
                     if (publish)
                     {
-                        await connection.ExecuteAsync("update node set published_version_id = @version, modified_at = now() where id = @id", new { id, version });
+                        await connection.ExecuteAsync("update kasbah.node set published_version_id = @version, modified_at = now() where id = @id", new { id, version });
                     }
 
                     await transaction.CommitAsync();
@@ -224,8 +224,8 @@ where
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
-                    const string UpdateNodeSql = "update node set alias = @alias, modified_at = now() where id = @id";
-                    var updateTaxonomySql = $"update node set alias_taxonomy[{taxoIndex}] = @alias, modified_at = now() where id_taxonomy[1:{taxoIndex}] = @taxonomy::uuid[]";
+                    const string UpdateNodeSql = "update kasbah.node set alias = @alias, modified_at = now() where id = @id";
+                    var updateTaxonomySql = $"update kasbah.node set alias_taxonomy[{taxoIndex}] = @alias, modified_at = now() where id_taxonomy[1:{taxoIndex}] = @taxonomy::uuid[]";
 
                     await connection.ExecuteAsync(UpdateNodeSql, new { id, alias });
                     await connection.ExecuteAsync(updateTaxonomySql, new { alias, taxonomy = node.Taxonomy.Ids });
@@ -237,7 +237,7 @@ where
 
         public async Task ChangeNodeTypeAsync(Guid id, string type)
         {
-            const string Sql = "update node set type = @type, modified_at = now() where id = @id";
+            const string Sql = "update kasbah.node set type = @type, modified_at = now() where id = @id";
             using (var connection = _settings.GetConnection())
             {
                 await connection.ExecuteAsync(Sql, new { id, type });
@@ -253,8 +253,8 @@ where
 
             using (var connection = _settings.GetConnection())
             {
-                var deleteContentSql = $"delete from node_content where id in (select id from node where id_taxonomy[1:{taxoIndex}] = (select id_taxonomy from node where id = @id))";
-                var deleteNodesSql = $"delete from node where id_taxonomy[1:{taxoIndex}] = (select id_taxonomy from node where id = @id)";
+                var deleteContentSql = $"delete from kasbah.node_content where id in (select id from kasbah.node where id_taxonomy[1:{taxoIndex}] = (select id_taxonomy from kasbah.node where id = @id))";
+                var deleteNodesSql = $"delete from kasbah.node where id_taxonomy[1:{taxoIndex}] = (select id_taxonomy from kasbah.node where id = @id)";
 
                 await connection.ExecuteAsync(deleteContentSql, new { id });
                 await connection.ExecuteAsync(deleteNodesSql, new { id });
@@ -276,7 +276,7 @@ select
     id_taxonomy as Ids,
     alias_taxonomy as Aliases
 from
-    node
+    kasbah.node
 order by
     modified_at desc
 limit {take}";
@@ -298,13 +298,13 @@ limit {take}";
                 using (var transaction = connection.BeginTransaction())
                 {
                     const string UpdateNodeSql = @"
-                    update node set
+                    update kasbah.node set
                         parent_id = @parent,
-                        alias_taxonomy = (select alias_taxonomy from node where id = @parent) || alias,
-                        id_taxonomy = (select id_taxonomy from node where id = @parent) || id,
+                        alias_taxonomy = (select alias_taxonomy from kasbah.node where id = @parent) || alias,
+                        id_taxonomy = (select id_taxonomy from kasbah.node where id = @parent) || id,
                         modified_at = now()
                         where id = @id";
-                    var updateTaxonomySql = $"update node set alias_taxonomy = (select alias_taxonomy from node where id = @id) || alias, id_taxonomy = (select id_taxonomy from node where id = @id) || id where id_taxonomy[1:{taxoIndex}] = @taxonomy::uuid[]";
+                    var updateTaxonomySql = $"update kasbah.node set alias_taxonomy = (select alias_taxonomy from kasbah.node where id = @id) || alias, id_taxonomy = (select id_taxonomy from kasbah.node where id = @id) || id where id_taxonomy[1:{taxoIndex}] = @taxonomy::uuid[]";
 
                     await connection.ExecuteAsync(UpdateNodeSql, new { id, parent, alias = node.Alias });
                     await connection.ExecuteAsync(updateTaxonomySql, new { id, taxonomy = node.Taxonomy.Ids });
@@ -330,7 +330,7 @@ limit {take}";
 
             if (!string.Equals(currentNode.DisplayName, node.DisplayName))
             {
-                const string Sql = @"update node set display_name = @DisplayName, modified_at = now() where id = @Id";
+                const string Sql = @"update kasbah.node set display_name = @DisplayName, modified_at = now() where id = @Id";
                 using (var connection = _settings.GetConnection())
                 {
                     await connection.ExecuteAsync(Sql, node);
@@ -355,7 +355,7 @@ select
     id_taxonomy as Ids,
     alias_taxonomy as Aliases
 from
-    node
+    kasbah.node
 where
     (@parent is null and parent_id is null)
     or (parent_id = @parent)

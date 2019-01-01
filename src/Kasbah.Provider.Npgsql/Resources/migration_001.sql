@@ -1,7 +1,7 @@
-create table node (
+create table kasbah.node (
   id uuid primary key not null,
 
-  parent_id uuid references node ( id ),
+  parent_id uuid references kasbah.node ( id ),
   type varchar(512) not null,
   alias varchar(512) not null,
 
@@ -16,8 +16,8 @@ create table node (
   modified_at timestamp default now() not null
 );
 
-create table node_content (
-  id uuid not null references node ( id ),
+create table kasbah.node_content (
+  id uuid not null references kasbah.node ( id ),
   version integer not null,
   content jsonb,
   created_at timestamp default now() not null,
@@ -25,7 +25,7 @@ create table node_content (
   primary key ( id, version )
 );
 
-create table "user" (
+create table kasbah."user" (
   id uuid primary key not null,
   username varchar(512) not null,
   password text not null,
@@ -38,7 +38,7 @@ create table "user" (
   disabled_at timestamp
 );
 
-create table media (
+create table kasbah.media (
   id uuid primary key not null,
   file_name text,
   content_type text,
@@ -47,7 +47,7 @@ create table media (
   modified_at timestamp default now() not null
 );
 
-create table session (
+create table kasbah.session (
   id uuid primary key not null,
 
   attributes jsonb,
@@ -56,10 +56,10 @@ create table session (
   last_activity_at timestamp default now() not null
 );
 
-create table session_activity (
+create table kasbah.session_activity (
   id uuid primary key not null,
 
-  session_id uuid references session ( id ),
+  session_id uuid references kasbah.session ( id ),
 
   type varchar(128) not null,
   attributes jsonb,
