@@ -14,26 +14,31 @@ export const actions = {
       url: '/connect/token',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic d2ViOnNlY3JldA=='
+        Authorization: 'Basic d2ViOnNlY3JldA==',
       },
-      rawBody: `grant_type=password&username=${request.username}&password=${request.password}`
+      rawBody: `grant_type=password&username=${request.username}&password=${request.password}`,
     }
 
     dispatch({ type: LOGIN_REQUEST })
     makeApiRequest(req)
-      .then(res => {
+      .then((res) => {
         if (res.error) {
           throw new Error(res.error)
         } else {
           localStorage.user = JSON.stringify(res)
-          localStorage.accessTokenExpires = moment().add(res.expires_in, 'seconds').format()
+          localStorage.accessTokenExpires = moment()
+            .add(res.expires_in, 'seconds')
+            .format()
 
           dispatch({ type: LOGIN_REQUEST_SUCCESS, payload: res })
           dispatch(push('/'))
         }
       })
-      .catch(ex => {
-        dispatch({ type: LOGIN_REQUEST_FAILURE, error: 'An error has occurred' })
+      .catch((ex) => {
+        dispatch({
+          type: LOGIN_REQUEST_FAILURE,
+          error: 'An error has occurred',
+        })
       })
   },
   watchRefreshToken: () => (dispatch) => {
@@ -44,26 +49,37 @@ export const actions = {
         return
       }
 
-      if (moment().add(30, 'seconds').isAfter(moment(localStorage.accessTokenExpires))) {
+      if (
+        moment()
+          .add(30, 'seconds')
+          .isAfter(moment(localStorage.accessTokenExpires))
+      ) {
         const user = JSON.parse(localStorage.user)
-        makeApiRequest({
-          url: '/connect/token',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          rawBody: `grant_type=refresh_token&refresh_token=${user.refresh_token}`
-        })
-          .then(res => {
-            localStorage.user = JSON.stringify(res)
-            localStorage.accessTokenExpires = moment().add(res.expires_in, 'seconds').format()
 
-            dispatch({ type: ACCESS_TOKEN_REFRESH, res })
+        if (user.refresh_token) {
+          makeApiRequest({
+            url: '/connect/token',
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            rawBody: `grant_type=refresh_token&refresh_token=${user.refresh_token}`,
           })
-          .catch(err => {
-            console.error(err)
+            .then((res) => {
+              localStorage.user = JSON.stringify(res)
+              localStorage.accessTokenExpires = moment()
+                .add(res.expires_in, 'seconds')
+                .format()
 
-            dispatch(push('/login'))
-          })
+              dispatch({ type: ACCESS_TOKEN_REFRESH, res })
+            })
+            .catch((err) => {
+              console.error(err)
+
+              dispatch(push('/login'))
+            })
+        } else {
+          dispatch(push('/login'))
+        }
       }
     }
 
@@ -72,36 +88,36 @@ export const actions = {
     if (moment(localStorage.accessTokenExpires).isAfter(moment())) {
       dispatch({ type: AUTH_TOKEN_VALID })
     }
-  }
+  },
 }
 
 const initialState = {
   user: localStorage.user ? JSON.parse(localStorage.user) : null,
   authenticating: false,
-  ready: false
+  ready: false,
 }
 
 const actionHandlers = {
   [LOGIN_REQUEST]: (state) => ({
     ...state,
     authenticating: true,
-    error: null
+    error: null,
   }),
   [LOGIN_REQUEST_SUCCESS]: (state, { payload }) => ({
     ...state,
     authenticating: false,
     user: payload,
-    ready: true
+    ready: true,
   }),
   [LOGIN_REQUEST_FAILURE]: (state, { error }) => ({
     ...state,
     authenticating: false,
-    error
+    error,
   }),
   [AUTH_TOKEN_VALID]: (state) => ({
     ...state,
-    ready: true
-  })
+    ready: true,
+  }),
 }
 
 export const reducer = (state = initialState, action) => {
@@ -112,5 +128,5 @@ export const reducer = (state = initialState, action) => {
 
 export default {
   actions,
-  reducer
+  reducer,
 }
