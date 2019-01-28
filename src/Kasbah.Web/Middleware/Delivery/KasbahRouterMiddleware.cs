@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Kasbah.Content;
 using Kasbah.Web.Models;
 using Kasbah.Web.Models.Delivery;
 using Microsoft.AspNetCore.Http;
@@ -32,6 +34,7 @@ namespace Kasbah.Web.Middleware.Delivery
         {
             var kasbahWebContext = context.GetKasbahWebContext();
 
+            // Load the model from the cache if this is a subsequent request
             if (context.Request.Query.TryGetValue("ti", out var traceIdentifier))
             {
                 var model = _cache.Get($"model:{traceIdentifier.First()}");
@@ -50,49 +53,43 @@ namespace Kasbah.Web.Middleware.Delivery
 
                     if (content is IPresentable presentable)
                     {
-                        // TODO: process Control tree for `BodyControl` and `HeadControl`
+                        var typeMapperContext = new TypeMapperContext();
 
-                        var instanceComponents = presentable.Components;
-                        var staticComponents = await presentable.ListStaticComponentsAsync(kasbahWebContext) ?? new ComponentCollection();
-                        var allComponents = instanceComponents.Concat(staticComponents)
-                            .ToDictionary(ent => ent.Key, ent => ent.Value);
-
-                        var renderDataAsync = allComponents.Keys.AsParallel().Select(async key =>
+                        async Task<ControlRenderModel> ControlToRenderModel(Control control)
                         {
-                            var componentList = allComponents[key];
-                            var componentsAsync = componentList
-                                .AsParallel()
-                                .AsOrdered()
-                                .Select(async ent =>
-                                {
-                                    var component = _componentRegistry.GetByAlias(ent.Control);
-                                    var properties = ent.Properties == null ? null : await kasbahWebContext.TypeMapper.MapTypeAsync(ent.Properties, component.Properties.Alias) as Component;
-
-                                    return new RenderModel.Component
-                                    {
-                                        Alias = ent.Control,
-                                        Model = await GetModelAsync(kasbahWebContext, properties, component)
-                                    };
-                                });
-
-                            return new
+                            if (control == null || string.IsNullOrEmpty(control.Alias))
                             {
-                                key,
-                                components = await Task.WhenAll(componentsAsync)
-                            };
-                        });
+                                return null;
+                            }
 
-                        var renderData = await Task.WhenAll(renderDataAsync);
+                            var component = _componentRegistry.GetByAlias(control.Alias);
+                            var properties = control.Model == null ? null : await kasbahWebContext.TypeMapper.MapTypeAsync(control.Model.ToObject<IDictionary<string, object>>(), component.Properties.Alias, kasbahWebContext.Node, kasbahWebContext.Node.PublishedVersion, typeMapperContext);
+
+                            var controlModel = await GetModelAsync(kasbahWebContext, properties, component);
+
+                            var placeholderTasks = (control.Placeholders ?? new PlaceholderCollection()).Select(async ent => new KeyValuePair<string, IEnumerable<object>>(ent.Key, await Task.WhenAll(ent.Value.Select(ControlToRenderModel))));
+
+                            var placeholders = await Task.WhenAll(placeholderTasks);
+
+                            return new ControlRenderModel
+                            {
+                                Component = control.Alias,
+                                Model = controlModel,
+                                Controls = placeholders.ToDictionary(ent => ent.Key, ent => ent.Value)
+                            };
+                        }
+
+                        var bodyModel = await ControlToRenderModel(presentable.BodyControl);
+                        var headModel = await ControlToRenderModel(presentable.HeadControl);
 
                         var model = new RenderModel
                         {
                             TraceIdentifier = context.TraceIdentifier,
                             Node = node,
-                            Content = content,
                             Site = kasbahWebContext.Site,
                             SiteNode = kasbahWebContext.SiteNode,
-                            Layout = presentable.Layout,
-                            Components = new RenderModel.ComponentMap(renderData.ToDictionary(ent => ent.key, ent => ent.components.AsEnumerable()))
+                            Body = bodyModel,
+                            Head = headModel
                         };
 
                         context.Items["kasbah:model"] = model;
@@ -120,29 +117,28 @@ namespace Kasbah.Web.Middleware.Delivery
             await _next.Invoke(context);
         }
 
-        async Task<object> GetModelAsync(KasbahWebContext context, Component properties, ComponentDefinition component)
+        async Task<object> GetModelAsync(KasbahWebContext context, object properties, ComponentDefinition component)
         {
             var asyncMethod = component.Control.GetMethod("GetModelAsync");
-            if (asyncMethod != null)
+            if (asyncMethod == null)
             {
-                var instance = ActivatorUtilities.CreateInstance(_serviceProvider, component.Control);
-
-                var task = (Task<object>)asyncMethod.Invoke(instance, new object[] { properties, context });
-
-                return await task;
+                return null;
             }
-            else
-            {
-                var method = component.Control.GetMethod("GetModel");
-                if (method == null)
-                {
-                    return properties;
-                }
-                else
-                {
-                    var instance = ActivatorUtilities.CreateInstance(_serviceProvider, component.Control);
 
-                    return method.Invoke(instance, new object[] { properties, context });
+            var instance = ActivatorUtilities.CreateInstance(_serviceProvider, component.Control);
+            try
+            {
+                var task = (Task)asyncMethod.Invoke(instance, new object[] { context, properties });
+
+                await task.ConfigureAwait(false);
+
+                return (object)((dynamic)task).Result;
+            }
+            finally
+            {
+                if (instance is IDisposable disposable)
+                {
+                    disposable.Dispose();
                 }
             }
         }

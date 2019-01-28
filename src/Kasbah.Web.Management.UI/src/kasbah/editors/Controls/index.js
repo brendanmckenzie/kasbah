@@ -1,3 +1,4 @@
+import Control from './Control'
 import Enum from './Enum'
 import Date from './Date'
 import LongText from './LongText'
@@ -9,6 +10,7 @@ import Text from './Text'
 import Components from './Components'
 
 export const controls = {
+  Control,
   Enum,
   Date,
   LongText,
@@ -17,5 +19,5 @@ export const controls = {
   NodePicker,
   NodePickerMulti,
   Text,
-  Components
+  Components,
 }

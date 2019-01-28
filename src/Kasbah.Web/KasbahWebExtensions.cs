@@ -146,21 +146,29 @@ namespace Kasbah.Web
             return app;
         }
 
-        public static void InitialiseKasbahWeb(this IServiceProvider services)
+        static void InitialiseKasbahWeb(this IServiceProvider services)
         {
             var typeRegistry = services.GetService<TypeRegistry>();
             var siteRegistry = services.GetService<SiteRegistry>();
             var componentRegistry = services.GetService<ComponentRegistry>();
 
+            // Register default item types
             typeRegistry.Register<Item>();
             typeRegistry.Register<Folder>();
 
             var registration = services.GetService<KasbahWebRegistration>();
 
+            if (registration == null)
+            {
+                throw new ArgumentNullException(nameof(KasbahWebRegistration), "An instance of KasbahWebRegistration must be registered");
+            }
+
+            // Register application-specific types. sites, components
             registration.RegisterTypes(typeRegistry);
             registration.RegisterSites(siteRegistry);
             registration.RegisterComponents(componentRegistry);
 
+            // Perform underlying Kasbah initialisation
             services.InitialiseKasbahAsync().Wait();
         }
 
@@ -168,6 +176,7 @@ namespace Kasbah.Web
         {
             public void PopulateFeature(IEnumerable<ApplicationPart> parts, ControllerFeature feature)
             {
+                // TODO: add a comment why this is necessary
                 var remove = feature.Controllers
                     .Where(ent => ent.FullName.StartsWith(typeof(StaticContentController).Namespace))
                     .ToArray();

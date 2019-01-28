@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Kasbah.Content.Models;
 
 namespace Kasbah.Web.Models
@@ -12,5 +13,7 @@ namespace Kasbah.Web.Models
         public Type Control { get; set; }
 
         public TypeDefinition Properties { get; set; }
+
+        public IEnumerable<PlaceholderDefinition> Placeholders { get; set; }
     }
 }

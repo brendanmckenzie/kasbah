@@ -43,7 +43,12 @@ namespace Kasbah.Content
                 Editor = editor
             };
 
-            if (typeof(Item).GetTypeInfo().IsAssignableFrom(property.PropertyType))
+            var editorAttribute = property.GetCustomAttribute<FieldEditorAttribute>(true);
+            if (editorAttribute != null)
+            {
+                ret.Editor = editorAttribute.Editor;
+            }
+            else if (typeof(Item).GetTypeInfo().IsAssignableFrom(property.PropertyType))
             {
                 ret.Editor = "nodePicker";
                 ret.Type = property.PropertyType.AssemblyQualifiedName;
@@ -69,12 +74,6 @@ namespace Kasbah.Content
             {
                 ret.Editor = "nested";
                 ret.Options["fields"] = typeInfo.GetProperties().Select(MapProperty).ToList(); // TODO: guard against recurrsion
-            }
-
-            var editorAttribute = property.GetCustomAttribute<FieldEditorAttribute>(true);
-            if (editorAttribute != null)
-            {
-                ret.Editor = editorAttribute.Editor;
             }
 
             return ret;

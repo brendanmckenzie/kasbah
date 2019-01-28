@@ -1,7 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\..\build\common.props" />
-
-  <ItemGroup>
-    <ProjectReference Include="..\Kasbah\Kasbah.csproj" />
-  </ItemGroup>
-</Project>

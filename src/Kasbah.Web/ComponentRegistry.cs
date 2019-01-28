@@ -21,7 +21,14 @@ namespace Kasbah.Web
         internal PropertyMapper PropertyMapper { get; private set; }
 
         public void RegisterComponent(ComponentDefinition component)
-            => _components.Add(component);
+        {
+            if (_components.Any(ent => ent.Alias.Equals(component.Alias)))
+            {
+                throw new ArgumentException(nameof(component), $"A component with the alias '{component.Alias}' was already registered.  Component aliases must be unique.");
+            }
+
+            _components.Add(component);
+        }
 
         public IEnumerable<ComponentDefinition> ListComponents()
             => _components.AsEnumerable();

@@ -37,6 +37,7 @@ namespace Kasbah.Content
             var typeInfo = type.GetTypeInfo();
 
             var options = new ProxyGenerationOptions();
+            var caseConverter = new Newtonsoft.Json.Serialization.CamelCaseNamingStrategy();
 
             var ret = _generator.CreateClassProxy(type, options, new KasbahPropertyInterceptor(MapPropertyAsync, data, context));
             if (data != null)
@@ -47,11 +48,29 @@ namespace Kasbah.Content
                 var values = await Task.WhenAll(eagerLoadProperties.Select(async prop =>
                 {
                     var key = prop.Name;
+
+                    async Task<object> ExtractValue()
+                    {
+                        if (data.ContainsKey(key))
+                        {
+                            return await MapPropertyAsync(data[key], prop, context);
+                        }
+
+                        var altKey = caseConverter.GetPropertyName(key, false);
+
+                        if (data.ContainsKey(altKey))
+                        {
+                            return await MapPropertyAsync(data[altKey], prop, context);
+                        }
+
+                        return null;
+                    }
+
                     return new
                     {
                         Key = key,
                         Property = prop,
-                        Value = data.ContainsKey(key) ? await MapPropertyAsync(data[key], prop, context) : null
+                        Value = await ExtractValue()
                     };
                 }));
 
