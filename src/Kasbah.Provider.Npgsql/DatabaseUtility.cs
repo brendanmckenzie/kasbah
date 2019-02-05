@@ -93,6 +93,7 @@ namespace Kasbah.Provider.Npgsql
                                 _log.LogInformation($"Migration run successfully: '{resource.ShortName}'");
                             }
                         }
+
                         transaction.Commit();
 
                         _log.LogInformation("All migrations run successfully");

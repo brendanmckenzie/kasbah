@@ -9,7 +9,9 @@ namespace Kasbah.Web
     public static class ComponentRegistryExtensions
     {
         public static void RegisterComponent<TComponent, TProperties>(this ComponentRegistry componentRegistry, Action<TypeDefinitionBuilder> configure = null)
+            where TComponent : ComponentBase, new()
         {
+            var instance = new TComponent();
             var type = typeof(TComponent);
 
             var builder = new TypeDefinitionBuilder<TProperties>(componentRegistry.PropertyMapper);
@@ -18,7 +20,7 @@ namespace Kasbah.Web
 
             var definition = new ComponentDefinition
             {
-                Alias = type.Name,
+                Alias = instance.Alias,
                 Control = type,
                 Properties = builder.Build(),
                 Placeholders = Enumerable.Empty<PlaceholderDefinition>()
@@ -27,11 +29,11 @@ namespace Kasbah.Web
             componentRegistry.RegisterComponent(definition);
         }
 
-        public static void RegisterComponent<TComponent>(this ComponentRegistry componentRegistry)
-            where TComponent : ComponentBase, new()
+        public static void RegisterComponent<TModel>(this ComponentRegistry componentRegistry)
+            where TModel : ComponentBase, new()
         {
-            var type = typeof(TComponent);
-            var instance = new TComponent();
+            var type = typeof(TModel);
+            var instance = new TModel();
 
             // TODO: this is gross
             TypeDefinition GetProperties()

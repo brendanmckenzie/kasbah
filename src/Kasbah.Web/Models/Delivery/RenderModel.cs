@@ -12,8 +12,6 @@ namespace Kasbah.Web.Models.Delivery
 
         public Node SiteNode { get; set; }
 
-        public ControlRenderModel Head { get; set; }
-
-        public ControlRenderModel Body { get; set; }
+        public ControlRenderModel Layout { get; set; }
     }
 }

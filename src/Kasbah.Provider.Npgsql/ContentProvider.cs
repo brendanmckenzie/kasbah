@@ -175,7 +175,7 @@ where
             }
         }
 
-        public async Task<IDictionary<string, object>> GetRawDataAsync(Guid id, long? version = default(long?))
+        public async Task<string> GetRawDataAsync(Guid id, long? version = default(long?))
         {
             const string Sql = "select content from kasbah.node_content where id = @id and ((@version is not null and version = @version) or (@version is null and version = (select max(version) from kasbah.node_content where id = @id)));";
 
@@ -183,12 +183,7 @@ where
             {
                 var json = await connection.QueryFirstOrDefaultAsync<string>(Sql, new { id, version });
 
-                if (json == null)
-                {
-                    return null;
-                }
-
-                return JsonConvert.DeserializeObject<IDictionary<string, object>>(json);
+                return json;
             }
         }
 

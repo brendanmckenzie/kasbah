@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Castle.DynamicProxy;
 using Kasbah.Content.Models;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Kasbah.Content
@@ -27,6 +28,15 @@ namespace Kasbah.Content
             _typeRegistry = typeRegistry;
 
             _generator = new ProxyGenerator();
+        }
+
+        public async Task<object> MapTypeAsync(string data, string typeName, Node node = null, long? version = null, TypeMapperContext context = null)
+        {
+            context = context ?? new TypeMapperContext();
+
+            var dictData = JsonConvert.DeserializeObject<IDictionary<string, object>>(data);
+
+            return await MapTypeAsync(dictData, typeName, node, version, context);
         }
 
         public async Task<object> MapTypeAsync(IDictionary<string, object> data, string typeName, Node node = null, long? version = null, TypeMapperContext context = null)

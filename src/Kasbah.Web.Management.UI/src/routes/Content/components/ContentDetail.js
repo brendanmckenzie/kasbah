@@ -13,30 +13,36 @@ class ContentDetail extends React.Component {
     match: PropTypes.object.isRequired,
     content: PropTypes.object.isRequired,
     getDetail: PropTypes.func.isRequired,
-    putDetail: PropTypes.func.isRequired
+    putDetail: PropTypes.func.isRequired,
   }
 
-  componentWillMount() {
-    const { match: { params } } = this.props
+  componentDidMount() {
+    const {
+      match: { params },
+    } = this.props
 
     this.props.getDetail(params.id)
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.match.params.id !== this.props.match.params.id) {
-      this.props.getDetail(nextProps.match.params.id)
+  componentDidUpdate(prevProps) {
+    if (prevProps.match.params.id !== this.props.match.params.id) {
+      this.props.getDetail(this.props.match.params.id)
     }
   }
 
   handleSave = (values) => {
-    const { match: { params } } = this.props
+    const {
+      match: { params },
+    } = this.props
     const detail = this.props.content.detail[params.id]
 
     this.props.putDetail(detail.node.id, values, true)
   }
 
   render() {
-    const { match: { params } } = this.props
+    const {
+      match: { params },
+    } = this.props
     const detail = this.props.content.detail[params.id]
 
     if (!detail) {
@@ -45,22 +51,25 @@ class ContentDetail extends React.Component {
 
     return (
       <div>
-        <h2 className='subtitle'>{detail.node.displayName}</h2>
+        <h2 className="subtitle">{detail.node.displayName}</h2>
         <Field>
           <Breadcrumbs id={params.id} content={this.props.content} />
         </Field>
 
         <Columns>
           <Column>
-            {detail.type.fields.length === 0
-              ? <p>This content type does not define any editable fields.</p>
-              : <ContentEditorForm
+            {detail.type.fields.length === 0 ? (
+              <p>This content type does not define any editable fields.</p>
+            ) : (
+              <ContentEditorForm
                 initialValues={detail.data}
                 type={detail.type}
                 loading={detail.saving}
-                onSubmit={this.handleSave} />}
+                onSubmit={this.handleSave}
+              />
+            )}
           </Column>
-          <Column className='is-3'>
+          <Column className="is-3">
             <SideBar {...detail} />
           </Column>
         </Columns>
@@ -70,11 +79,14 @@ class ContentDetail extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  content: state.content
+  content: state.content,
 })
 
 const mapDispatchToProps = {
-  ...contentActions
+  ...contentActions,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ContentDetail)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ContentDetail)

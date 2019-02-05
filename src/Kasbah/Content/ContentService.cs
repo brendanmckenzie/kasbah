@@ -8,6 +8,7 @@ using Kasbah.Content.Models;
 using Kasbah.Extensions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace Kasbah.Content
 {
@@ -49,7 +50,7 @@ namespace Kasbah.Content
         public async Task<IEnumerable<Node>> DescribeTreeAsync()
             => await _contentProvider.DescribeTreeAsync();
 
-        public async Task<IDictionary<string, object>> GetRawDataAsync(Guid id, long? version = null)
+        public async Task<string> GetRawDataAsync(Guid id, long? version = null)
         {
             return await _cache?.GetOrSetAsync($"{nameof(GetRawDataAsync)}_{id}_{version}", async () =>
             {
@@ -77,13 +78,13 @@ namespace Kasbah.Content
         public async Task<NodeDataForEditing> GetNodeDataForEditingAsync(Guid id)
         {
             var node = await GetNodeAsync(id);
-            var data = await GetRawDataAsync(id) ?? new Dictionary<string, object>();
+            var data = await GetRawDataAsync(id);
             var type = _typeRegistry.GetType(node.Type);
 
             return new NodeDataForEditing
             {
                 Node = node,
-                Data = data,
+                Data = JsonConvert.DeserializeObject<IDictionary<string, object>>(data ?? "{}"),
                 Type = type
             };
         }

@@ -5,13 +5,13 @@ import { actions as uiActions } from 'store/appReducers/ui'
 import { actions as contentActions } from 'store/appReducers/content'
 import ContentTree from 'components/ContentTree'
 
-class EditButton extends React.Component {
+class MoveButton extends React.Component {
   static propTypes = {
     node: PropTypes.object.isRequired,
     content: PropTypes.object.isRequired,
     showModal: PropTypes.func.isRequired,
     hideModal: PropTypes.func.isRequired,
-    moveNode: PropTypes.func.isRequired
+    moveNode: PropTypes.func.isRequired,
   }
 
   handleClick = () => {
@@ -25,10 +25,14 @@ class EditButton extends React.Component {
       }
     }
     const title = 'Move node'
-    const control = <ContentTree context={contextName} selected={node.parent} readOnly />
+    const control = <ContentTree contextName={contextName} selected={node.parent} readOnly />
     const buttons = [
-      <button type='button' className='button' onClick={this.props.hideModal}>Cancel</button>,
-      <button type='button' className='button is-primary' onClick={doMove}>Move</button>
+      <button key="cancel" type="button" className="button" onClick={this.props.hideModal}>
+        Cancel
+      </button>,
+      <button key="move" type="button" className="button is-primary" onClick={doMove}>
+        Move
+      </button>,
     ]
 
     this.props.showModal(title, control, buttons)
@@ -36,8 +40,10 @@ class EditButton extends React.Component {
 
   render() {
     return (
-      <button className='button' type='button' onClick={this.handleClick}>
-        <span className='icon is-small'><i className='fa fa-long-arrow-right' /></span>
+      <button className="button" type="button" onClick={this.handleClick}>
+        <span className="icon is-small">
+          <i className="fa fa-long-arrow-right" />
+        </span>
         <span>Move</span>
       </button>
     )
@@ -45,12 +51,15 @@ class EditButton extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => ({
-  content: state.content
+  content: state.content,
 })
 
 const mapDispatchToProps = {
   ...uiActions,
-  ...contentActions
+  ...contentActions,
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditButton)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MoveButton)

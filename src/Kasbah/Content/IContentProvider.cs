@@ -13,7 +13,7 @@ namespace Kasbah.Content
 
         Task<IEnumerable<Node>> DescribeTreeAsync();
 
-        Task<IDictionary<string, object>> GetRawDataAsync(Guid id, long? version = null);
+        Task<string> GetRawDataAsync(Guid id, long? version = null);
 
         Task UpdateDataAsync(Guid id, IDictionary<string, object> data, bool publish);
 

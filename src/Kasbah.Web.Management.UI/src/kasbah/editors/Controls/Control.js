@@ -3,19 +3,27 @@ import PropTypes from 'prop-types'
 import { Field } from 'redux-form'
 import { connect } from 'react-redux'
 import _ from 'lodash'
+import { actions as contentActions } from 'store/appReducers/content'
 import Nested from './Nested'
 
 class Control extends React.PureComponent {
   static propTypes = {
     input: PropTypes.object.isRequired,
     options: PropTypes.object,
-    id: PropTypes.string.isRequired,
     className: PropTypes.string,
+    content: PropTypes.object.isRequired,
+    listComponents: PropTypes.func.isRequired
   }
 
   static alias = 'kasbah_web:control'
 
   state = { selectedControl: '' }
+
+  componentWillMount() {
+    if (!this.props.content.components.loaded && !this.props.content.components.loading) {
+      this.props.listComponents()
+    }
+  }
 
   handleChange = (field) => (ev) => {
     this.setState({
@@ -30,7 +38,10 @@ class Control extends React.PureComponent {
 
     const newValue = _.merge({}, value, {
       placeholders: {
-        [placeholder]: [{ alias: this.state.selectedControl }],
+        [placeholder]: [
+          ...((value.placeholders && value.placeholders[placeholder]) || []),
+          { alias: this.state.selectedControl },
+        ],
       },
     })
 
@@ -66,8 +77,10 @@ class Control extends React.PureComponent {
                 <div>
                   <span className="select">
                     <select value={this.state.selectedControl} onChange={this.handleChange('selectedControl')}>
-                      <option key={null} value={null}>None</option>
-                      {plc.allowedControls.map((c) => (
+                      <option key={null} value={null}>
+                        None
+                      </option>
+                      {(plc.allowedControls || list.map((a) => a.alias)).map((c) => (
                         <option value={c} key={c} children={c} />
                       ))}
                     </select>
@@ -141,7 +154,7 @@ class Control extends React.PureComponent {
       <div className="control-editor">
         <span className="select">
           <Field name={`${name}.alias`} component="select">
-            <option value={null}></option>
+            <option value={null} />
             {list.map((cmp) => (
               <option key={cmp.alias} value={cmp.alias} children={cmp.alias} />
             ))}
@@ -158,7 +171,9 @@ const mapStateToProps = (state) => ({
   content: state.content,
 })
 
-const mapDispatchToProps = {}
+const mapDispatchToProps = {
+  ...contentActions
+}
 
 export default connect(
   mapStateToProps,

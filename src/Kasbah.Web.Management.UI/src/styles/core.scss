@@ -6,201 +6,210 @@ $body-size: 14px;
 @import '../../node_modules/bulma/bulma';
 
 body {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 header.navbar {
-    background-color: #f5f5f5;
+  background-color: #f5f5f5;
 
-    .navbar-item {
-        text-transform: uppercase;
+  .navbar-item {
+    text-transform: uppercase;
 
-        &.is-active {
-            background-color: #fff;
-        }
+    &.is-active {
+      background-color: #fff;
     }
+  }
 }
 
-.input, .textarea {
-    box-shadow: none;
+.input,
+.textarea {
+  box-shadow: none;
 }
 
 .content-editor__form {
-    textarea {
-        height: 200px;
-        resize: none;
-    }
+  textarea {
+    height: 200px;
+    resize: none;
+  }
 }
 
 ul.breadcrumb {
-    margin-top: -15px;
-    li {
-        font-size: 80%;
-        display: inline-block;
+  margin-top: -15px;
+  li {
+    font-size: 80%;
+    display: inline-block;
 
-        &::after {
-            content: '/';
-            margin: 0 5px;
-        }
-
-        &:last-child {
-            &::after {
-                display: none;
-            }
-        }
+    &::after {
+      content: '/';
+      margin: 0 5px;
     }
+
+    &:last-child {
+      &::after {
+        display: none;
+      }
+    }
+  }
 }
 
 .modal .breadcrumb {
-    margin-top: 0;
+  margin-top: 0;
 
-    li {
-        font-size: initial;
-    }
+  li {
+    font-size: initial;
+  }
 }
 
 @each $name, $pair in $colors {
-    $color: nth($pair, 1);
-    $color-invert: nth($pair, 2);
+  $color: nth($pair, 1);
+  $color-invert: nth($pair, 2);
 
-    .tile.is-#{$name} {
-        a {
-            color: $color-invert;
-        }
+  .tile.is-#{$name} {
+    a {
+      color: $color-invert;
     }
+  }
 }
 
 .tile {
-    .title a {
-        text-decoration: none;
-    }
+  .title a {
+    text-decoration: none;
+  }
 }
 
 blockquote {
-    padding-left: 10px;
-    border-left: 5px solid #f5f5f5;
-    margin-bottom: 10px;
+  padding-left: 10px;
+  border-left: 5px solid #f5f5f5;
+  margin-bottom: 10px;
 }
 
 .media-picker .card {
-    cursor: pointer;
+  cursor: pointer;
 
-    .card-content {
-      padding: .5rem;
+  .card-content {
+    padding: 0.5rem;
 
-      .filename {
-        text-overflow: ellipsis;
-        overflow: hidden;
-        white-space: nowrap;
-      }
+    .filename {
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
     }
+  }
 
-    &.is-selected {
-      .card-image::before {
-          color: white;
-          content: '\f00c';
-          font: normal normal normal 14px/1 "Font Awesome 5";
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          position: absolute;
-          left: 0;
-          top: 0;
-          width: 32px;
-          height: 32px;
-          background-color: $turquoise;
-          z-index: 99;
-      }
+  &.is-selected {
+    .card-image::before {
+      color: white;
+      content: '\f00c';
+      font: normal normal normal 14px/1 'Font Awesome 5';
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 32px;
+      height: 32px;
+      background-color: $turquoise;
+      z-index: 99;
     }
+  }
 }
 
 .node-picker .card {
-    cursor: pointer;
+  cursor: pointer;
 
-    .card-content {
-      padding: .5rem;
-    }
+  .card-content {
+    padding: 0.5rem;
+  }
 
-    &.is-selected {
-      .card-content::before {
-          color: white;
-          content: '\f00c';
-          font: normal normal normal 14px/1 "Font Awesome 5";
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          position: absolute;
-          right: 0;
-          top: 0;
-          width: 32px;
-          height: 32px;
-          background-color: $turquoise;
-          z-index: 99;
-      }
+  &.is-selected {
+    .card-content::before {
+      color: white;
+      content: '\f00c';
+      font: normal normal normal 14px/1 'Font Awesome 5';
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 32px;
+      height: 32px;
+      background-color: $turquoise;
+      z-index: 99;
     }
+  }
 }
 
 .node-picker {
-    ul li {
-        margin-bottom: 4px;
+  ul li {
+    margin-bottom: 4px;
 
-        .level-item {
-            display: initial;
-        }
+    .level-item {
+      display: initial;
     }
+  }
 }
 
 ul.content-tree {
-    li ul {
-        padding-left: 15px;
-        border-left: 1px solid #f5f5f5;
-        margin-bottom: 5px;
-    }
+  li ul {
+    padding-left: 15px;
+    border-left: 2px solid #f5f5f5;
+    margin-bottom: 5px;
+  }
 
-    a.is-active {
-        font-weight: bold;
-    }
+  a.is-active {
+    font-weight: bold;
+  }
 
-    .level {
-        margin-bottom: 0;
+  .level {
+    margin-bottom: 0;
 
-        .level-left {
-            font-size: 90%;
-            flex-shrink: 1;
+    .level-left {
+      font-size: 90%;
+      flex-shrink: 1;
 
-            .level-item {
-                flex-shrink: 1;
-                word-break: break-all;
-                hyphens: auto;
+      .level-item {
+        flex-shrink: 1;
+        word-break: break-all;
+        hyphens: auto;
 
-                &.icon {
-                    color: $grey-light;
-                    margin-right: 4px;
-                    margin-left: 2px;
-                    margin-top: 2px;
-                }
-            }
+        &.icon {
+          color: $grey-light;
+          margin-right: 4px;
+          margin-left: 2px;
+          margin-top: 2px;
         }
-
-        .button.expand {
-            border: 0;
-            margin-left: -0.5rem;
-            margin-right: 0;
-            margin-top: 2px;
-            margin-bottom: -2px;
-            color: $grey;
-
-            &:focus {
-                box-shadow: none;
-            }
-        }
+      }
     }
 
-    .button.add-node {
-        white-space: normal;
-        height: auto;
+    .button.expand {
+      border: 0;
+      margin-left: -0.5rem;
+      margin-right: 0;
+      margin-top: 2px;
+      margin-bottom: -2px;
+      color: $grey;
+
+      &:focus {
+        box-shadow: none;
+      }
     }
+
+    .button.is-link {
+      border: none;
+      margin: 0;
+      padding: 0;
+      background-color: transparent;
+      color: $black;
+    }
+  }
+
+  .button.add-node {
+    white-space: normal;
+    height: auto;
+  }
 }
 
 .media--upload__dropzone {
@@ -219,7 +228,7 @@ ul.content-tree {
   text-decoration: none;
 
   &:hover {
-      background-color: transparent;
+    background-color: transparent;
   }
 }
 
@@ -228,28 +237,28 @@ pre {
 }
 
 .modal-card-foot {
-    justify-content: flex-end;
+  justify-content: flex-end;
 }
 
 .level-vertical {
-    flex-direction: column;
-    align-items: flex-start;
+  flex-direction: column;
+  align-items: flex-start;
 
-    .level-item {
-        &:not(:last-child) {
-            margin-right: 0;
-            margin-bottom: .25rem;
-        }
-
-        &.no-gap {
-            margin-bottom: 0;
-        }
+  .level-item {
+    &:not(:last-child) {
+      margin-right: 0;
+      margin-bottom: 0.25rem;
     }
+
+    &.no-gap {
+      margin-bottom: 0;
+    }
+  }
 }
 
 a.online {
-    display: block;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }

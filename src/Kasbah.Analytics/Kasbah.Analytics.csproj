@@ -1,7 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
   <Import Project="..\..\build\common.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\Kasbah\Kasbah.csproj" />
   </ItemGroup>
+
 </Project>

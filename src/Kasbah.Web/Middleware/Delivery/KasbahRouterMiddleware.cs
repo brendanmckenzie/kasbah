@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Kasbah.Content;
+using Kasbah.Content.Models;
 using Kasbah.Web.Models;
 using Kasbah.Web.Models.Delivery;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,6 +33,7 @@ namespace Kasbah.Web.Middleware.Delivery
             _serviceProvider = serviceProvider;
         }
 
+        // TODO: this method is gross.
         public async Task Invoke(HttpContext context)
         {
             var kasbahWebContext = context.GetKasbahWebContext();
@@ -48,8 +52,7 @@ namespace Kasbah.Web.Middleware.Delivery
 
                 if (node != null && node.PublishedVersion.HasValue)
                 {
-                    var data = await kasbahWebContext.ContentService.GetRawDataAsync(node.Id, node.PublishedVersion);
-                    var content = await kasbahWebContext.TypeMapper.MapTypeAsync(data, node.Type, node, node.PublishedVersion);
+                    var content = await GetContent(node, kasbahWebContext.TypeMapper, kasbahWebContext.ContentService);
 
                     if (content is IPresentable presentable)
                     {
@@ -63,9 +66,36 @@ namespace Kasbah.Web.Middleware.Delivery
                             }
 
                             var component = _componentRegistry.GetByAlias(control.Alias);
-                            var properties = control.Model == null ? null : await kasbahWebContext.TypeMapper.MapTypeAsync(control.Model.ToObject<IDictionary<string, object>>(), component.Properties.Alias, kasbahWebContext.Node, kasbahWebContext.Node.PublishedVersion, typeMapperContext);
 
-                            var controlModel = await GetModelAsync(kasbahWebContext, properties, component);
+                            if (component == null)
+                            {
+                                // TODO: log this somehow
+                                return null;
+                            }
+
+                            async Task<object> ExtractProperties()
+                            {
+                                if (control.Model == null)
+                                {
+                                    return null;
+                                }
+
+                                try
+                                {
+                                    var dict = control.Model.ToObject<IDictionary<string, object>>();
+
+                                    return await kasbahWebContext.TypeMapper.MapTypeAsync(dict, component.Properties.Alias, kasbahWebContext.Node, kasbahWebContext.Node.PublishedVersion, typeMapperContext);
+                                }
+                                catch (InvalidOperationException)
+                                {
+                                    // TODO: address this - most likely `control.Model` is `null`ish
+                                    return null;
+                                }
+                            }
+
+                            var properties = await ExtractProperties();
+
+                            var controlModel = await GetModelAsync(kasbahWebContext, properties, component, presentable);
 
                             var placeholderTasks = (control.Placeholders ?? new PlaceholderCollection()).Select(async ent => new KeyValuePair<string, IEnumerable<object>>(ent.Key, await Task.WhenAll(ent.Value.Select(ControlToRenderModel))));
 
@@ -79,8 +109,7 @@ namespace Kasbah.Web.Middleware.Delivery
                             };
                         }
 
-                        var bodyModel = await ControlToRenderModel(presentable.BodyControl);
-                        var headModel = await ControlToRenderModel(presentable.HeadControl);
+                        var layout = await ControlToRenderModel(presentable.Layout);
 
                         var model = new RenderModel
                         {
@@ -88,8 +117,7 @@ namespace Kasbah.Web.Middleware.Delivery
                             Node = node,
                             Site = kasbahWebContext.Site,
                             SiteNode = kasbahWebContext.SiteNode,
-                            Body = bodyModel,
-                            Head = headModel
+                            Layout = layout
                         };
 
                         context.Items["kasbah:model"] = model;
@@ -117,18 +145,18 @@ namespace Kasbah.Web.Middleware.Delivery
             await _next.Invoke(context);
         }
 
-        async Task<object> GetModelAsync(KasbahWebContext context, object properties, ComponentDefinition component)
+        async Task<object> GetModelAsync(KasbahWebContext context, object properties, ComponentDefinition component, IPresentable content)
         {
-            var asyncMethod = component.Control.GetMethod("GetModelAsync");
+            var asyncMethod = component.Control.GetMethod(nameof(ComponentBase<object>.GetModelAsync));
             if (asyncMethod == null)
             {
                 return null;
             }
 
-            var instance = ActivatorUtilities.CreateInstance(_serviceProvider, component.Control);
+            dynamic instance = ActivatorUtilities.CreateInstance(_serviceProvider, component.Control);
             try
             {
-                var task = (Task)asyncMethod.Invoke(instance, new object[] { context, properties });
+                var task = (Task)asyncMethod.Invoke(instance, new object[] { context, properties, content });
 
                 await task.ConfigureAwait(false);
 
@@ -141,6 +169,20 @@ namespace Kasbah.Web.Middleware.Delivery
                     disposable.Dispose();
                 }
             }
+        }
+
+        async Task<object> GetContent(Node node, TypeMapper typeMapper, ContentService contentService)
+        {
+            // TODO: this should be in `ContentService`
+            // TODO: apply patches
+            var data = await contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
+
+            // var dataAsOperations = JsonConvert.DeserializeObject<List<Operation>>(data);
+            // var contractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+            // var patch = new JsonPatchDocument(dataAsOperations, contractResolver);
+            var content = await typeMapper.MapTypeAsync(data, node.Type, node, node.PublishedVersion);
+
+            return content;
         }
     }
 }
