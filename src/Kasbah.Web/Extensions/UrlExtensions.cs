@@ -29,7 +29,7 @@ namespace Kasbah.Web
                 var builder = new UriBuilder
                 {
                     Scheme = site.UseSsl ? "https" : "http",
-                    Host = site.DefaultDomain,
+                    Host = site.DefaultHostname,
                     Path = relativePath
                 };
 
@@ -69,7 +69,7 @@ namespace Kasbah.Web
                 var builder = new UriBuilder
                 {
                     Scheme = site.UseSsl ? "https" : "http",
-                    Host = site.DefaultDomain,
+                    Host = site.DefaultHostname,
                     Path = relativePath
                 };
 

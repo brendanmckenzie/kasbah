@@ -21,6 +21,7 @@ namespace Kasbah.Content
 
         public void RegisterType(TypeDefinition type)
         {
+            // TODO: include inheritance of type
             if (!typeof(Item).GetTypeInfo().IsAssignableFrom(Type.GetType(type.Alias)))
             {
                 throw new InvalidOperationException($"All content models must inherit from {typeof(Item).FullName}");

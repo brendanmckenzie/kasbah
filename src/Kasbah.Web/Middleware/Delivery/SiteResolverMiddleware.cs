@@ -23,7 +23,10 @@ namespace Kasbah.Web.Middleware.Delivery
 
         public async Task Invoke(HttpContext context)
         {
-            _log.LogDebug($"Trying to match {context.Request.Host}.  Available sites: {string.Join(", ", _siteRegistry.ListSites().SelectMany(s => s.Domains))}");
+            // TODO: use below for finding site
+            // var sites = await _contentService.GetNodesByType("Site");
+
+            _log.LogDebug($"Trying to match {context.Request.Host}.  Available sites: {string.Join(", ", _siteRegistry.ListSites().SelectMany(s => s.Hostnames))}");
 
             var kasbahWebContext = context.GetKasbahWebContext();
 

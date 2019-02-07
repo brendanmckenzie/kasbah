@@ -25,7 +25,7 @@ namespace Kasbah.Web
             => _sites.SingleOrDefault(ent => ent.Alias == alias);
 
         public Site GetSiteByDomain(string domain)
-            => _sites.FirstOrDefault(ent => ent.Domains.Contains(domain));
+            => _sites.FirstOrDefault(ent => ent.Hostnames.Contains(domain));
 
         public Site GetSiteByNode(Node node)
         {
