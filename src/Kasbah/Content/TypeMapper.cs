@@ -34,7 +34,7 @@ namespace Kasbah.Content
         {
             context = context ?? new TypeMapperContext();
 
-            var dictData = JsonConvert.DeserializeObject<IDictionary<string, object>>(data);
+            var dictData = string.IsNullOrEmpty(data) ? null : JsonConvert.DeserializeObject<IDictionary<string, object>>(data);
 
             return await MapTypeAsync(dictData, typeName, node, version, context);
         }
@@ -115,6 +115,11 @@ namespace Kasbah.Content
             }
 
             var sourceType = source.GetType();
+
+            if (sourceType.Equals(property.PropertyType))
+            {
+                return source;
+            }
 
             // Nested objects
             if (sourceType == typeof(JObject))

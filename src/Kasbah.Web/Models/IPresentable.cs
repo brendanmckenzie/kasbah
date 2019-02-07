@@ -13,6 +13,6 @@ namespace Kasbah.Web.Models
     public class BasePresentable : Item, IPresentable
     {
         [FieldEditor("kasbah_web:control")]
-        public virtual Control Layout { get; set; }
+        public Control Layout { get; set; }
     }
 }

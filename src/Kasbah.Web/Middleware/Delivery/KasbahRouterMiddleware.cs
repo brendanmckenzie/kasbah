@@ -69,7 +69,8 @@ namespace Kasbah.Web.Middleware.Delivery
 
                             if (component == null)
                             {
-                                // TODO: log this somehow
+                                _log.LogInformation($"Referenced component '{control.Alias}' not found");
+
                                 return null;
                             }
 
@@ -80,17 +81,9 @@ namespace Kasbah.Web.Middleware.Delivery
                                     return null;
                                 }
 
-                                try
-                                {
-                                    var dict = control.Model.ToObject<IDictionary<string, object>>();
+                                var dict = control.Model.ToObject<IDictionary<string, object>>();
 
-                                    return await kasbahWebContext.TypeMapper.MapTypeAsync(dict, component.Properties.Alias, kasbahWebContext.Node, kasbahWebContext.Node.PublishedVersion, typeMapperContext);
-                                }
-                                catch (InvalidOperationException)
-                                {
-                                    // TODO: address this - most likely `control.Model` is `null`ish
-                                    return null;
-                                }
+                                return await kasbahWebContext.TypeMapper.MapTypeAsync(dict, component.Properties.Alias, kasbahWebContext.Node, kasbahWebContext.Node.PublishedVersion, typeMapperContext);
                             }
 
                             var properties = await ExtractProperties();
