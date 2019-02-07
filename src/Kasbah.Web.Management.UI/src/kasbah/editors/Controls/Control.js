@@ -12,12 +12,12 @@ class Control extends React.PureComponent {
     options: PropTypes.object,
     className: PropTypes.string,
     content: PropTypes.object.isRequired,
-    listComponents: PropTypes.func.isRequired
+    listComponents: PropTypes.func.isRequired,
   }
 
   static alias = 'kasbah_web:control'
 
-  state = { selectedControl: '' }
+  state = { selectedControl: '', visibleEditors: {} }
 
   componentWillMount() {
     if (!this.props.content.components.loaded && !this.props.content.components.loading) {
@@ -36,16 +36,63 @@ class Control extends React.PureComponent {
       input: { value, onChange },
     } = this.props
 
-    const newValue = _.merge({}, value, {
+    const newValue = {
+      ...value,
       placeholders: {
         [placeholder]: [
           ...((value.placeholders && value.placeholders[placeholder]) || []),
           { alias: this.state.selectedControl },
         ],
       },
-    })
+    }
 
     onChange(newValue)
+  }
+
+  handleRemoveControl = (placeholder, index) => () => {
+    const {
+      input: { value, onChange },
+    } = this.props
+
+    const newValue = {
+      ...value,
+      placeholders: {
+        [placeholder]: value.placeholders[placeholder].filter((_, idx) => idx !== index),
+      },
+    }
+
+    onChange(newValue)
+  }
+
+  handleMoveDown = (placeholder, index) => () => {
+    const move = (arr, from, to) => {
+      const actualTo = to === arr.length ? 0 : to
+      const clone = [...arr]
+      Array.prototype.splice.call(clone, actualTo, 0, Array.prototype.splice.call(clone, from, 1)[0])
+      return clone
+    }
+
+    const {
+      input: { value, onChange },
+    } = this.props
+
+    const newValue = {
+      ...value,
+      placeholders: {
+        [placeholder]: move(value.placeholders[placeholder], index, index + 1),
+      },
+    }
+
+    onChange(newValue)
+  }
+
+  handleToggleEditor = (placeholder, index) => () => {
+    this.setState((prevState) => ({
+      visibleEditors: {
+        ...prevState.visibleEditors,
+        [`${placeholder}.${index}`]: !prevState.visibleEditors[`${placeholder}.${index}`],
+      },
+    }))
   }
 
   get placeholders() {
@@ -72,8 +119,41 @@ class Control extends React.PureComponent {
             {component.placeholders.map((plc) => (
               <li key={plc.alias}>
                 <p>
-                  <code>{plc.alias}</code>
+                  <code>placeholder '{plc.alias}'</code>
                 </p>
+                <div>
+                  {value.placeholders &&
+                    value.placeholders[plc.alias] &&
+                    value.placeholders[plc.alias].map((cnt, idx) => (
+                      <React.Fragment key={idx}>
+                        <button
+                          type="button"
+                          className="button is-small"
+                          onClick={this.handleToggleEditor(plc.alias, idx)}
+                        >
+                          {this.state.visibleEditors[`${plc.alias}.${idx}`] ? 'hide' : 'show'} {cnt.alias} editor
+                        </button>
+                        {this.state.visibleEditors[`${plc.alias}.${idx}`] && (
+                          <Field
+                            component={Control}
+                            name={`${name}.placeholders[${plc.alias}][${idx}]`}
+                            content={this.props.content}
+                          />
+                        )}
+                        <button
+                          type="button"
+                          className="button is-warning is-small"
+                          onClick={this.handleRemoveControl(plc.alias, idx)}
+                        >
+                          remove
+                        </button>
+                        <button type="button" className="button is-small" onClick={this.handleMoveDown(plc.alias, idx)}>
+                          move down
+                        </button>
+                        <hr />
+                      </React.Fragment>
+                    ))}
+                </div>
                 <div>
                   <span className="select">
                     <select value={this.state.selectedControl} onChange={this.handleChange('selectedControl')}>
@@ -88,19 +168,6 @@ class Control extends React.PureComponent {
                   <button type="button" className="button is-small" onClick={this.handleAddControl(plc.alias)}>
                     add control
                   </button>
-                </div>
-                <div>
-                  {value.placeholders &&
-                    value.placeholders[plc.alias] &&
-                    value.placeholders[plc.alias].map((cnt, idx) => (
-                      <React.Fragment key={idx}>
-                        <Field
-                          component={Control}
-                          name={`${name}.placeholders[${plc.alias}][${idx}]`}
-                          content={this.props.content}
-                        />
-                      </React.Fragment>
-                    ))}
                 </div>
               </li>
             ))}
@@ -172,7 +239,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = {
-  ...contentActions
+  ...contentActions,
 }
 
 export default connect(
