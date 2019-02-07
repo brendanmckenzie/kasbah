@@ -60,6 +60,8 @@ namespace Kasbah.Web.Middleware.Delivery
 
                         async Task<ControlRenderModel> ControlToRenderModel(Control control)
                         {
+                            var stopwatch = new System.Diagnostics.Stopwatch();
+                            stopwatch.Start();
                             if (control == null || string.IsNullOrEmpty(control.Alias))
                             {
                                 return null;
@@ -93,12 +95,16 @@ namespace Kasbah.Web.Middleware.Delivery
                             var placeholderTasks = (control.Placeholders ?? new PlaceholderCollection()).Select(async ent => new KeyValuePair<string, IEnumerable<object>>(ent.Key, await Task.WhenAll(ent.Value.Select(ControlToRenderModel))));
 
                             var placeholders = await Task.WhenAll(placeholderTasks);
+                            var controls = placeholders.ToDictionary(ent => ent.Key, ent => ent.Value);
+
+                            stopwatch.Stop();
+                            _log.LogInformation($"Finished processing control {control.Alias} in {stopwatch.ElapsedMilliseconds:N0} ms");
 
                             return new ControlRenderModel
                             {
                                 Component = control.Alias,
                                 Model = controlModel,
-                                Controls = placeholders.ToDictionary(ent => ent.Key, ent => ent.Value)
+                                Controls = controls
                             };
                         }
 

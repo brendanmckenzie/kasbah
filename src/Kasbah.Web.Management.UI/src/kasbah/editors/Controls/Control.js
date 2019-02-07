@@ -2,7 +2,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { Field } from 'redux-form'
 import { connect } from 'react-redux'
-import _ from 'lodash'
 import { actions as contentActions } from 'store/appReducers/content'
 import Nested from './Nested'
 
@@ -50,6 +49,11 @@ class Control extends React.PureComponent {
   }
 
   handleRemoveControl = (placeholder, index) => () => {
+    // eslint-disable-next-line no-restricted-globals
+    if (!confirm('Are you sure?')) {
+      return
+    }
+
     const {
       input: { value, onChange },
     } = this.props
@@ -138,6 +142,7 @@ class Control extends React.PureComponent {
                             component={Control}
                             name={`${name}.placeholders[${plc.alias}][${idx}]`}
                             content={this.props.content}
+                            listComponents={this.props.listComponents}
                           />
                         )}
                         <button

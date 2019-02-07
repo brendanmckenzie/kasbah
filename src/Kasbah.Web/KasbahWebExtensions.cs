@@ -54,6 +54,7 @@ namespace Kasbah.Web
         public static IServiceCollection AddKasbahWebDelivery(this IServiceCollection services, IEnumerable<Assembly> applicationParts = null)
         {
             services.AddKasbahWeb();
+            services.AddMemoryCache();
 
             services.AddSingleton(new KasbahWebApplication());
 

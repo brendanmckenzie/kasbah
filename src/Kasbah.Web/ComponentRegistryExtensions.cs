@@ -8,6 +8,27 @@ namespace Kasbah.Web
 {
     public static class ComponentRegistryExtensions
     {
+        // TODO: tidy this up
+        public static void RegisterComponent<TComponent, TProperties>(this ComponentRegistry componentRegistry, string alias, Action<TypeDefinitionBuilder> configure = null)
+            where TComponent : ComponentBase
+        {
+            var type = typeof(TComponent);
+
+            var builder = new TypeDefinitionBuilder<TProperties>(componentRegistry.PropertyMapper);
+
+            configure?.Invoke(builder);
+
+            var definition = new ComponentDefinition
+            {
+                Alias = alias,
+                Control = type,
+                Properties = builder.Build(),
+                Placeholders = Enumerable.Empty<PlaceholderDefinition>()
+            };
+
+            componentRegistry.RegisterComponent(definition);
+        }
+
         public static void RegisterComponent<TComponent, TProperties>(this ComponentRegistry componentRegistry, Action<TypeDefinitionBuilder> configure = null)
             where TComponent : ComponentBase, new()
         {
