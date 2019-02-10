@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Kasbah.Content.Attributes;
@@ -15,7 +16,8 @@ namespace Kasbah.Content
         {
             { typeof(string), "text" },
             { typeof(DateTime), "date" },
-            { typeof(Enum), "enum" }
+            { typeof(Enum), "enum" },
+            { typeof(bool), "boolean" },
         };
 
         static IEnumerable<Type> _basicEditors = _knownTypeEditors.Keys.Concat(new[]
@@ -42,6 +44,12 @@ namespace Kasbah.Content
                 Type = property.PropertyType.Name,
                 Editor = editor
             };
+
+            var displayNameAttribute = property.GetCustomAttribute<DisplayNameAttribute>();
+            if (displayNameAttribute != null)
+            {
+                ret.DisplayName = displayNameAttribute.DisplayName;
+            }
 
             var editorAttribute = property.GetCustomAttribute<FieldEditorAttribute>(true);
             if (editorAttribute != null)

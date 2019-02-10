@@ -1,23 +1,25 @@
+import Boolean from './Boolean'
+import Components from './Components'
 import Control from './Control'
-import Enum from './Enum'
 import Date from './Date'
+import Enum from './Enum'
 import LongText from './LongText'
 import MediaPicker from './MediaPicker'
 import Nested from './Nested'
 import NodePicker from './NodePicker'
 import NodePickerMulti from './NodePickerMulti'
 import Text from './Text'
-import Components from './Components'
 
 export const controls = {
+  Boolean,
+  Components,
   Control,
-  Enum,
   Date,
+  Enum,
   LongText,
   MediaPicker,
   Nested,
   NodePicker,
   NodePickerMulti,
   Text,
-  Components,
 }
