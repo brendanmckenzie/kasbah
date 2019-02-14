@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Kasbah.Content.Models;
 using Kasbah.Web.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace Kasbah.Web
 {
@@ -24,8 +25,9 @@ namespace Kasbah.Web
         public Site GetSite(string alias)
             => _sites.SingleOrDefault(ent => ent.Alias == alias);
 
-        public Site GetSiteByDomain(string domain)
-            => _sites.FirstOrDefault(ent => ent.Hostnames.Contains(domain));
+        public Site GetSiteByDomain(HostString domain)
+            => _sites.FirstOrDefault(ent => (ent.Hostnames ?? Enumerable.Empty<string>()).Any(hst => hst.Equals(domain.Host))
+                || (domain.Port.HasValue && (ent.Ports ?? Enumerable.Empty<int>()).Contains(domain.Port.Value)));
 
         public Site GetSiteByNode(Node node)
         {

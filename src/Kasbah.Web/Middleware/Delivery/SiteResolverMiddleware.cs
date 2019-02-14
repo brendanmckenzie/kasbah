@@ -26,11 +26,11 @@ namespace Kasbah.Web.Middleware.Delivery
             // TODO: use below for finding site
             // var sites = await _contentService.GetNodesByType("Site");
 
-            _log.LogDebug($"Trying to match {context.Request.Host}.  Available sites: {string.Join(", ", _siteRegistry.ListSites().SelectMany(s => s.Hostnames))}");
+            _log.LogDebug($"Trying to match {context.Request.Host}.  Available sites: {string.Join(", ", _siteRegistry.ListSites().SelectMany(s => s.Hostnames ?? Enumerable.Empty<string>()))}");
 
             var kasbahWebContext = context.GetKasbahWebContext();
 
-            kasbahWebContext.Site = _siteRegistry.GetSiteByDomain(context.Request.Host.ToString());
+            kasbahWebContext.Site = _siteRegistry.GetSiteByDomain(context.Request.Host);
             if (kasbahWebContext.Site != null)
             {
                 _log.LogDebug($"Site matched: {kasbahWebContext.Site.Alias}");

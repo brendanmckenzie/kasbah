@@ -30,6 +30,7 @@ namespace Kasbah.Web
                 {
                     Scheme = site.UseSsl ? "https" : "http",
                     Host = site.DefaultHostname,
+                    Port = site.DefaultPort ?? (site.UseSsl ? 443 : 80),
                     Path = relativePath
                 };
 
@@ -70,6 +71,7 @@ namespace Kasbah.Web
                 {
                     Scheme = site.UseSsl ? "https" : "http",
                     Host = site.DefaultHostname,
+                    Port = site.DefaultPort ?? (site.UseSsl ? 443 : 80),
                     Path = relativePath
                 };
 

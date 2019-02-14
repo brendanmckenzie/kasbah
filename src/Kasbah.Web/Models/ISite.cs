@@ -6,7 +6,11 @@ namespace Kasbah.Web.Models
     {
         IEnumerable<string> Hostnames { get; set; }
 
+        IEnumerable<int> Ports { get; set; }
+
         string DefaultHostname { get; set; }
+
+        int? DefaultPort { get; set; }
 
         bool UseSsl { get; set; }
     }
