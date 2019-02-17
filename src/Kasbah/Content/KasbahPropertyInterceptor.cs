@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 using Castle.DynamicProxy;
+using StackExchange.Profiling;
 
 namespace Kasbah.Content
 {
@@ -28,9 +29,12 @@ namespace Kasbah.Content
 
                 if (_data.ContainsKey(propertyName))
                 {
-                    var property = invocation.TargetType.GetProperty(propertyName);
+                    using (MiniProfiler.Current.Step($"Mapping lazy property ('{propertyName}')"))
+                    {
+                        var property = invocation.TargetType.GetProperty(propertyName);
 
-                    invocation.ReturnValue = _mapProperty.Invoke(_data[propertyName], property, _context).Result;
+                        invocation.ReturnValue = _mapProperty.Invoke(_data[propertyName], property, _context).Result;
+                    }
                 }
             }
         }

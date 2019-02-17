@@ -9,6 +9,7 @@ using Kasbah.Extensions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using StackExchange.Profiling;
 
 namespace Kasbah.Content
 {
@@ -52,10 +53,13 @@ namespace Kasbah.Content
 
         public async Task<string> GetRawDataAsync(Guid id, long? version = null)
         {
-            return await _cache?.GetOrSetAsync($"{nameof(GetRawDataAsync)}_{id}_{version}", async () =>
+            using (MiniProfiler.Current.Step(nameof(GetRawDataAsync)))
             {
-                return await _contentProvider.GetRawDataAsync(id, version);
-            });
+                return await _cache?.GetOrSetAsync($"{nameof(GetRawDataAsync)}_{id}_{version}", async () =>
+                {
+                    return await _contentProvider.GetRawDataAsync(id, version);
+                });
+            }
         }
 
         public async Task UpdateDataAsync(Guid id, IDictionary<string, object> data, bool publish)

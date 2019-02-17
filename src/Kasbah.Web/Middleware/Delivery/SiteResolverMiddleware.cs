@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Kasbah.Content;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using StackExchange.Profiling;
 
 namespace Kasbah.Web.Middleware.Delivery
 {
@@ -23,19 +24,22 @@ namespace Kasbah.Web.Middleware.Delivery
 
         public async Task Invoke(HttpContext context)
         {
-            // TODO: use below for finding site
-            // var sites = await _contentService.GetNodesByType("Site");
-
-            _log.LogDebug($"Trying to match {context.Request.Host}.  Available sites: {string.Join(", ", _siteRegistry.ListSites().SelectMany(s => s.Hostnames ?? Enumerable.Empty<string>()))}");
-
-            var kasbahWebContext = context.GetKasbahWebContext();
-
-            kasbahWebContext.Site = _siteRegistry.GetSiteByDomain(context.Request.Host);
-            if (kasbahWebContext.Site != null)
+            using (MiniProfiler.Current.Step(nameof(SiteResolverMiddleware)))
             {
-                _log.LogDebug($"Site matched: {kasbahWebContext.Site.Alias}");
+                // TODO: use below for finding site
+                // var sites = await _contentService.GetNodesByType("Site");
 
-                kasbahWebContext.SiteNode = await _contentService.GetNodeByTaxonomy(kasbahWebContext.Site.ContentRoot);
+                _log.LogDebug($"Trying to match {context.Request.Host}.  Available sites: {string.Join(", ", _siteRegistry.ListSites().SelectMany(s => s.Hostnames ?? Enumerable.Empty<string>()))}");
+
+                var kasbahWebContext = context.GetKasbahWebContext();
+
+                kasbahWebContext.Site = _siteRegistry.GetSiteByDomain(context.Request.Host);
+                if (kasbahWebContext.Site != null)
+                {
+                    _log.LogDebug($"Site matched: {kasbahWebContext.Site.Alias}");
+
+                    kasbahWebContext.SiteNode = await _contentService.GetNodeByTaxonomy(kasbahWebContext.Site.ContentRoot);
+                }
             }
 
             await _next.Invoke(context);

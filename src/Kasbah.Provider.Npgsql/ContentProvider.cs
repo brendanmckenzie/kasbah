@@ -203,7 +203,7 @@ where
                         await connection.ExecuteAsync("update kasbah.node set published_version_id = @version, modified_at = now() where id = @id", new { id, version });
                     }
 
-                    await transaction.CommitAsync();
+                    transaction.Commit();
                 }
             }
         }
@@ -225,7 +225,7 @@ where
                     await connection.ExecuteAsync(UpdateNodeSql, new { id, alias });
                     await connection.ExecuteAsync(updateTaxonomySql, new { alias, taxonomy = node.Taxonomy.Ids });
 
-                    await transaction.CommitAsync();
+                    transaction.Commit();
                 }
             }
         }
@@ -304,7 +304,7 @@ limit {take}";
                     await connection.ExecuteAsync(UpdateNodeSql, new { id, parent, alias = node.Alias });
                     await connection.ExecuteAsync(updateTaxonomySql, new { id, taxonomy = node.Taxonomy.Ids });
 
-                    await transaction.CommitAsync();
+                    transaction.Commit();
                 }
             }
         }

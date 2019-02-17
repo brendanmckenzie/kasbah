@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Kasbah.Content;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using StackExchange.Profiling;
 
 namespace Kasbah.Web.Middleware.Delivery
 {
@@ -22,17 +23,20 @@ namespace Kasbah.Web.Middleware.Delivery
 
         public async Task Invoke(HttpContext context)
         {
-            var kasbahWebContext = context.GetKasbahWebContext();
-
-            var site = kasbahWebContext.Site;
-            if (site != null)
+            using (MiniProfiler.Current.Step(nameof(NodeResolverMiddleware)))
             {
-                var requestPath = context.Request.Path.ToString().Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                var contentPath = site.ContentRoot.Concat(requestPath);
+                var kasbahWebContext = context.GetKasbahWebContext();
 
-                _log.LogDebug($"Trying to find content at: {string.Join(" / ", contentPath)}");
-                var node = await _contentService.GetNodeByTaxonomy(contentPath);
-                kasbahWebContext.Node = node;
+                var site = kasbahWebContext.Site;
+                if (site != null)
+                {
+                    var requestPath = context.Request.Path.ToString().Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                    var contentPath = site.ContentRoot.Concat(requestPath);
+
+                    _log.LogDebug($"Trying to find content at: {string.Join(" / ", contentPath)}");
+                    var node = await _contentService.GetNodeByTaxonomy(contentPath);
+                    kasbahWebContext.Node = node;
+                }
             }
 
             await _next.Invoke(context);

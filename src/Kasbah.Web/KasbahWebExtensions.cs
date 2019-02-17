@@ -42,6 +42,8 @@ namespace Kasbah.Web
 
         public static IServiceCollection AddKasbahWeb(this IServiceCollection services)
         {
+            services.AddMiniProfiler();
+
             services.AddKasbah();
             services.AddKasbahMedia();
 
@@ -115,6 +117,9 @@ namespace Kasbah.Web
 
         public static IApplicationBuilder UseKasbahWebDelivery(this IApplicationBuilder app, IEnumerable<Type> middleware = null)
         {
+            app.UseMiniProfiler();
+
+            app.UseMiddleware<KasbahProfilingMiddleware>();
             app.UseMiddleware<KasbahWebContextInitialisationMiddleware>();
             app.UseMiddleware<SiteResolverMiddleware>();
             app.UseMiddleware<NodeResolverMiddleware>();

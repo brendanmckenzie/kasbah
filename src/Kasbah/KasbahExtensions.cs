@@ -4,6 +4,7 @@ using Kasbah.Content;
 using Kasbah.Content.Models;
 using Kasbah.Security;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Profiling;
 
 namespace Kasbah
 {

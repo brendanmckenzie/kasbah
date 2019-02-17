@@ -13,6 +13,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using StackExchange.Profiling;
 
 namespace Kasbah.Web.Middleware.Delivery
 {
@@ -36,107 +37,112 @@ namespace Kasbah.Web.Middleware.Delivery
         // TODO: this method is gross.
         public async Task Invoke(HttpContext context)
         {
-            var kasbahWebContext = context.GetKasbahWebContext();
-
-            // Load the model from the cache if this is a subsequent request
-            if (context.Request.Query.TryGetValue("ti", out var traceIdentifier))
+            using (MiniProfiler.Current.Step(nameof(KasbahRouterMiddleware)))
             {
-                var model = _cache.Get($"model:{traceIdentifier.First()}");
+                var kasbahWebContext = context.GetKasbahWebContext();
 
-                context.Items["kasbah:model"] = model;
-            }
-
-            if (context.Items["kasbah:model"] == null && kasbahWebContext.Site != null)
-            {
-                var node = kasbahWebContext.Node;
-
-                if (node != null && node.PublishedVersion.HasValue)
+                // Load the model from the cache if this is a subsequent request
+                if (context.Request.Query.TryGetValue("ti", out var traceIdentifier))
                 {
-                    var content = await GetContent(node, kasbahWebContext.TypeMapper, kasbahWebContext.ContentService);
+                    var model = _cache.Get($"model:{traceIdentifier.First()}");
 
-                    if (content is IPresentable presentable)
+                    context.Items["kasbah:model"] = model;
+                }
+
+                if (context.Items["kasbah:model"] == null && kasbahWebContext.Site != null)
+                {
+                    var node = kasbahWebContext.Node;
+
+                    if (node != null && node.PublishedVersion.HasValue)
                     {
-                        var typeMapperContext = new TypeMapperContext();
+                        var content = await GetContent(node, kasbahWebContext.TypeMapper, kasbahWebContext.ContentService);
 
-                        async Task<ControlRenderModel> ControlToRenderModel(Control control)
+                        if (content is IPresentable presentable)
                         {
-                            var stopwatch = new System.Diagnostics.Stopwatch();
-                            stopwatch.Start();
-                            if (control == null || string.IsNullOrEmpty(control.Alias))
+                            var typeMapperContext = new TypeMapperContext();
+
+                            async Task<ControlRenderModel> ControlToRenderModel(Control control)
                             {
-                                return null;
-                            }
-
-                            var component = _componentRegistry.GetByAlias(control.Alias);
-
-                            if (component == null)
-                            {
-                                _log.LogInformation($"Referenced component '{control.Alias}' not found");
-
-                                return null;
-                            }
-
-                            async Task<object> ExtractProperties()
-                            {
-                                if (control.Model == null)
+                                using (MiniProfiler.Current.Step($"{nameof(ControlToRenderModel)}('{control.Alias}')"))
                                 {
-                                    return null;
+
+                                    if (control == null || string.IsNullOrEmpty(control.Alias))
+                                    {
+                                        return null;
+                                    }
+
+                                    var component = _componentRegistry.GetByAlias(control.Alias);
+
+                                    if (component == null)
+                                    {
+                                        _log.LogInformation($"Referenced component '{control.Alias}' not found");
+
+                                        return null;
+                                    }
+
+                                    async Task<object> ExtractProperties()
+                                    {
+                                        using (MiniProfiler.Current.Step("Mapping properties"))
+                                        {
+                                            if (control.Model == null)
+                                            {
+                                                return null;
+                                            }
+
+                                            var dict = control.Model.ToObject<IDictionary<string, object>>();
+
+                                            return await kasbahWebContext.TypeMapper.MapTypeAsync(dict, component.Properties.Alias, kasbahWebContext.Node, kasbahWebContext.Node.PublishedVersion, typeMapperContext);
+                                        }
+                                    }
+
+                                    var properties = await ExtractProperties();
+
+                                    var controlModel = await GetModelAsync(kasbahWebContext, properties, component, presentable);
+
+                                    var placeholderTasks = (control.Placeholders ?? new PlaceholderCollection()).Select(async ent => new KeyValuePair<string, IEnumerable<object>>(ent.Key, await Task.WhenAll(ent.Value.Select(ControlToRenderModel))));
+
+                                    var placeholders = await Task.WhenAll(placeholderTasks);
+                                    var controls = placeholders.ToDictionary(ent => ent.Key, ent => ent.Value);
+
+                                    return new ControlRenderModel
+                                    {
+                                        Component = control.Alias,
+                                        Model = controlModel,
+                                        Controls = controls
+                                    };
                                 }
-
-                                var dict = control.Model.ToObject<IDictionary<string, object>>();
-
-                                return await kasbahWebContext.TypeMapper.MapTypeAsync(dict, component.Properties.Alias, kasbahWebContext.Node, kasbahWebContext.Node.PublishedVersion, typeMapperContext);
                             }
 
-                            var properties = await ExtractProperties();
+                            var layout = await ControlToRenderModel(presentable.Layout);
 
-                            var controlModel = await GetModelAsync(kasbahWebContext, properties, component, presentable);
-
-                            var placeholderTasks = (control.Placeholders ?? new PlaceholderCollection()).Select(async ent => new KeyValuePair<string, IEnumerable<object>>(ent.Key, await Task.WhenAll(ent.Value.Select(ControlToRenderModel))));
-
-                            var placeholders = await Task.WhenAll(placeholderTasks);
-                            var controls = placeholders.ToDictionary(ent => ent.Key, ent => ent.Value);
-
-                            stopwatch.Stop();
-                            _log.LogInformation($"Finished processing control {control.Alias} in {stopwatch.ElapsedMilliseconds:N0} ms");
-
-                            return new ControlRenderModel
+                            var model = new RenderModel
                             {
-                                Component = control.Alias,
-                                Model = controlModel,
-                                Controls = controls
+                                TraceIdentifier = context.TraceIdentifier,
+                                Node = node,
+                                Site = kasbahWebContext.Site,
+                                SiteNode = kasbahWebContext.SiteNode,
+                                Layout = layout
                             };
-                        }
 
-                        var layout = await ControlToRenderModel(presentable.Layout);
+                            context.Items["kasbah:model"] = model;
 
-                        var model = new RenderModel
-                        {
-                            TraceIdentifier = context.TraceIdentifier,
-                            Node = node,
-                            Site = kasbahWebContext.Site,
-                            SiteNode = kasbahWebContext.SiteNode,
-                            Layout = layout
-                        };
-
-                        context.Items["kasbah:model"] = model;
-
-                        _cache.Set($"model:{context.TraceIdentifier}", model, TimeSpan.FromMinutes(5));
-                    }
-                    else
-                    {
-                        context.Response.StatusCode = 400;
-                        if (context.Request.Headers.TryGetValue("Accept", out var accept) && accept.Contains("application/json"))
-                        {
-                            context.Response.Headers.Add("Content-Type", "application/json");
-                            await context.Response.WriteAsync(JsonConvert.SerializeObject(new { error = "Requested content cannot be rendered" }));
+                            _cache.Set($"model:{context.TraceIdentifier}", model, TimeSpan.FromMinutes(5));
                         }
                         else
                         {
-                            await context.Response.WriteAsync("Requested content cannot be rendered");
-                        }
+                            context.Response.StatusCode = 400;
+                            if (context.Request.Headers.TryGetValue("Accept", out var accept) && accept.Contains("application/json"))
+                            {
+                                context.Response.Headers.Add("Content-Type", "application/json");
+                                await context.Response.WriteAsync(JsonConvert.SerializeObject(new { error = "Requested content cannot be rendered" }));
+                            }
+                            else
+                            {
+                                await context.Response.WriteAsync("Requested content cannot be rendered");
+                            }
 
-                        return;
+                            return;
+                        }
                     }
                 }
             }
@@ -146,42 +152,48 @@ namespace Kasbah.Web.Middleware.Delivery
 
         async Task<object> GetModelAsync(KasbahWebContext context, object properties, ComponentDefinition component, IPresentable content)
         {
-            var asyncMethod = component.Control.GetMethod(nameof(ComponentBase<object>.GetModelAsync));
-            if (asyncMethod == null)
+            using (MiniProfiler.Current.Step(nameof(GetModelAsync)))
             {
-                return null;
-            }
-
-            dynamic instance = ActivatorUtilities.CreateInstance(_serviceProvider, component.Control);
-            try
-            {
-                var task = (Task)asyncMethod.Invoke(instance, new object[] { context, properties, content });
-
-                await task.ConfigureAwait(false);
-
-                return (object)((dynamic)task).Result;
-            }
-            finally
-            {
-                if (instance is IDisposable disposable)
+                var asyncMethod = component.Control.GetMethod(nameof(ComponentBase<object>.GetModelAsync));
+                if (asyncMethod == null)
                 {
-                    disposable.Dispose();
+                    return null;
+                }
+
+                dynamic instance = ActivatorUtilities.CreateInstance(_serviceProvider, component.Control);
+                try
+                {
+                    var task = (Task)asyncMethod.Invoke(instance, new object[] { context, properties, content });
+
+                    await task.ConfigureAwait(false);
+
+                    return (object)((dynamic)task).Result;
+                }
+                finally
+                {
+                    if (instance is IDisposable disposable)
+                    {
+                        disposable.Dispose();
+                    }
                 }
             }
         }
 
         async Task<object> GetContent(Node node, TypeMapper typeMapper, ContentService contentService)
         {
-            // TODO: this should be in `ContentService`
-            // TODO: apply patches
-            var data = await contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
+            using (MiniProfiler.Current.Step(nameof(GetContent)))
+            {
+                // TODO: this should be in `ContentService`
+                // TODO: apply patches
+                var data = await contentService.GetRawDataAsync(node.Id, node.PublishedVersion);
 
-            // var dataAsOperations = JsonConvert.DeserializeObject<List<Operation>>(data);
-            // var contractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
-            // var patch = new JsonPatchDocument(dataAsOperations, contractResolver);
-            var content = await typeMapper.MapTypeAsync(data, node.Type, node, node.PublishedVersion);
+                // var dataAsOperations = JsonConvert.DeserializeObject<List<Operation>>(data);
+                // var contractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+                // var patch = new JsonPatchDocument(dataAsOperations, contractResolver);
+                var content = await typeMapper.MapTypeAsync(data, node.Type, node, node.PublishedVersion);
 
-            return content;
+                return content;
+            }
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -111,10 +112,10 @@ namespace Kasbah.Provider.Npgsql
             }
         }
 
-        public bool CheckDatabaseInitialised(NpgsqlConnection connection)
+        public bool CheckDatabaseInitialised(IDbConnection connection)
             => connection.Query<bool>("select count(*) = 1 from pg_catalog.pg_tables where schemaname = 'kasbah' and tablename = 'setting'").First();
 
-        public T GetSystemValue<T>(NpgsqlConnection connection, string key)
+        public T GetSystemValue<T>(IDbConnection connection, string key)
         {
             var json = connection.Query<string>("select value from kasbah.setting where key = @key", new { key }).FirstOrDefault();
 
@@ -126,7 +127,7 @@ namespace Kasbah.Provider.Npgsql
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-        public void PutSystemValue<T>(NpgsqlConnection connection, string key, T value)
+        public void PutSystemValue<T>(IDbConnection connection, string key, T value)
         {
             var json = JsonConvert.SerializeObject(value);
 
