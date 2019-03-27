@@ -65,7 +65,6 @@ namespace Kasbah.Web.Middleware.Delivery
                             {
                                 using (MiniProfiler.Current.Step($"{nameof(ControlToRenderModel)}('{control.Alias}')"))
                                 {
-
                                     if (control == null || string.IsNullOrEmpty(control.Alias))
                                     {
                                         return null;

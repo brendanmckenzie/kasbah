@@ -10,7 +10,7 @@ namespace Kasbah.Web.Models
         public string Area { get; set; }
 
         public IEnumerable<string> Hostnames { get; set; }
-        
+
         public IEnumerable<int> Ports { get; set; }
 
         public IEnumerable<string> ContentRoot { get; set; } // => Node.Taxonomy.Aliases;
@@ -21,7 +21,7 @@ namespace Kasbah.Web.Models
         /// </summary>
         /// <returns></returns>
         public string DefaultHostname { get; set; }
-        
+
         public int? DefaultPort { get; set; }
 
         /// <summary>

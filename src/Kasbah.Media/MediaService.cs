@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Kasbah.Media.Models;
-using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -17,10 +17,10 @@ namespace Kasbah.Media
     {
         readonly IMediaProvider _mediaProvider;
         readonly IMediaStorageProvider _mediaStorageProvider;
-        readonly IDistributedCache _cache;
+        readonly IMemoryCache _cache;
         readonly ILogger _log;
 
-        public MediaService(ILoggerFactory loggerFactory, IMediaProvider mediaProvider, IMediaStorageProvider mediaStorageProvider, IDistributedCache cache = null)
+        public MediaService(ILoggerFactory loggerFactory, IMediaProvider mediaProvider, IMediaStorageProvider mediaStorageProvider, IMemoryCache cache)
         {
             _log = loggerFactory.CreateLogger<MediaService>();
             _mediaProvider = mediaProvider;
@@ -65,7 +65,7 @@ namespace Kasbah.Media
             if (!request.IsEmpty)
             {
                 var cacheKey = $"media:{request.Hash}";
-                var cached = await _cache?.GetAsync(cacheKey);
+                var cached = _cache.Get<byte[]>(cacheKey);
                 if (cached == null)
                 {
                     var image = Image.Load(stream);
@@ -89,7 +89,7 @@ namespace Kasbah.Media
                             break;
                     }
 
-                    await _cache?.SetAsync(cacheKey, (responseStream as MemoryStream).ToArray());
+                    _cache.Set(cacheKey, (responseStream as MemoryStream).ToArray());
 
                     responseStream.Seek(0, SeekOrigin.Begin);
                 }

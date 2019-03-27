@@ -5,8 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Kasbah.Content.Events;
 using Kasbah.Content.Models;
-using Kasbah.Extensions;
-using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using StackExchange.Profiling;
@@ -17,7 +16,7 @@ namespace Kasbah.Content
     {
         readonly ILogger _log;
         readonly IContentProvider _contentProvider;
-        readonly IDistributedCache _cache;
+        readonly IMemoryCache _cache;
         readonly TypeRegistry _typeRegistry;
         readonly EventBus _eventBus;
         readonly IKasbahQueryProviderFactory _queryProviderFactory;
@@ -27,7 +26,7 @@ namespace Kasbah.Content
             // TODO: find out how to not need this. it's here because of unit tests
         }
 
-        public ContentService(ILoggerFactory loggerFactory, IContentProvider contentProvider, TypeRegistry typeRegistry, EventBus eventBus, IKasbahQueryProviderFactory queryProviderFactory, IDistributedCache cache = null)
+        public ContentService(ILoggerFactory loggerFactory, IContentProvider contentProvider, TypeRegistry typeRegistry, EventBus eventBus, IKasbahQueryProviderFactory queryProviderFactory, IMemoryCache cache)
         {
             _log = loggerFactory.CreateLogger<ContentService>();
             _contentProvider = contentProvider;
@@ -43,7 +42,7 @@ namespace Kasbah.Content
 
             var id = await _contentProvider.CreateNodeAsync(parent, alias, type, displayName);
 
-            await _cache?.RemoveAsync(nameof(DescribeTreeAsync));
+            _cache.Remove(nameof(DescribeTreeAsync));
 
             return id;
         }
@@ -55,7 +54,7 @@ namespace Kasbah.Content
         {
             using (MiniProfiler.Current.Step(nameof(GetRawDataAsync)))
             {
-                return await _cache?.GetOrSetAsync($"{nameof(GetRawDataAsync)}_{id}_{version}", async () =>
+                return await _cache.GetOrCreateAsync($"{nameof(GetRawDataAsync)}_{id}_{version}", async (_) =>
                 {
                     return await _contentProvider.GetRawDataAsync(id, version);
                 });
@@ -68,14 +67,14 @@ namespace Kasbah.Content
 
             await _contentProvider.UpdateDataAsync(id, data, publish);
 
-            await _cache?.RemoveAsync($"{nameof(GetRawDataAsync)}_{id}_{null}");
+            _cache.Remove($"{nameof(GetRawDataAsync)}_{id}_{null}");
             if (publish)
             {
                 await _eventBus.TriggerContentPublished(node);
             }
 
-            await _cache?.RemoveAsync($"{nameof(GetNodeAsync)}_{id}");
-            await _cache?.RemoveAsync($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", node.Taxonomy.Aliases)}");
+            _cache.Remove($"{nameof(GetNodeAsync)}_{id}");
+            _cache.Remove($"{nameof(GetNodeByTaxonomy)}_{string.Join("_", node.Taxonomy.Aliases)}");
         }
 
         // TODO: could probably use better naming conventions

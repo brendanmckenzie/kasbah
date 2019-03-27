@@ -7,15 +7,16 @@ using Amazon.S3;
 using Amazon.S3.Model;
 using Kasbah.Media;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Kasbah.Provider.Aws
 {
     public class S3MediaProvider : IMediaStorageProvider
     {
         readonly S3MediaProviderSettings _settings;
-        readonly IDistributedCache _cache;
+        readonly IMemoryCache _cache;
 
-        public S3MediaProvider(S3MediaProviderSettings settings, IDistributedCache cache = null)
+        public S3MediaProvider(S3MediaProviderSettings settings, IMemoryCache cache)
         {
             _settings = settings;
             _cache = cache;
@@ -24,7 +25,7 @@ namespace Kasbah.Provider.Aws
         public async Task<Stream> GetMediaAsync(Guid id)
         {
             var cacheKey = $"media:s3:{id}";
-            var cached = await _cache?.GetAsync(cacheKey);
+            var cached = _cache.Get<byte[]>(cacheKey);
             if (cached == null)
             {
                 using (var client = GetClient())
@@ -40,7 +41,7 @@ namespace Kasbah.Provider.Aws
                         var stream = new MemoryStream();
                         await ret.ResponseStream.CopyToAsync(stream);
 
-                        await _cache?.SetAsync(cacheKey, stream.ToArray());
+                        _cache.Set(cacheKey, stream.ToArray());
 
                         stream.Seek(0, SeekOrigin.Begin);
 
